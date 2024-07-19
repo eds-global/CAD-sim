@@ -1,0 +1,29 @@
+﻿        private static System.Windows.Forms.ComboBox cbBuildingTypes;
+        private static System.Windows.Forms.ComboBox cbBuildingCategory;
+        private static System.Windows.Forms.TextBox txtAddress;
+        private static System.Windows.Forms.TextBox txtClientName;
+        private static System.Windows.Forms.TextBox txtProjectName;
+        private static System.Windows.Forms.ComboBox cbCities;
+        private static System.Windows.Forms.ComboBox cbStates;
+        private static System.Windows.Forms.Label lbClimateType;
+        private static System.Windows.Forms.Label lbLongitude;
+        private static System.Windows.Forms.Label lbLatitude;
+        private static System.Windows.Forms.TextBox txtAngle;
+
+        cbBuildingTypes = new System.Windows.Forms.ComboBox();
+        cbBuildingCategory = new System.Windows.Forms.ComboBox();
+        txtAddress = new System.Windows.Forms.TextBox();
+        txtClientName = new System.Windows.Forms.TextBox();
+        txtProjectName = new System.Windows.Forms.TextBox();
+
+
+
+
+
+
+        string fileName = @"D:\0 Yogas\6 KarmaYoga\Output\UnitBase\XX23-100080-01_Bottom_(XA)_7.JSON";
+
+        using (var reader = new StreamReader(fileName))
+        {
+            DataModel dataModel = JsonConvert.DeserializeObject<DataModel>(reader.ReadToEnd());
+        }
