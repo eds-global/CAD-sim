@@ -4,13 +4,10 @@
 
    - Download Visual Studio 2022 from [here](https://visualstudio.microsoft.com/).
 
-   ![Visual Studio 2022](images/visual_studio.png)
-
 2. **Install ZWCAD 2024**
 
    - Download ZWCAD 2024 from [here](https://www.zwsoft.com/download).
 
-   ![ZWCAD 2024](images/zwcad.png)
 
 3. **Open the Source Code in Visual Studio**
 
@@ -22,8 +19,6 @@
 5. **Add ZWCAD References to Projects**
 
    - Right-click on **References** > **Add References** > **Browse** tab > Click **Browse** > Locate `zwManaged.dll` and `zwDatabaseMgd.dll` in `C:\Program Files\ZWSOFT\ZWCAD 2024` > Click **OK**.
-
-   ![Add References](images/add_references.png)
 
    Perform the above steps for both the 'EDS' and 'Zoom' projects.
 
