@@ -24,10 +24,11 @@ namespace EDS.UserControls
 
         private void toggleSwitch1_CheckedChanged(object sender, EventArgs e)
         {
-            if (toggleSwitch1.Checked)
-                uChange.Text ="W/sqmk -> Btu";
-            else
-                uChange.Text ="m -> ft";
+        }
+
+        private void WallDataPalette_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
