@@ -31,6 +31,7 @@ namespace EDS
         public static ExportPalette exportPalette = null;
         public static WindowsDataPalette windowsDataPalette = null;
         public static LispCommands LispCommandsPalette = null;
+        public static WallDataPalette wallDataPalette = null;
 
         [CommandMethod("EDS")]
         public static void EDS()
@@ -39,6 +40,7 @@ namespace EDS
             {
                 EDS_PaletteSet = new ZwSoft.ZwCAD.Windows.PaletteSet("EDS", new System.Guid("A61D0875-A507-4b73-8B5F-9266BEACD596"));
                 EDS_PaletteSet.Visible = true;
+                EDS_PaletteSet.Size = new System.Drawing.Size(400,500);
 
                 projectInfoPalette = new ProjectInformationPalette();
                 EDS_PaletteSet.Add("Project Information", projectInfoPalette);
@@ -51,6 +53,9 @@ namespace EDS
 
                 LispCommandsPalette = new LispCommands();
                 EDS_PaletteSet.Add("Lisp Commands", LispCommandsPalette);
+
+                wallDataPalette = new WallDataPalette();
+                EDS_PaletteSet.Add("Walls",wallDataPalette);
             }
             else
             {

@@ -47,10 +47,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="ZwDatabaseMgd">
-      <HintPath>C:\Program Files\ZWCAD 2024\ZwDatabaseMgd.dll</HintPath>
+      <HintPath>..\..\ZWCAD\ZwDatabaseMgd.dll</HintPath>
     </Reference>
     <Reference Include="ZwManaged">
-      <HintPath>C:\Program Files\ZWCAD 2024\ZwManaged.dll</HintPath>
+      <HintPath>..\..\ZWCAD\ZwManaged.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +69,12 @@
     </Compile>
     <Compile Include="UserControls\LispCommands.Designer.cs">
       <DependentUpon>LispCommands.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WallDataPalette.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\WallDataPalette.Designer.cs">
+      <DependentUpon>WallDataPalette.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\WindowsDataPalette.cs">
       <SubType>UserControl</SubType>
@@ -109,6 +115,9 @@
     <EmbeddedResource Include="UserControls\ProjectInformationPalette.resx">
       <DependentUpon>ProjectInformationPalette.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\WallDataPalette.resx">
+      <DependentUpon>WallDataPalette.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\WindowsDataPalette.resx">
       <DependentUpon>WindowsDataPalette.cs</DependentUpon>
     </EmbeddedResource>
@@ -128,6 +137,10 @@
     <ProjectReference Include="..\Zoom\Zoom.vbproj">
       <Project>{3fd6929b-968b-4cd2-a275-89cc6e708f02}</Project>
       <Name>Zoom</Name>
+    </ProjectReference>
+    <ProjectReference Include="ToggleSwitch\ToggleSwitch.csproj">
+      <Project>{49b88ffa-f02c-4709-ba65-9f8996444ecd}</Project>
+      <Name>ToggleSwitch</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
