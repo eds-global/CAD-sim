@@ -9,3 +9,8 @@
 /ResourceLib/obj
 /ResourceLib/bin
 /packages
+/.vs
+/Zoom/.vs
+/ResourceLib/.vs
+/MockupDesign/.vs
+/EDS/.vs
