@@ -1,42 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExcelDataReader;
 
 namespace EDS
 {
-    internal class ExcelReader
+    public class ExcelReader
     {
-        string folderPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
         public static List<string> GetValuesFromExcel(string fileName, string sheetName)
         {
+            string folderPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
             List<string> values = new List<string>();
 
-            using (SpreadsheetLight.SLDocument document = new SpreadsheetLight.SLDocument(fileName))
+            var filePath = Path.Combine(folderPath, "Database", fileName);
+
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
-                // Check if the sheet name exists in the workbook
-                var sheetNames = document.GetWorksheetNames();
-                if (!sheetNames.Contains(sheetName))
+                // Create an IExcelDataReader instance
+                IExcelDataReader reader;
+
+                // Detect the file format and create the reader
+                if (Path.GetExtension(filePath).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Sheet '{sheetName}' does not exist.");
-                    return new List<string>();
+                    reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                }
+                else if (Path.GetExtension(filePath).Equals(".xls", StringComparison.OrdinalIgnoreCase))
+                {
+                    reader = ExcelReaderFactory.CreateBinaryReader(stream);
+                }
+                else
+                {
+                    throw new NotSupportedException("Unsupported file format");
                 }
 
-                // Select the worksheet by name
-                document.SelectWorksheet(sheetName);
+                // Convert the reader to a dataset
+                var dataset = reader.AsDataSet();
 
-                // Get the number of rows in the worksheet
-                int rowCount = document.GetWorksheetStatistics().NumberOfRows;
-
-                // Read the first column (column index 1) for all rows
-                for (int row = 1; row <= rowCount; row++)
+                // Find the DataTable with the specified sheet name
+                DataTable table = null;
+                foreach (DataTable dt in dataset.Tables)
                 {
-                    // Read the cell value from the first column
-                    string cellValue = document.GetCellValueAsString(row, 1);
-                    values.Add(cellValue);
+                    if (dt.TableName.Equals(sheetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        table = dt;
+                        break;
+                    }
                 }
+
+                if (table == null)
+                {
+                    Console.WriteLine($"Sheet with name '{sheetName}' not found.");
+                   
+                }
+
+                // Iterate through the rows and columns of the DataTable
+                foreach (DataRow row in table.Rows)
+                {
+                    foreach (var cell in row.ItemArray)
+                    {
+                        values.Add(cell.ToString());
+                    }
+                }
+
+                // Don't forget to close the reader
+                reader.Close();
             }
 
             return values;
