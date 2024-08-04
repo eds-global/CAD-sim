@@ -35,8 +35,6 @@
             this.uValue = new System.Windows.Forms.TextBox();
             this.uValueCheck = new System.Windows.Forms.CheckBox();
             this.extWallCombo = new System.Windows.Forms.ComboBox();
-            this.ExtUpdateButton = new System.Windows.Forms.Button();
-            this.ExtMatchButton = new System.Windows.Forms.Button();
             this.intWallCombo = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.DrawButton = new System.Windows.Forms.Button();
@@ -66,12 +64,12 @@
             this.label6 = new System.Windows.Forms.Label();
             this.MatchAllButton = new System.Windows.Forms.Button();
             this.UpdateAllButton = new System.Windows.Forms.Button();
-            this.IntMatchButton = new System.Windows.Forms.Button();
-            this.IntUpdateButton = new System.Windows.Forms.Button();
-            this.toggleSwitch1 = new JCS.ToggleSwitch();
-            this.label14 = new System.Windows.Forms.Label();
+            this.wallMatchButton = new System.Windows.Forms.Button();
+            this.wallUpdateButton = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
+            this.toggleSwitch1 = new JCS.ToggleSwitch();
+            this.refreshButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -135,6 +133,7 @@
             this.uValueCheck.Size = new System.Drawing.Size(15, 14);
             this.uValueCheck.TabIndex = 6;
             this.uValueCheck.UseVisualStyleBackColor = true;
+            this.uValueCheck.CheckedChanged += new System.EventHandler(this.uValueCheck_CheckedChanged);
             // 
             // extWallCombo
             // 
@@ -142,35 +141,11 @@
             this.extWallCombo.FormattingEnabled = true;
             this.extWallCombo.IntegralHeight = false;
             this.extWallCombo.ItemHeight = 13;
-            this.extWallCombo.Location = new System.Drawing.Point(114, 37);
+            this.extWallCombo.Location = new System.Drawing.Point(119, 37);
             this.extWallCombo.Name = "extWallCombo";
             this.extWallCombo.Size = new System.Drawing.Size(143, 21);
             this.extWallCombo.TabIndex = 7;
             this.extWallCombo.SelectedIndexChanged += new System.EventHandler(this.extWallCombo_SelectedIndexChanged);
-            // 
-            // ExtUpdateButton
-            // 
-            this.ExtUpdateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ExtUpdateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ExtUpdateButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.ExtUpdateButton.Location = new System.Drawing.Point(169, 64);
-            this.ExtUpdateButton.Name = "ExtUpdateButton";
-            this.ExtUpdateButton.Size = new System.Drawing.Size(88, 34);
-            this.ExtUpdateButton.TabIndex = 8;
-            this.ExtUpdateButton.Text = "Update";
-            this.ExtUpdateButton.UseVisualStyleBackColor = false;
-            // 
-            // ExtMatchButton
-            // 
-            this.ExtMatchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ExtMatchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ExtMatchButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.ExtMatchButton.Location = new System.Drawing.Point(310, 63);
-            this.ExtMatchButton.Name = "ExtMatchButton";
-            this.ExtMatchButton.Size = new System.Drawing.Size(95, 34);
-            this.ExtMatchButton.TabIndex = 9;
-            this.ExtMatchButton.Text = "Match";
-            this.ExtMatchButton.UseVisualStyleBackColor = false;
             // 
             // intWallCombo
             // 
@@ -178,7 +153,7 @@
             this.intWallCombo.FormattingEnabled = true;
             this.intWallCombo.IntegralHeight = false;
             this.intWallCombo.ItemHeight = 13;
-            this.intWallCombo.Location = new System.Drawing.Point(114, 123);
+            this.intWallCombo.Location = new System.Drawing.Point(119, 70);
             this.intWallCombo.Name = "intWallCombo";
             this.intWallCombo.Size = new System.Drawing.Size(143, 21);
             this.intWallCombo.TabIndex = 12;
@@ -188,7 +163,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(13, 124);
+            this.label5.Location = new System.Drawing.Point(13, 70);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(90, 16);
             this.label5.TabIndex = 11;
@@ -199,7 +174,7 @@
             this.DrawButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.DrawButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DrawButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.DrawButton.Location = new System.Drawing.Point(70, 331);
+            this.DrawButton.Location = new System.Drawing.Point(15, 280);
             this.DrawButton.Name = "DrawButton";
             this.DrawButton.Size = new System.Drawing.Size(88, 34);
             this.DrawButton.TabIndex = 13;
@@ -212,7 +187,7 @@
             this.SelectButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.SelectButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SelectButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.SelectButton.Location = new System.Drawing.Point(162, 332);
+            this.SelectButton.Location = new System.Drawing.Point(107, 281);
             this.SelectButton.Name = "SelectButton";
             this.SelectButton.Size = new System.Drawing.Size(95, 34);
             this.SelectButton.TabIndex = 14;
@@ -222,6 +197,7 @@
             // 
             // panel1
             // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.label10);
             this.panel1.Controls.Add(this.f1Type3CompText);
@@ -231,7 +207,7 @@
             this.panel1.Controls.Add(this.f1Type2);
             this.panel1.Controls.Add(this.f1Type1);
             this.panel1.Controls.Add(this.label8);
-            this.panel1.Location = new System.Drawing.Point(16, 169);
+            this.panel1.Location = new System.Drawing.Point(21, 111);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(200, 144);
             this.panel1.TabIndex = 15;
@@ -323,6 +299,7 @@
             // 
             // panel2
             // 
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.label12);
             this.panel2.Controls.Add(this.f2Type3CompText);
             this.panel2.Controls.Add(this.label13);
@@ -334,7 +311,7 @@
             this.panel2.Controls.Add(this.f2Type3);
             this.panel2.Controls.Add(this.f2Type1);
             this.panel2.Controls.Add(this.f2Type2);
-            this.panel2.Location = new System.Drawing.Point(275, 169);
+            this.panel2.Location = new System.Drawing.Point(280, 111);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(200, 144);
             this.panel2.TabIndex = 16;
@@ -448,7 +425,7 @@
             // label6
             // 
             this.label6.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.label6.Location = new System.Drawing.Point(-2, -2);
+            this.label6.Location = new System.Drawing.Point(3, -2);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(505, 33);
             this.label6.TabIndex = 17;
@@ -458,7 +435,7 @@
             this.MatchAllButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.MatchAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MatchAllButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.MatchAllButton.Location = new System.Drawing.Point(359, 332);
+            this.MatchAllButton.Location = new System.Drawing.Point(304, 281);
             this.MatchAllButton.Name = "MatchAllButton";
             this.MatchAllButton.Size = new System.Drawing.Size(95, 34);
             this.MatchAllButton.TabIndex = 19;
@@ -471,7 +448,7 @@
             this.UpdateAllButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.UpdateAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.UpdateAllButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.UpdateAllButton.Location = new System.Drawing.Point(267, 331);
+            this.UpdateAllButton.Location = new System.Drawing.Point(212, 280);
             this.UpdateAllButton.Name = "UpdateAllButton";
             this.UpdateAllButton.Size = new System.Drawing.Size(88, 34);
             this.UpdateAllButton.TabIndex = 18;
@@ -479,29 +456,45 @@
             this.UpdateAllButton.UseVisualStyleBackColor = false;
             this.UpdateAllButton.Click += new System.EventHandler(this.UpdateAllButton_Click);
             // 
-            // IntMatchButton
+            // wallMatchButton
             // 
-            this.IntMatchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.IntMatchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IntMatchButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.IntMatchButton.Location = new System.Drawing.Point(396, 115);
-            this.IntMatchButton.Name = "IntMatchButton";
-            this.IntMatchButton.Size = new System.Drawing.Size(95, 34);
-            this.IntMatchButton.TabIndex = 21;
-            this.IntMatchButton.Text = "Match";
-            this.IntMatchButton.UseVisualStyleBackColor = false;
+            this.wallMatchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.wallMatchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.wallMatchButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.wallMatchButton.Location = new System.Drawing.Point(403, 64);
+            this.wallMatchButton.Name = "wallMatchButton";
+            this.wallMatchButton.Size = new System.Drawing.Size(88, 30);
+            this.wallMatchButton.TabIndex = 21;
+            this.wallMatchButton.Text = "Match";
+            this.wallMatchButton.UseVisualStyleBackColor = false;
             // 
-            // IntUpdateButton
+            // wallUpdateButton
             // 
-            this.IntUpdateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.IntUpdateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IntUpdateButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.IntUpdateButton.Location = new System.Drawing.Point(281, 115);
-            this.IntUpdateButton.Name = "IntUpdateButton";
-            this.IntUpdateButton.Size = new System.Drawing.Size(88, 34);
-            this.IntUpdateButton.TabIndex = 20;
-            this.IntUpdateButton.Text = "Update";
-            this.IntUpdateButton.UseVisualStyleBackColor = false;
+            this.wallUpdateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.wallUpdateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.wallUpdateButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.wallUpdateButton.Location = new System.Drawing.Point(293, 64);
+            this.wallUpdateButton.Name = "wallUpdateButton";
+            this.wallUpdateButton.Size = new System.Drawing.Size(88, 30);
+            this.wallUpdateButton.TabIndex = 20;
+            this.wallUpdateButton.Text = "Update";
+            this.wallUpdateButton.UseVisualStyleBackColor = false;
+            // 
+            // label15
+            // 
+            this.label15.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label15.Location = new System.Drawing.Point(16, 100);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(487, 2);
+            this.label15.TabIndex = 23;
+            // 
+            // label16
+            // 
+            this.label16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label16.Location = new System.Drawing.Point(17, 264);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(487, 2);
+            this.label16.TabIndex = 24;
             // 
             // toggleSwitch1
             // 
@@ -517,29 +510,18 @@
             this.toggleSwitch1.TabIndex = 1;
             this.toggleSwitch1.CheckedChanged += new JCS.ToggleSwitch.CheckedChangedDelegate(this.toggleSwitch1_CheckedChanged);
             // 
-            // label14
+            // refreshButton
             // 
-            this.label14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label14.Location = new System.Drawing.Point(12, 101);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(487, 2);
-            this.label14.TabIndex = 22;
-            // 
-            // label15
-            // 
-            this.label15.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label15.Location = new System.Drawing.Point(12, 155);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(487, 2);
-            this.label15.TabIndex = 23;
-            // 
-            // label16
-            // 
-            this.label16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label16.Location = new System.Drawing.Point(12, 322);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(487, 2);
-            this.label16.TabIndex = 24;
+            this.refreshButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.refreshButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.refreshButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.refreshButton.Location = new System.Drawing.Point(408, 281);
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(95, 34);
+            this.refreshButton.TabIndex = 25;
+            this.refreshButton.Text = "Refresh";
+            this.refreshButton.UseVisualStyleBackColor = false;
+            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
             // 
             // WallDataPalette
             // 
@@ -547,11 +529,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.Controls.Add(this.refreshButton);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.label15);
-            this.Controls.Add(this.label14);
-            this.Controls.Add(this.IntMatchButton);
-            this.Controls.Add(this.IntUpdateButton);
+            this.Controls.Add(this.wallMatchButton);
+            this.Controls.Add(this.wallUpdateButton);
             this.Controls.Add(this.MatchAllButton);
             this.Controls.Add(this.UpdateAllButton);
             this.Controls.Add(this.panel2);
@@ -560,8 +542,6 @@
             this.Controls.Add(this.DrawButton);
             this.Controls.Add(this.intWallCombo);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.ExtMatchButton);
-            this.Controls.Add(this.ExtUpdateButton);
             this.Controls.Add(this.extWallCombo);
             this.Controls.Add(this.uValueCheck);
             this.Controls.Add(this.uValue);
@@ -593,8 +573,6 @@
         private System.Windows.Forms.TextBox uValue;
         private System.Windows.Forms.CheckBox uValueCheck;
         private System.Windows.Forms.ComboBox extWallCombo;
-        private System.Windows.Forms.Button ExtUpdateButton;
-        private System.Windows.Forms.Button ExtMatchButton;
         private System.Windows.Forms.ComboBox intWallCombo;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button DrawButton;
@@ -621,13 +599,13 @@
         private System.Windows.Forms.Button MatchAllButton;
         private System.Windows.Forms.Button UpdateAllButton;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button IntMatchButton;
-        private System.Windows.Forms.Button IntUpdateButton;
+        private System.Windows.Forms.Button wallMatchButton;
+        private System.Windows.Forms.Button wallUpdateButton;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button refreshButton;
     }
 }

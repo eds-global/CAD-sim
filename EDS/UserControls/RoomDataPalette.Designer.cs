@@ -135,11 +135,6 @@
             this.spaceComboBox.FormattingEnabled = true;
             this.spaceComboBox.IntegralHeight = false;
             this.spaceComboBox.ItemHeight = 13;
-            this.spaceComboBox.Items.AddRange(new object[] {
-            "Wood Wall",
-            "Metal Wall",
-            "Brick Wall",
-            "Concrete Wall"});
             this.spaceComboBox.Location = new System.Drawing.Point(97, 61);
             this.spaceComboBox.Name = "spaceComboBox";
             this.spaceComboBox.Size = new System.Drawing.Size(97, 21);
@@ -170,11 +165,6 @@
             this.lpdComboBox.FormattingEnabled = true;
             this.lpdComboBox.IntegralHeight = false;
             this.lpdComboBox.ItemHeight = 13;
-            this.lpdComboBox.Items.AddRange(new object[] {
-            "Wood Wall",
-            "Metal Wall",
-            "Brick Wall",
-            "Concrete Wall"});
             this.lpdComboBox.Location = new System.Drawing.Point(97, 103);
             this.lpdComboBox.Name = "lpdComboBox";
             this.lpdComboBox.Size = new System.Drawing.Size(97, 21);
@@ -195,11 +185,6 @@
             this.epdComboBox.FormattingEnabled = true;
             this.epdComboBox.IntegralHeight = false;
             this.epdComboBox.ItemHeight = 13;
-            this.epdComboBox.Items.AddRange(new object[] {
-            "Wood Wall",
-            "Metal Wall",
-            "Brick Wall",
-            "Concrete Wall"});
             this.epdComboBox.Location = new System.Drawing.Point(97, 130);
             this.epdComboBox.Name = "epdComboBox";
             this.epdComboBox.Size = new System.Drawing.Size(97, 21);
@@ -220,11 +205,6 @@
             this.freshAirComboBox.FormattingEnabled = true;
             this.freshAirComboBox.IntegralHeight = false;
             this.freshAirComboBox.ItemHeight = 13;
-            this.freshAirComboBox.Items.AddRange(new object[] {
-            "Wood Wall",
-            "Metal Wall",
-            "Brick Wall",
-            "Concrete Wall"});
             this.freshAirComboBox.Location = new System.Drawing.Point(97, 202);
             this.freshAirComboBox.Name = "freshAirComboBox";
             this.freshAirComboBox.Size = new System.Drawing.Size(97, 21);
@@ -245,11 +225,6 @@
             this.occupComboBox.FormattingEnabled = true;
             this.occupComboBox.IntegralHeight = false;
             this.occupComboBox.ItemHeight = 13;
-            this.occupComboBox.Items.AddRange(new object[] {
-            "Wood Wall",
-            "Metal Wall",
-            "Brick Wall",
-            "Concrete Wall"});
             this.occupComboBox.Location = new System.Drawing.Point(97, 175);
             this.occupComboBox.Name = "occupComboBox";
             this.occupComboBox.Size = new System.Drawing.Size(97, 21);
@@ -270,11 +245,6 @@
             this.ceilFinishComboBox.FormattingEnabled = true;
             this.ceilFinishComboBox.IntegralHeight = false;
             this.ceilFinishComboBox.ItemHeight = 13;
-            this.ceilFinishComboBox.Items.AddRange(new object[] {
-            "Wood Wall",
-            "Metal Wall",
-            "Brick Wall",
-            "Concrete Wall"});
             this.ceilFinishComboBox.Location = new System.Drawing.Point(97, 268);
             this.ceilFinishComboBox.Name = "ceilFinishComboBox";
             this.ceilFinishComboBox.Size = new System.Drawing.Size(97, 21);
@@ -295,11 +265,6 @@
             this.floorFinishComboBox.FormattingEnabled = true;
             this.floorFinishComboBox.IntegralHeight = false;
             this.floorFinishComboBox.ItemHeight = 13;
-            this.floorFinishComboBox.Items.AddRange(new object[] {
-            "Wood Wall",
-            "Metal Wall",
-            "Brick Wall",
-            "Concrete Wall"});
             this.floorFinishComboBox.Location = new System.Drawing.Point(97, 241);
             this.floorFinishComboBox.Name = "floorFinishComboBox";
             this.floorFinishComboBox.Size = new System.Drawing.Size(97, 21);

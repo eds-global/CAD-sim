@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="AEC\AEC Classes.cs" />
     <Compile Include="AEC\AECExportManager.cs" />
+    <Compile Include="AEC\EDSWallCreation.cs" />
     <Compile Include="CADUtilities.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="GenericModule.cs" />

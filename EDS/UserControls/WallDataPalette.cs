@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDS.AEC;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -38,22 +39,87 @@ namespace EDS.UserControls
 
         private void DrawButton_Click(object sender, EventArgs e)
         {
+            EDSWallCreation wallCreation = new EDSWallCreation();
+
+            EDSWall wall = new EDSWall()
+            {
+                extWallType = extWallCombo.SelectedItem == null ? "" : extWallCombo.SelectedItem.ToString(),
+                intWallType = intWallCombo.SelectedItem == null ? "" : intWallCombo.SelectedItem.ToString(),
+                uValue = uValue.Text,
+                eDS1Faces1 = f1Type1.SelectedItem == null ? "" : f1Type1.SelectedItem.ToString() + "-" + f1Type1CompText.Text,
+                eDS1Faces2 = f1Type2.SelectedItem == null ? "" : f1Type2.SelectedItem.ToString() + "-" + f1Type2CompText.Text,
+                eDS1Faces3 = f1Type3.SelectedItem == null ? "" : f1Type3.SelectedItem.ToString() + "-" + f1Type3CompText.Text,
+                eDS2Faces1 = f2Type1.SelectedItem == null ? "" : f2Type1.SelectedItem.ToString() + "-" + f2Type1CompText.Text,
+                eDS2Faces2 = f2Type2.SelectedItem == null ? "" : f2Type2.SelectedItem.ToString() + "-" + f2Type2CompText.Text,
+                eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text
+            };
+            wallCreation.CreateWall(wall);
+
+            extWallCombo.SelectedItem = null;
+            intWallCombo.SelectedItem = null;
+            uValue.Text = "";
+            f1Type1.SelectedItem = f1Type2.SelectedItem = f1Type3.SelectedItem = null;
+            f2Type1.SelectedItem = f2Type2.SelectedItem = f2Type3.SelectedItem = null;
 
         }
 
         private void UpdateAllButton_Click(object sender, EventArgs e)
         {
+            EDSWallCreation wallCreation = new EDSWallCreation();
 
+            EDSWall wall = new EDSWall()
+            {
+                extWallType = extWallCombo.SelectedItem == null ? "" : extWallCombo.SelectedItem.ToString(),
+                intWallType = intWallCombo.SelectedItem == null ? "" : intWallCombo.SelectedItem.ToString(),
+                uValue = uValue.Text,
+                eDS1Faces1 = f1Type1.SelectedItem == null ? "" : f1Type1.SelectedItem.ToString() + "-" + f1Type1CompText.Text,
+                eDS1Faces2 = f1Type2.SelectedItem == null ? "" : f1Type2.SelectedItem.ToString() + "-" + f1Type2CompText.Text,
+                eDS1Faces3 = f1Type3.SelectedItem == null ? "" : f1Type3.SelectedItem.ToString() + "-" + f1Type3CompText.Text,
+                eDS2Faces1 = f2Type1.SelectedItem == null ? "" : f2Type1.SelectedItem.ToString() + "-" + f2Type1CompText.Text,
+                eDS2Faces2 = f2Type2.SelectedItem == null ? "" : f2Type2.SelectedItem.ToString() + "-" + f2Type2CompText.Text,
+                eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text
+            };
+
+            wallCreation.UpdateLine(wall);
+
+            RefreshUI();
+
+        }
+
+        private void RefreshUI()
+        {
+            extWallCombo.SelectedItem = null;
+            intWallCombo.SelectedItem = null;
+            uValue.Text = "";
+            f1Type1.SelectedItem = f1Type2.SelectedItem = f1Type3.SelectedItem = null;
+            f2Type1.SelectedItem = f2Type2.SelectedItem = f2Type3.SelectedItem = null;
         }
 
         private void SelectButton_Click(object sender, EventArgs e)
         {
+            EDSWallCreation creation = new EDSWallCreation();
+            var edsValue = creation.GetWallLine();
 
+            extWallCombo.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.extWallType).ToList()) ? edsValue.First().extWallType : "";
+            intWallCombo.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.intWallType).ToList()) ? edsValue.First().intWallType : "";
+            uValue.Text = CheckIfValueSame(edsValue.Select(x => x.uValue).ToList()) ? edsValue.First().uValue : "";
+            f1Type1.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS1Faces1).ToList()) ? edsValue.First().eDS1Faces1 : "";
+            f1Type2.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS1Faces2).ToList()) ? edsValue.First().eDS1Faces2 : "";
+            f1Type3.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS1Faces3).ToList()) ? edsValue.First().eDS1Faces3 : "";
+            f2Type1.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS2Faces1).ToList()) ? edsValue.First().eDS2Faces1 : "";
+            f2Type2.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS2Faces2).ToList()) ? edsValue.First().eDS2Faces2 : "";
+            f2Type3.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS2Faces3).ToList()) ? edsValue.First().eDS2Faces3 : "";
+        }
+
+        private bool CheckIfValueSame(List<string> values)
+        {
+            return values.Distinct().Count() == 1 ? true : false;
         }
 
         private void MatchAllButton_Click(object sender, EventArgs e)
         {
-
+            //EDSWallCreation creation = new EDSWallCreation();
+            //creation.FindClosedLoop();
         }
 
         private void LoadListValues()
@@ -88,6 +154,25 @@ namespace EDS.UserControls
         private void intWallCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void uValueCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            if (uValueCheck.Checked)
+            {
+                uValue.Enabled = true;
+                extWallCombo.Enabled = false;
+            }
+            else
+            {
+                uValue.Enabled = false;
+                extWallCombo.Enabled = true;
+            }
+        }
+
+        private void refreshButton_Click(object sender, EventArgs e)
+        {
+            RefreshUI();
         }
     }
 }

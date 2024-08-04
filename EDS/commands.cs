@@ -32,6 +32,7 @@ namespace EDS
         public static WindowsDataPalette windowsDataPalette = null;
         public static LispCommands LispCommandsPalette = null;
         public static WallDataPalette wallDataPalette = null;
+        public static RoomDataPalette roomDataPalette = null;
 
         [CommandMethod("EDS")]
         public static void EDS()
@@ -56,6 +57,9 @@ namespace EDS
 
                 wallDataPalette = new WallDataPalette();
                 EDS_PaletteSet.Add("Walls",wallDataPalette);
+
+                roomDataPalette = new RoomDataPalette();
+                EDS_PaletteSet.Add("Rooms", roomDataPalette);
             }
             else
             {
