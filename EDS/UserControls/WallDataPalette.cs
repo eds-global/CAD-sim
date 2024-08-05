@@ -118,8 +118,7 @@ namespace EDS.UserControls
 
         private void MatchAllButton_Click(object sender, EventArgs e)
         {
-            //EDSWallCreation creation = new EDSWallCreation();
-            //creation.FindClosedLoop();
+
         }
 
         private void LoadListValues()
@@ -173,6 +172,18 @@ namespace EDS.UserControls
         private void refreshButton_Click(object sender, EventArgs e)
         {
             RefreshUI();
+        }
+
+        private void scanButton_Click(object sender, EventArgs e)
+        {
+            EDSWallCreation creation = new EDSWallCreation();
+            creation.FindClosedLoop();
+        }
+
+        static void UpdateProgressBar()
+        {
+
+
         }
     }
 }

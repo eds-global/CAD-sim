@@ -349,6 +349,7 @@ namespace EDS.AEC
 
         public void FindClosedLoop()
         {
+
             Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             doc.LockDocument();
@@ -365,7 +366,8 @@ namespace EDS.AEC
                     Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
                     if (entity is Line)
                     {
-                        lines.Add(entity as Line);
+                        if (entity.Layer == layerName)
+                            lines.Add(entity as Line);
                     }
                 }
 

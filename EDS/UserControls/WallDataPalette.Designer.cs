@@ -68,8 +68,12 @@
             this.wallUpdateButton = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
-            this.toggleSwitch1 = new JCS.ToggleSwitch();
             this.refreshButton = new System.Windows.Forms.Button();
+            this.toggleSwitch1 = new JCS.ToggleSwitch();
+            this.scanButton = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.treeView2 = new System.Windows.Forms.TreeView();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -110,7 +114,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(320, 37);
+            this.label4.Location = new System.Drawing.Point(320, 39);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(54, 16);
             this.label4.TabIndex = 4;
@@ -496,6 +500,19 @@
             this.label16.Size = new System.Drawing.Size(487, 2);
             this.label16.TabIndex = 24;
             // 
+            // refreshButton
+            // 
+            this.refreshButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.refreshButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.refreshButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.refreshButton.Location = new System.Drawing.Point(408, 281);
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(95, 34);
+            this.refreshButton.TabIndex = 25;
+            this.refreshButton.Text = "Refresh";
+            this.refreshButton.UseVisualStyleBackColor = false;
+            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
+            // 
             // toggleSwitch1
             // 
             this.toggleSwitch1.BackColor = System.Drawing.SystemColors.ScrollBar;
@@ -510,18 +527,38 @@
             this.toggleSwitch1.TabIndex = 1;
             this.toggleSwitch1.CheckedChanged += new JCS.ToggleSwitch.CheckedChangedDelegate(this.toggleSwitch1_CheckedChanged);
             // 
-            // refreshButton
+            // scanButton
             // 
-            this.refreshButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.refreshButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.refreshButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.refreshButton.Location = new System.Drawing.Point(408, 281);
-            this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new System.Drawing.Size(95, 34);
-            this.refreshButton.TabIndex = 25;
-            this.refreshButton.Text = "Refresh";
-            this.refreshButton.UseVisualStyleBackColor = false;
-            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
+            this.scanButton.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.scanButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scanButton.Location = new System.Drawing.Point(29, 326);
+            this.scanButton.Name = "scanButton";
+            this.scanButton.Size = new System.Drawing.Size(87, 32);
+            this.scanButton.TabIndex = 26;
+            this.scanButton.Text = "Scan";
+            this.scanButton.UseVisualStyleBackColor = false;
+            this.scanButton.Click += new System.EventHandler(this.scanButton_Click);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(132, 330);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(359, 23);
+            this.progressBar1.TabIndex = 27;
+            // 
+            // treeView1
+            // 
+            this.treeView1.Location = new System.Drawing.Point(15, 364);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(476, 165);
+            this.treeView1.TabIndex = 28;
+            // 
+            // treeView2
+            // 
+            this.treeView2.Location = new System.Drawing.Point(431, 600);
+            this.treeView2.Name = "treeView2";
+            this.treeView2.Size = new System.Drawing.Size(8, 8);
+            this.treeView2.TabIndex = 29;
             // 
             // WallDataPalette
             // 
@@ -529,6 +566,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.Controls.Add(this.treeView2);
+            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.scanButton);
             this.Controls.Add(this.refreshButton);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.label15);
@@ -552,7 +593,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "WallDataPalette";
-            this.Size = new System.Drawing.Size(511, 371);
+            this.Size = new System.Drawing.Size(477, 369);
             this.Load += new System.EventHandler(this.WallDataPalette_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -607,5 +648,9 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button refreshButton;
+        private System.Windows.Forms.Button scanButton;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView treeView2;
     }
 }
