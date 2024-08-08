@@ -1,9 +1,11 @@
-﻿using System;
+﻿using EDS.UserControls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 using ZwSoft.ZwCAD.ApplicationServices;
@@ -23,6 +25,7 @@ namespace EDS.AEC
         public static string extWallType = "ExtWall";
         public static string intWallType = "IntWall";
         public static string uValue = "UValue";
+        public static string uValueCheck = "UValueCheck";
         public static string eDS1Faces1 = "Face1Type1";
         public static string eDS1Faces2 = "Face1Type2";
         public static string eDS1Faces3 = "Face1Type3";
@@ -103,56 +106,40 @@ namespace EDS.AEC
             Database db = doc.Database;
 
             List<Point3d> points = new List<Point3d>();
-            PromptPointOptions ppoStart = new PromptPointOptions("\nEnter the start point of the line: ");
-            PromptPointResult pprStart = doc.Editor.GetPoint(ppoStart);
-            if (pprStart.Status != PromptStatus.OK)
-                return;
-            else if (pprStart.Status == PromptStatus.OK)
-                points.Add(pprStart.Value);
+            //List<Point3d> points = new List<Point3d>();
+            PromptPointOptions ppo = new PromptPointOptions("\nSpecify first point or [Exit]: ");
+            PromptPointResult ppr = doc.Editor.GetPoint(ppo);
 
-            // Prompt for the end point
-            PromptPointOptions ppoEnd = new PromptPointOptions("\nEnter the end point of the line: ");
-            ppoEnd.BasePoint = pprStart.Value;
-            ppoEnd.UseBasePoint = true;
-            PromptPointResult pprEnd = doc.Editor.GetPoint(ppoEnd);
-            if (pprEnd.Status != PromptStatus.OK)
-                return;
-            else if (pprEnd.Status == PromptStatus.OK)
-                points.Add(pprEnd.Value);
-
-            using (doc.LockDocument())
+            if (ppr.Status == PromptStatus.OK)
             {
-                if (points.Count > 1)
+                points.Add(ppr.Value);
+            }
+
+
+            while (ppr.Status == PromptStatus.OK)
+            {
+                ppo.Message = "\nSpecify next point or [Exit]: ";
+                ppo.UseBasePoint = true;
+                ppo.BasePoint = ppr.Value;
+                ppr = doc.Editor.GetPoint(ppo);
+
+                if (ppr.Status == PromptStatus.OK)
                 {
-                    using (Transaction tr = db.TransactionManager.StartTransaction())
+                    points.Add(ppr.Value);
+
+                    using (doc.LockDocument())
                     {
-                        BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                        BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
-
-
-                        for (int i = 0; i < points.Count; i++)
+                        if (points.Count > 1)
                         {
-                            if (i == points.Count - 1)
+                            using (Transaction tr = db.TransactionManager.StartTransaction())
                             {
-                                if (!(points[0].IsEqualTo(points[i])))
-                                {
-                                    Line line = new Line();
-                                    line.StartPoint = new Point3d(points[0].X, points[0].Y, 0);
-                                    line.EndPoint = new Point3d(points[i].X, points[i].Y, 0);
+                                BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                                BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                                    line.Layer = layerName;
 
-                                    btr.AppendEntity(line);
-                                    tr.AddNewlyCreatedDBObject(line, true);
-
-                                    SetXDataForLine(dSWall, line);
-                                }
-                            }
-                            else
-                            {
                                 Line line = new Line();
-                                line.StartPoint = new Point3d(points[i].X, points[i].Y, 0);
-                                line.EndPoint = new Point3d(points[i + 1].X, points[i + 1].Y, 0);
+                                line.StartPoint = new Point3d(points[0].X, points[0].Y, 0);
+                                line.EndPoint = new Point3d(points[0 + 1].X, points[0 + 1].Y, 0);
 
                                 line.Layer = layerName;
 
@@ -160,17 +147,21 @@ namespace EDS.AEC
                                 tr.AddNewlyCreatedDBObject(line, true);
 
                                 SetXDataForLine(dSWall, line);
+
+                                tr.Commit();
                             }
                         }
-
-                        tr.Commit();
+                        else
+                        {
+                            doc.Editor.WriteMessage("\nNot enough points to create a line.");
+                        }
                     }
-                }
-                else
-                {
-                    doc.Editor.WriteMessage("\nNot enough points to create a line.");
+
+                    points.RemoveAt(0);
                 }
             }
+
+
         }
 
         private static void SetXDataForLine(EDSWall dSWall, Line line)
@@ -184,6 +175,7 @@ namespace EDS.AEC
             CADUtilities.SetXData(line.ObjectId, eDS2Faces1, dSWall.eDS2Faces1);
             CADUtilities.SetXData(line.ObjectId, eDS2Faces2, dSWall.eDS2Faces2);
             CADUtilities.SetXData(line.ObjectId, eDS2Faces3, dSWall.eDS2Faces3);
+            CADUtilities.SetXData(line.ObjectId, uValueCheck, dSWall.uValueCheck);
         }
 
         public void UpdateLine(EDSWall wall)
@@ -343,96 +335,116 @@ namespace EDS.AEC
             xData.eDS2Faces1 = CADUtilities.GetXData(line.ObjectId, eDS2Faces1);
             xData.eDS2Faces2 = CADUtilities.GetXData(line.ObjectId, eDS2Faces2);
             xData.eDS2Faces3 = CADUtilities.GetXData(line.ObjectId, eDS2Faces3);
+            xData.uValueCheck = CADUtilities.GetXData(line.ObjectId, uValueCheck);
 
             return xData;
         }
 
         public void FindClosedLoop()
         {
-
             Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
+            Editor ed = doc.Editor;
+
             doc.LockDocument();
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
-                BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead) as BlockTableRecord;
-
                 List<Line> lines = new List<Line>();
+                // Define the selection filter for lines
+                TypedValue[] filter = new TypedValue[1];
+                filter[0] = new TypedValue((int)DxfCode.Start, "LINE");
 
-                // Collect all lines from the drawing
-                foreach (ObjectId objId in btr)
+                // Create the selection filter
+                SelectionFilter selectionFilter = new SelectionFilter(filter);
+
+                // Prompt for the selection
+                PromptSelectionOptions opts = new PromptSelectionOptions();
+                opts.MessageForAdding = "Select lines: ";
+                PromptSelectionResult res = ed.GetSelection(opts, selectionFilter);
+
+
+                if (res.Status == PromptStatus.OK)
                 {
-                    Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                    if (entity is Line)
-                    {
-                        if (entity.Layer == layerName)
-                            lines.Add(entity as Line);
-                    }
-                }
+                    SelectionSet selectionSet = res.Value;
 
-                // Create an adjacency list
-                Dictionary<Point3d, List<Line>> adjacencyList = new Dictionary<Point3d, List<Line>>();
+                    // Collect all lines from the drawing
+                    foreach (SelectedObject so in selectionSet)
+                    {
+                        ObjectId objId = so.ObjectId;
 
-                foreach (Line line in lines)
-                {
-                    if (!adjacencyList.ContainsKey(line.StartPoint))
-                    {
-                        adjacencyList[line.StartPoint] = new List<Line>();
-                    }
-                    if (!adjacencyList.ContainsKey(line.EndPoint))
-                    {
-                        adjacencyList[line.EndPoint] = new List<Line>();
+                        Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
+                        if (entity is Line)
+                        {
+                            if (entity.Layer == layerName)
+                                lines.Add(entity as Line);
+                        }
                     }
 
-                    adjacencyList[line.StartPoint].Add(line);
-                    adjacencyList[line.EndPoint].Add(line);
-                }
+                    CreateTreeNode(lines);
 
-                // Find all possible loops using DFS
-                List<List<Line>> loops = new List<List<Line>>();
-                HashSet<Line> visitedLines = new HashSet<Line>();
+                    // Create an adjacency list
+                    Dictionary<Point3d, List<Line>> adjacencyList = new Dictionary<Point3d, List<Line>>();
 
-                foreach (Line line in lines)
-                {
-                    if (!visitedLines.Contains(line))
+                    foreach (Line line in lines)
                     {
-                        List<Line> currentLoop = new List<Line>();
-                        FindLoops(adjacencyList, line, line.StartPoint, line.StartPoint, currentLoop, loops, visitedLines);
+                        if (!adjacencyList.ContainsKey(line.StartPoint))
+                        {
+                            adjacencyList[line.StartPoint] = new List<Line>();
+                        }
+                        if (!adjacencyList.ContainsKey(line.EndPoint))
+                        {
+                            adjacencyList[line.EndPoint] = new List<Line>();
+                        }
+
+                        adjacencyList[line.StartPoint].Add(line);
+                        adjacencyList[line.EndPoint].Add(line);
                     }
-                }
 
-                // Calculate areas of the loops and find the best loop
-                double maxArea = double.NegativeInfinity;
-                List<Line> bestLoop = null;
+                    // Find all possible loops using DFS
+                    List<List<Line>> loops = new List<List<Line>>();
+                    HashSet<Line> visitedLines = new HashSet<Line>();
 
-                foreach (var loop in loops)
-                {
-                    double area = CalculateLoopArea(loop);
-                    if (area > maxArea)
+                    foreach (Line line in lines)
                     {
-                        maxArea = area;
-                        bestLoop = loop;
+                        if (!visitedLines.Contains(line))
+                        {
+                            List<Line> currentLoop = new List<Line>();
+                            FindLoops(adjacencyList, line, line.StartPoint, line.StartPoint, currentLoop, loops, visitedLines);
+                        }
                     }
-                }
 
-                // Output the best loop
-                if (bestLoop != null)
-                {
-                    foreach (Line loopLine in bestLoop)
+                    // Calculate areas of the loops and find the best loop
+                    double maxArea = double.NegativeInfinity;
+                    List<Line> bestLoop = null;
+
+                    foreach (var loop in loops)
                     {
-                        loopLine.UpgradeOpen();
-                        loopLine.Color = Color.FromColor(System.Drawing.Color.Yellow);
-                        loopLine.DowngradeOpen();
-                        doc.Editor.WriteMessage($"\nLine from {loopLine.StartPoint} to {loopLine.EndPoint}");
+                        double area = CalculateLoopArea(loop);
+                        if (area > maxArea)
+                        {
+                            maxArea = area;
+                            bestLoop = loop;
+                        }
                     }
-                    doc.Editor.WriteMessage($"\nMaximum Area: {maxArea}");
-                }
-                else
-                {
-                    doc.Editor.WriteMessage("\nNo closed loops found.");
-                }
 
+                    // Output the best loop
+                    if (bestLoop != null)
+                    {
+                        foreach (Line loopLine in bestLoop)
+                        {
+                            loopLine.UpgradeOpen();
+                            loopLine.Color = Color.FromColor(System.Drawing.Color.Yellow);
+                            loopLine.DowngradeOpen();
+                            doc.Editor.WriteMessage($"\nLine from {loopLine.StartPoint} to {loopLine.EndPoint}");
+                        }
+                        doc.Editor.WriteMessage($"\nMaximum Area: {maxArea}");
+                    }
+                    else
+                    {
+                        doc.Editor.WriteMessage("\nNo closed loops found.");
+                    }
+
+                }
                 tr.Commit();
             }
         }
@@ -473,6 +485,97 @@ namespace EDS.AEC
             }
             return Math.Abs(area) / 2;
         }
+
+        private void CreateTreeNode(List<Line> lines)
+        {
+            int exCount = 1;
+            int inCount = 1;
+            WallDataPalette.treeView1.Nodes.Clear();
+            TreeNode treeNode = new TreeNode("Walls");
+
+            TreeNode externalNode = new TreeNode("External Walls");
+            treeNode.Nodes.Add(externalNode);
+
+            TreeNode internalNode = new TreeNode("Internal Walls");
+            treeNode.Nodes.Add(internalNode);
+
+
+            WallDataPalette.treeView1.Nodes.Add(treeNode);
+            foreach (Line line in lines)
+            {
+                var wall = GetXDataForLine(line);
+                if (bool.Parse(wall.uValueCheck) == false)
+                {
+                    TreeNode child = new TreeNode("Line " + exCount.ToString());
+                    child.Tag = line.Handle.ToString();
+                    externalNode.Nodes.Add(child);
+
+                    exCount++;
+                }
+                else
+                {
+                    TreeNode child = new TreeNode("Line " + inCount.ToString());
+                    child.Tag = line.Handle.ToString();
+                    internalNode.Nodes.Add(child);
+
+                    inCount++;
+                }
+            }
+            //treeNode.Nodes.Add(treeNode);
+        }
+
+        public void MatchLine()
+        {
+            Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+            doc.LockDocument();
+            using (Transaction transaction=doc.Database.TransactionManager.StartTransaction())
+            {
+                // Define the selection filter for lines
+                TypedValue[] filter = new TypedValue[1];
+                filter[0] = new TypedValue((int)DxfCode.Start, "LINE");
+
+                // Create the selection filter
+                SelectionFilter selectionFilter = new SelectionFilter(filter);
+
+                PromptEntityOptions sourceOptions = new PromptEntityOptions("\nSelect source object: ");
+                PromptEntityResult sourceResult = ed.GetEntity(sourceOptions);
+
+                if (sourceResult.Status != PromptStatus.OK)
+                    return;
+
+                // Retrieve the source object
+                Entity sourceEntity = (Entity)transaction.GetObject(sourceResult.ObjectId, OpenMode.ForRead);
+
+                // Get properties of the source entity
+                string layerName = sourceEntity.Layer;
+                var sourceData = GetXDataForLine(sourceEntity as Line);
+                // Add more properties as needed
+
+                // Prompt user to select target objects
+                PromptSelectionOptions targetOptions = new PromptSelectionOptions();
+                targetOptions.MessageForAdding = "\nSelect target objects: ";
+                PromptSelectionResult targetResult = ed.GetSelection(targetOptions,selectionFilter);
+
+                if (targetResult.Status != PromptStatus.OK)
+                    return;
+
+                // Apply properties to each target object
+                foreach (ObjectId id in targetResult.Value.GetObjectIds())
+                {
+                    Entity targetEntity = (Entity)transaction.GetObject(id, OpenMode.ForWrite);
+                    targetEntity.UpgradeOpen();
+                    // Set properties from source entity
+                    targetEntity.Layer = layerName;
+                    SetXDataForLine(sourceData, targetEntity as Line);
+                    targetEntity.DowngradeOpen();
+                    // Apply more properties as needed
+                }
+                
+                transaction.Commit();
+            }
+        }
+
     }
 
     public class ClosedLoopFinder
@@ -582,12 +685,14 @@ namespace EDS.AEC
         public string eDS2Faces2 { get; set; }
         public string eDS2Faces3 { get; set; }
 
+        public string uValueCheck { get; set; }
+
         public EDSWall()
         {
 
         }
 
-        public EDSWall(string extWallType, string intWallType, string uValue, string eDS1Faces1, string eDS1Faces2, string eDS1Faces3, string eDS2Faces1, string eDS2Faces2, string eDS2Faces3)
+        public EDSWall(string extWallType, string intWallType, string uValue, string eDS1Faces1, string eDS1Faces2, string eDS1Faces3, string eDS2Faces1, string eDS2Faces2, string eDS2Faces3, string uValueCheck)
         {
             this.extWallType = extWallType;
             this.intWallType = intWallType;
@@ -598,6 +703,7 @@ namespace EDS.AEC
             this.eDS2Faces1 = eDS2Faces1;
             this.eDS2Faces2 = eDS2Faces2;
             this.eDS2Faces3 = eDS2Faces3;
+            this.uValueCheck = uValueCheck;
         }
     }
 

@@ -17,7 +17,7 @@ namespace EDS
 
             List<string> values = new List<string>();
 
-            var filePath = Path.Combine(folderPath, "Database", fileName);
+            var filePath = Path.Combine(folderPath, "EDS_Database", fileName);
 
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
             {
@@ -55,7 +55,7 @@ namespace EDS
                 if (table == null)
                 {
                     Console.WriteLine($"Sheet with name '{sheetName}' not found.");
-                   
+
                 }
 
                 // Iterate through the rows and columns of the DataTable

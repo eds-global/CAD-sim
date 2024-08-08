@@ -22,7 +22,7 @@ namespace ResourceLib
         {
             Dictionary<string, List<string>> buildingData = new Dictionary<string, List<string>>();
             
-            string dataFilePath = Path.Combine(folderPath, "Database\\" + csvFileName);
+            string dataFilePath = Path.Combine(folderPath, "EDS_Database\\" + csvFileName);
 
             if (File.Exists(dataFilePath))
             {
@@ -76,7 +76,7 @@ namespace ResourceLib
         {
             Dictionary<string, List<CityRecord>> cityData = new Dictionary<string, List<CityRecord>>();
 
-            string dataFilePath = Path.Combine(folderPath, "Database\\" + csvFileName);
+            string dataFilePath = Path.Combine(folderPath, "EDS_Database\\" + csvFileName);
 
             if (File.Exists(dataFilePath))
             {

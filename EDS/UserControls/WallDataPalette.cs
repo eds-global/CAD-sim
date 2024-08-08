@@ -51,15 +51,12 @@ namespace EDS.UserControls
                 eDS1Faces3 = f1Type3.SelectedItem == null ? "" : f1Type3.SelectedItem.ToString() + "-" + f1Type3CompText.Text,
                 eDS2Faces1 = f2Type1.SelectedItem == null ? "" : f2Type1.SelectedItem.ToString() + "-" + f2Type1CompText.Text,
                 eDS2Faces2 = f2Type2.SelectedItem == null ? "" : f2Type2.SelectedItem.ToString() + "-" + f2Type2CompText.Text,
-                eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text
+                eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text,
+                uValueCheck = uValueCheck.Checked.ToString(),
             };
             wallCreation.CreateWall(wall);
 
-            extWallCombo.SelectedItem = null;
-            intWallCombo.SelectedItem = null;
-            uValue.Text = "";
-            f1Type1.SelectedItem = f1Type2.SelectedItem = f1Type3.SelectedItem = null;
-            f2Type1.SelectedItem = f2Type2.SelectedItem = f2Type3.SelectedItem = null;
+            RefreshUI();
 
         }
 
@@ -93,6 +90,7 @@ namespace EDS.UserControls
             uValue.Text = "";
             f1Type1.SelectedItem = f1Type2.SelectedItem = f1Type3.SelectedItem = null;
             f2Type1.SelectedItem = f2Type2.SelectedItem = f2Type3.SelectedItem = null;
+            uValueCheck.Checked = false;
         }
 
         private void SelectButton_Click(object sender, EventArgs e)
@@ -109,6 +107,7 @@ namespace EDS.UserControls
             f2Type1.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS2Faces1).ToList()) ? edsValue.First().eDS2Faces1 : "";
             f2Type2.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS2Faces2).ToList()) ? edsValue.First().eDS2Faces2 : "";
             f2Type3.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.eDS2Faces3).ToList()) ? edsValue.First().eDS2Faces3 : "";
+            uValueCheck.Checked = CheckIfValueSame(edsValue.Select(x => x.uValueCheck).ToList()) ? bool.Parse(edsValue.First().uValueCheck) == true ? true : false : false;
         }
 
         private bool CheckIfValueSame(List<string> values)
@@ -118,7 +117,8 @@ namespace EDS.UserControls
 
         private void MatchAllButton_Click(object sender, EventArgs e)
         {
-
+            EDSWallCreation wallCreation = new EDSWallCreation();
+            wallCreation.MatchLine();
         }
 
         private void LoadListValues()
@@ -183,7 +183,17 @@ namespace EDS.UserControls
         static void UpdateProgressBar()
         {
 
+        }
 
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            try
+            {
+                string handle = e.Node.Tag.ToString();
+
+                Zoom.ZoomManager.Zoom2Handle(handle);
+            }
+            catch { }
         }
     }
 }

@@ -72,7 +72,7 @@
             this.toggleSwitch1 = new JCS.ToggleSwitch();
             this.scanButton = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            treeView1 = new System.Windows.Forms.TreeView();
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -548,10 +548,11 @@
             // 
             // treeView1
             // 
-            this.treeView1.Location = new System.Drawing.Point(15, 364);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(476, 165);
-            this.treeView1.TabIndex = 28;
+            treeView1.Location = new System.Drawing.Point(15, 364);
+            treeView1.Name = "treeView1";
+            treeView1.Size = new System.Drawing.Size(476, 165);
+            treeView1.TabIndex = 28;
+            treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // treeView2
             // 
@@ -567,7 +568,7 @@
             this.AutoScroll = true;
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.Controls.Add(this.treeView2);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(treeView1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.scanButton);
             this.Controls.Add(this.refreshButton);
@@ -593,7 +594,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "WallDataPalette";
-            this.Size = new System.Drawing.Size(477, 369);
+            this.Size = new System.Drawing.Size(460, 352);
             this.Load += new System.EventHandler(this.WallDataPalette_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -650,7 +651,7 @@
         private System.Windows.Forms.Button refreshButton;
         private System.Windows.Forms.Button scanButton;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.TreeView treeView2;
+        public static System.Windows.Forms.TreeView treeView1;
     }
 }

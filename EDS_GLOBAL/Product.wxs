@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="EDS_GLOBAL" Language="1033" Version="1.0.0.0" Manufacturer="HP" UpgradeCode="887472d4-fb1a-4137-82aa-bbe036b6f8f6">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" />
+		<WixVariable Id="WixUILicenseRtf" Value="EDS.rtf" />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<Media Id='1' Cabinet='cab1.cab' EmbedCab='yes'  />
+		<UIRef Id="WixUI_Minimal" />
+		<UI />
+		<Feature Id="ProductFeature" Title="EDS_GLOBAL" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentGroupRef Id="ProductDatabase" />
+			<ComponentGroupRef Id="ProductWeather" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="AppDataFolder">
+				<Directory Id="INSTALLFOLDER" Name="EDS_GLOBAL">
+					<Directory Id="DATABASE1" Name="EDS_Database">
+						<Directory Id="WEATHER_FILES" Name="Weather_Files">
+						</Directory>
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+	</Fragment>
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<Component Id="EDS.DLL" DiskId="1" Guid="D79B3CCA-E1AD-4902-9B3C-215EDCE682AB">
+				<File Id="EDS.DLL" Name="EDS.dll" Source="..\EDS\bin\Debug\EDS.dll" />
+			</Component>
+			<Component Id="EDS.DLL.CONFIG" DiskId="1" Guid="C4480679-6D37-46BA-BFDC-18DAE37D4BBA">
+				<File Id="EDS.DLL.CONFIG" Name="EDS.dll.config" Source="..\EDS\bin\Debug\EDS.dll.config" />
+			</Component>
+			<Component Id="EDS.PDB" DiskId="1" Guid="F3C12DA9-6AD0-4F1C-89EC-8332B96EA216">
+				<File Id="EDS.PDB" Name="EDS.pdb" Source="..\EDS\bin\Debug\EDS.pdb" />
+			</Component>
+			<Component Id="EXCELDATAREADER.DATASET.DLL" DiskId="1" Guid="8D9D94DA-0208-45A6-926F-08B79DF2345B">
+				<File Id="EXCELDATAREADER.DATASET.DLL" Name="ExcelDataReader.DataSet.dll" Source="..\EDS\bin\Debug\ExcelDataReader.DataSet.dll" />
+			</Component>
+			<Component Id="EXCELDATAREADER.DATASET.PDB" DiskId="1" Guid="B347C623-93AB-4CDB-B08C-A183E55B9E7F">
+				<File Id="EXCELDATAREADER.DATASET.PDB" Name="ExcelDataReader.DataSet.pdb" Source="..\EDS\bin\Debug\ExcelDataReader.DataSet.pdb" />
+			</Component>
+			<Component Id="EXCELDATAREADER.DATASET.XML" DiskId="1" Guid="111EF214-2E17-478A-841F-6629660945ED">
+				<File Id="EXCELDATAREADER.DATASET.XML" Name="ExcelDataReader.DataSet.xml" Source="..\EDS\bin\Debug\ExcelDataReader.DataSet.xml" />
+			</Component>
+			<Component Id="EXCELDATAREADER.DLL" DiskId="1" Guid="3291FF54-C8ED-4D1D-9C8E-99962FDC6590">
+				<File Id="EXCELDATAREADER.DLL" Name="ExcelDataReader.dll" Source="..\EDS\bin\Debug\ExcelDataReader.dll" />
+			</Component>
+			<Component Id="EXCELDATAREADER.PDB" DiskId="1" Guid="B9EB2667-5900-4AC2-85FC-8B2D1963EB24">
+				<File Id="EXCELDATAREADER.PDB" Name="ExcelDataReader.pdb" Source="..\EDS\bin\Debug\ExcelDataReader.pdb" />
+			</Component>
+			<Component Id="EXCELDATAREADER.XML" DiskId="1" Guid="32FBCE34-21C6-4C31-A6A9-4DBB9A7D26BB">
+				<File Id="EXCELDATAREADER.XML" Name="ExcelDataReader.xml" Source="..\EDS\bin\Debug\ExcelDataReader.xml" />
+			</Component>
+			<Component Id="MFCMIFC80.DLL" DiskId="1" Guid="CC72F1CB-2726-4411-83BD-7EDC95D27840">
+				<File Id="MFCMIFC80.DLL" Name="MFCMIFC80.dll" Source="..\EDS\bin\Debug\MFCMIFC80.dll" />
+			</Component>
+			<Component Id="NEWTONSOFT.JSON.DLL" DiskId="1" Guid="53413A55-12BC-4B7B-B4E0-4B0AC022B7B4">
+				<File Id="NEWTONSOFT.JSON.DLL" Name="Newtonsoft.Json.dll" Source="..\EDS\bin\Debug\Newtonsoft.Json.dll" />
+			</Component>
+			<Component Id="NEWTONSOFT.JSON.XML" DiskId="1" Guid="21D45147-2E6C-42DF-9A7F-103116D2012C">
+				<File Id="NEWTONSOFT.JSON.XML" Name="Newtonsoft.Json.xml" Source="..\EDS\bin\Debug\Newtonsoft.Json.xml" />
+			</Component>
+			<Component Id="RESOURCELIB.DLL" DiskId="1" Guid="E5FAE977-C348-4D30-A010-34C9CB7A40B9">
+				<File Id="RESOURCELIB.DLL" Name="ResourceLib.dll" Source="..\EDS\bin\Debug\ResourceLib.dll" />
+			</Component>
+			<Component Id="RESOURCELIB.PDB" DiskId="1" Guid="0F01D95D-BB44-4C39-B419-1C34B7B51E3B">
+				<File Id="RESOURCELIB.PDB" Name="ResourceLib.pdb" Source="..\EDS\bin\Debug\ResourceLib.pdb" />
+			</Component>
+			<Component Id="TOGGLESWITCH.DLL" DiskId="1" Guid="6D0D6CD3-6E3F-45F6-BDC7-9BC4F31B8832">
+				<File Id="TOGGLESWITCH.DLL" Name="ToggleSwitch.dll" Source="..\EDS\bin\Debug\ToggleSwitch.dll" />
+			</Component>
+			<Component Id="TOGGLESWITCH.PDB" DiskId="1" Guid="37523A10-D7F9-4A43-88B1-6474325CA34C">
+				<File Id="TOGGLESWITCH.PDB" Name="ToggleSwitch.pdb" Source="..\EDS\bin\Debug\ToggleSwitch.pdb" />
+			</Component>
+			<Component Id="ZOOM.DLL" DiskId="1" Guid="A25C20B1-8C91-4B2B-9105-B62572C507CB">
+				<File Id="ZOOM.DLL" Name="Zoom.dll" Source="..\EDS\bin\Debug\Zoom.dll" />
+			</Component>
+			<Component Id="ZOOM.PDB" DiskId="1" Guid="D19462C4-6376-4813-AE52-42DA4E454E87">
+				<File Id="ZOOM.PDB" Name="Zoom.pdb" Source="..\EDS\bin\Debug\Zoom.pdb" />
+			</Component>
+			<Component Id="ZOOM.XML" DiskId="1" Guid="0A9FBCFD-1DE5-4555-A3A4-4D439D0C21E3">
+				<File Id="ZOOM.XML" Name="Zoom.xml" Source="..\EDS\bin\Debug\Zoom.xml" />
+			</Component>
+			<Component Id="ZWDATABASEMGD.DLL" DiskId="1" Guid="0863959E-B593-4300-AC61-838A79507BFF">
+				<File Id="ZWDATABASEMGD.DLL" Name="ZwDatabaseMgd.dll" Source="..\EDS\bin\Debug\ZwDatabaseMgd.dll" />
+			</Component>
+			<Component Id="ZWMANAGED.DLL" DiskId="1" Guid="C24F9854-7A72-4F18-87B9-1EF639DFBFB6">
+				<File Id="ZWMANAGED.DLL" Name="ZwManaged.dll" Source="..\EDS\bin\Debug\ZwManaged.dll" />
+			</Component>
+		</ComponentGroup>
+		<ComponentGroup Id="ProductDatabase" Directory="DATABASE1">
+			<Component Id="BUILDING.CSV" DiskId="1" Guid="14844243-F1CE-4816-9148-6C1CCB3FACB8">
+				<File Id="BUILDING.CSV" Name="Building.csv" Source="..\EDS\bin\Debug\EDS_Database\Building.csv" />
+			</Component>
+			<Component Id="CITIES.CSV" DiskId="1" Guid="3802CAFE-5732-40EA-A057-BFE0162585C7">
+				<File Id="CITIES.CSV" Name="Cities.csv" Source="..\EDS\bin\Debug\EDS_Database\Cities.csv" />
+			</Component>
+			<Component Id="MATERIAL_DATABASE.XLSX" DiskId="1" Guid="6B5B485B-E9CC-49F1-8C07-F0692D269D35">
+				<File Id="MATERIAL_DATABASE.XLSX" Name="Material Database.xlsx" Source="..\EDS\bin\Debug\EDS_Database\Material Database.xlsx" />
+			</Component>
+		</ComponentGroup>
+
+	</Fragment>
+	<Fragment>
+		<ComponentGroup Id="ProductWeather" Directory="WEATHER_FILES">
+			<Component Id="IND_AN_PORT.BLAIR.433330_ISHRAE2014.EPW" DiskId="1" Guid="033671AA-5CE0-431A-B0B3-CCADC4D0320A">
+				<File Id="IND_AN_PORT.BLAIR.433330_ISHRAE2014.EPW" Name="IND_AN_Port.Blair.433330_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AN_Port.Blair.433330_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_AP_KURNOOL.432130_ISHRAE2014.EPW" DiskId="1" Guid="047B23BB-EBF0-4B53-8237-1D970C1ACC35">
+				<File Id="IND_AP_KURNOOL.432130_ISHRAE2014.EPW" Name="IND_AP_Kurnool.432130_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AP_Kurnool.432130_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_AP_NELLORE.432450_ISHRAE2014.EPW" DiskId="1" Guid="9DA5E9EB-4934-40C2-9058-41E5D0AE65FF">
+				<File Id="IND_AP_NELLORE.432450_ISHRAE2014.EPW" Name="IND_AP_Nellore.432450_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AP_Nellore.432450_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_AP_VISHAKHAPATNAM.431500_ISHRAE2014.EPW" DiskId="1" Guid="F978EC15-4D1E-40C9-A7AE-2C5D311E246F">
+				<File Id="IND_AP_VISHAKHAPATNAM.431500_ISHRAE2014.EPW" Name="IND_AP_Vishakhapatnam.431500_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AP_Vishakhapatnam.431500_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_AS_DIBRUGARH.AP.423140_ISHRAE2014.EPW" DiskId="1" Guid="E8C12DA5-F958-4F1B-9714-D3B5B3A21573">
+				<File Id="IND_AS_DIBRUGARH.AP.423140_ISHRAE2014.EPW" Name="IND_AS_Dibrugarh.AP.423140_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AS_Dibrugarh.AP.423140_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_AS_GUWAHATI_BORDOLOI.INTL.AP.424100_ISHRAE2014.EPW" DiskId="1" Guid="130E4698-5129-4D84-9AC5-56A36339E9F9">
+				<File Id="IND_AS_GUWAHATI_BORDOLOI.INTL.AP.424100_ISHRAE2014.EPW" Name="IND_AS_Guwahati-Bordoloi.Intl.AP.424100_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AS_Guwahati-Bordoloi.Intl.AP.424100_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_AS_JORHAT.424230_ISHRAE2014.EPW" DiskId="1" Guid="F0E544D1-1E85-4322-80D5-B41CE604C5AC">
+				<File Id="IND_AS_JORHAT.424230_ISHRAE2014.EPW" Name="IND_AS_Jorhat.424230_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AS_Jorhat.424230_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_AS_TEZPUR.424150_ISHRAE2014.EPW" DiskId="1" Guid="5D9A9E3E-5AEB-4BC1-90AF-E37296F89727">
+				<File Id="IND_AS_TEZPUR.424150_ISHRAE2014.EPW" Name="IND_AS_Tezpur.424150_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_AS_Tezpur.424150_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_BR_BHAGALPUR.424980_ISHRAE2014.EPW" DiskId="1" Guid="5A9C4E8F-3FD4-4C2A-A25F-B19D2279630C">
+				<File Id="IND_BR_BHAGALPUR.424980_ISHRAE2014.EPW" Name="IND_BR_Bhagalpur.424980_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_BR_Bhagalpur.424980_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_BR_PATNA_JAYAPRAKASH.AP.424920_ISHRAE2014.EPW" DiskId="1" Guid="82D914FC-2DFA-4CAD-93D5-4867C0581CF5">
+				<File Id="IND_BR_PATNA_JAYAPRAKASH.AP.424920_ISHRAE2014.EPW" Name="IND_BR_Patna-Jayaprakash.AP.424920_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_BR_Patna-Jayaprakash.AP.424920_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_BR_RAXAUL.AP.423820_ISHRAE2014.EPW" DiskId="1" Guid="501E3004-05D6-436D-A431-02359B99E2B8">
+				<File Id="IND_BR_RAXAUL.AP.423820_ISHRAE2014.EPW" Name="IND_BR_Raxaul.AP.423820_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_BR_Raxaul.AP.423820_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_CT_JAGDALPUR.430410_ISHRAE2014.EPW" DiskId="1" Guid="F17D1DA4-9300-420D-A461-2215FEBDFC55">
+				<File Id="IND_CT_JAGDALPUR.430410_ISHRAE2014.EPW" Name="IND_CT_Jagdalpur.430410_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_CT_Jagdalpur.430410_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_CT_RAIPUR.428750_ISHRAE2014.EPW" DiskId="1" Guid="B66C2C8A-16F4-4336-9692-9011AE108BE5">
+				<File Id="IND_CT_RAIPUR.428750_ISHRAE2014.EPW" Name="IND_CT_Raipur.428750_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_CT_Raipur.428750_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_DL_NEW.DELHI_SAFDARJUNG.AP.421820_ISHRAE2014.EPW" DiskId="1" Guid="77A1AA21-63F4-463A-8306-26F819DE93C6">
+				<File Id="IND_DL_NEW.DELHI_SAFDARJUNG.AP.421820_ISHRAE2014.EPW" Name="IND_DL_New.Delhi-Safdarjung.AP.421820_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_DL_New.Delhi-Safdarjung.AP.421820_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_GA_PANJIM.431920_ISHRAE2014.EPW" DiskId="1" Guid="B309CA4F-B75B-4398-96AD-B61EF62F02A8">
+				<File Id="IND_GA_PANJIM.431920_ISHRAE2014.EPW" Name="IND_GA_Panjim.431920_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_GA_Panjim.431920_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_GJ_AHMEDABAD_PATEL.INTL.AP.426470_ISHRAE2014.EPW" DiskId="1" Guid="14574F00-76A5-4628-A843-ADEA7C93AEB4">
+				<File Id="IND_GJ_AHMEDABAD_PATEL.INTL.AP.426470_ISHRAE2014.EPW" Name="IND_GJ_Ahmedabad-Patel.Intl.AP.426470_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_GJ_Ahmedabad-Patel.Intl.AP.426470_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_GJ_BHUJ.426340_ISHRAE2014.EPW" DiskId="1" Guid="E1812316-C332-42D2-9E51-01198C75BD01">
+				<File Id="IND_GJ_BHUJ.426340_ISHRAE2014.EPW" Name="IND_GJ_Bhuj.426340_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_GJ_Bhuj.426340_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_GJ_JAMNAGAR.427340_ISHRAE2014.EPW" DiskId="1" Guid="BBD4430F-8F54-4501-99F5-4AA86BD29196">
+				<File Id="IND_GJ_JAMNAGAR.427340_ISHRAE2014.EPW" Name="IND_GJ_Jamnagar.427340_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_GJ_Jamnagar.427340_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_GJ_RAJKOT.AP.427370_ISHRAE2014.EPW" DiskId="1" Guid="6EBFFE1B-EE74-4985-A2F1-F48CA2BBB494">
+				<File Id="IND_GJ_RAJKOT.AP.427370_ISHRAE2014.EPW" Name="IND_GJ_Rajkot.AP.427370_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_GJ_Rajkot.AP.427370_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_GJ_SURAT.428400_ISHRAE2014.EPW" DiskId="1" Guid="A4969E1E-0F94-43E0-9AA2-F2F8AF451FD3">
+				<File Id="IND_GJ_SURAT.428400_ISHRAE2014.EPW" Name="IND_GJ_Surat.428400_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_GJ_Surat.428400_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_GJ_VERAVAL.429090_ISHRAE2014.EPW" DiskId="1" Guid="E0E2DF61-06A6-4708-8985-BD8091643713">
+				<File Id="IND_GJ_VERAVAL.429090_ISHRAE2014.EPW" Name="IND_GJ_Veraval.429090_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_GJ_Veraval.429090_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_HR_HISSAR.421310_ISHRAE2014.EPW" DiskId="1" Guid="338292DD-1C37-4E56-9773-DC952CF2D58A">
+				<File Id="IND_HR_HISSAR.421310_ISHRAE2014.EPW" Name="IND_HR_Hissar.421310_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_HR_Hissar.421310_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_JH_RANCHI_MUNDA.INTL.AP.427010_ISHRAE2014.EPW" DiskId="1" Guid="E4D95948-926B-44E6-B27B-6F6F054C1605">
+				<File Id="IND_JH_RANCHI_MUNDA.INTL.AP.427010_ISHRAE2014.EPW" Name="IND_JH_Ranchi-Munda.Intl.AP.427010_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_JH_Ranchi-Munda.Intl.AP.427010_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_JK_SRINAGAR.420270_ISHRAE2014.EPW" DiskId="1" Guid="186FD5C1-56BB-48E2-A8AF-DD7F043C442E">
+				<File Id="IND_JK_SRINAGAR.420270_ISHRAE2014.EPW" Name="IND_JK_Srinagar.420270_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_JK_Srinagar.420270_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_KA_BELGAUM_SAMBRE.AP.431980_ISHRAE2014.EPW" DiskId="1" Guid="45382F4C-AAA6-409A-A6B5-9030EB04A98E">
+				<File Id="IND_KA_BELGAUM_SAMBRE.AP.431980_ISHRAE2014.EPW" Name="IND_KA_Belgaum-Sambre.AP.431980_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_KA_Belgaum-Sambre.AP.431980_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_KA_BENGALURU.432950_ISHRAE2014.EPW" DiskId="1" Guid="357DE977-3EB1-4B92-9C55-82B02F13F7BB">
+				<File Id="IND_KA_BENGALURU.432950_ISHRAE2014.EPW" Name="IND_KA_Bengaluru.432950_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_KA_Bengaluru.432950_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_KA_CHITRADURGA.432330_ISHRAE2014.EPW" DiskId="1" Guid="F1BB7285-A646-4B5A-A434-45E2FBEF8C27">
+				<File Id="IND_KA_CHITRADURGA.432330_ISHRAE2014.EPW" Name="IND_KA_Chitradurga.432330_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_KA_Chitradurga.432330_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_KA_MANGALURU.432840_ISHRAE2014.EPW" DiskId="1" Guid="9ECF2081-1198-4049-BB37-63432B547CA1">
+				<File Id="IND_KA_MANGALURU.432840_ISHRAE2014.EPW" Name="IND_KA_Mangaluru.432840_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_KA_Mangaluru.432840_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_KL_THIRUVANANTHAPURAM.433710_ISHRAE2014.EPW" DiskId="1" Guid="8481D4F4-96A5-4E61-A7C7-92AE30E3408F">
+				<File Id="IND_KL_THIRUVANANTHAPURAM.433710_ISHRAE2014.EPW" Name="IND_KL_Thiruvananthapuram.433710_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_KL_Thiruvananthapuram.433710_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MH_AKOLA.AP.429340_ISHRAE2014.EPW" DiskId="1" Guid="BA55A743-D498-4727-830C-EC4479E58785">
+				<File Id="IND_MH_AKOLA.AP.429340_ISHRAE2014.EPW" Name="IND_MH_Akola.AP.429340_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MH_Akola.AP.429340_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MH_AURANGABAD.AP.430140_ISHRAE2014.EPW" DiskId="1" Guid="BAFCE76B-2841-4DF3-803D-A66F122D3DA4">
+				<File Id="IND_MH_AURANGABAD.AP.430140_ISHRAE2014.EPW" Name="IND_MH_Aurangabad.AP.430140_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MH_Aurangabad.AP.430140_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MH_MUMBAI_ANDHERI.RS.430030_ISHRAE2014.EPW" DiskId="1" Guid="1CA590CD-FA9C-4A0C-9F00-B97E921F06F8">
+				<File Id="IND_MH_MUMBAI_ANDHERI.RS.430030_ISHRAE2014.EPW" Name="IND_MH_Mumbai-Andheri.RS.430030_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MH_Mumbai-Andheri.RS.430030_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MH_NAGPUR_AMBEDKAR.INTL.AP.428670_ISHRAE2014.EPW" DiskId="1" Guid="13B61729-A629-497B-93A2-7A8894819CC0">
+				<File Id="IND_MH_NAGPUR_AMBEDKAR.INTL.AP.428670_ISHRAE2014.EPW" Name="IND_MH_Nagpur-Ambedkar.Intl.AP.428670_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MH_Nagpur-Ambedkar.Intl.AP.428670_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MH_PUNE.AP.430630_ISHRAE2014.EPW" DiskId="1" Guid="04B40EFC-71E3-4E70-910C-AFD9E5C53EC3">
+				<File Id="IND_MH_PUNE.AP.430630_ISHRAE2014.EPW" Name="IND_MH_Pune.AP.430630_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MH_Pune.AP.430630_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MH_RATNAGIRI.431100_ISHRAE2014.EPW" DiskId="1" Guid="20469F4F-BD3D-43B4-A9AB-E7ACF9FD29B0">
+				<File Id="IND_MH_RATNAGIRI.431100_ISHRAE2014.EPW" Name="IND_MH_Ratnagiri.431100_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MH_Ratnagiri.431100_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MH_SOLAPUR.431170_ISHRAE2014.EPW" DiskId="1" Guid="8D4CA308-B45E-435A-8165-38E78E9D6FAF">
+				<File Id="IND_MH_SOLAPUR.431170_ISHRAE2014.EPW" Name="IND_MH_Solapur.431170_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MH_Solapur.431170_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_ML_SHILLONG.425160_ISHRAE2014.EPW" DiskId="1" Guid="4FB5CF92-0974-4D2E-B1AB-883692E1086B">
+				<File Id="IND_ML_SHILLONG.425160_ISHRAE2014.EPW" Name="IND_ML_Shillong.425160_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_ML_Shillong.425160_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MN_IMPHAL.426230_ISHRAE2014.EPW" DiskId="1" Guid="3CC6E8F0-2D47-48AB-B317-ECD930DD928A">
+				<File Id="IND_MN_IMPHAL.426230_ISHRAE2014.EPW" Name="IND_MN_Imphal.426230_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MN_Imphal.426230_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MP_BHOPAL_BHOJ.AP.426670_ISHRAE2014.EPW" DiskId="1" Guid="0E626262-A056-4AC9-AD86-C60C9AAEBCCF">
+				<File Id="IND_MP_BHOPAL_BHOJ.AP.426670_ISHRAE2014.EPW" Name="IND_MP_Bhopal-Bhoj.AP.426670_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MP_Bhopal-Bhoj.AP.426670_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MP_GWALIOR.423610_ISHRAE2014.EPW" DiskId="1" Guid="21BED6EC-3BD1-42C0-B24D-570F4C0F2060">
+				<File Id="IND_MP_GWALIOR.423610_ISHRAE2014.EPW" Name="IND_MP_Gwalior.423610_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MP_Gwalior.423610_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MP_INDORE_HOLKAR.AP.427540_ISHRAE2014.EPW" DiskId="1" Guid="7D5CB28B-D7E1-4BE6-92D7-00FB1649BF8E">
+				<File Id="IND_MP_INDORE_HOLKAR.AP.427540_ISHRAE2014.EPW" Name="IND_MP_Indore-Holkar.AP.427540_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MP_Indore-Holkar.AP.427540_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_MP_JABALPUR.426750_ISHRAE2014.EPW" DiskId="1" Guid="C04FEE71-1F68-46BA-933C-42A595098E00">
+				<File Id="IND_MP_JABALPUR.426750_ISHRAE2014.EPW" Name="IND_MP_Jabalpur.426750_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_MP_Jabalpur.426750_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_OR_BHUBANESHWAR_PATNAIK.INTL.AP.429710_ISHRAE2014.EPW" DiskId="1" Guid="F7B0AA85-CC23-45C9-96F3-D965CFEFFDF7">
+				<File Id="IND_OR_BHUBANESHWAR_PATNAIK.INTL.AP.429710_ISHRAE2014.EPW" Name="IND_OR_Bhubaneshwar-Patnaik.Intl.AP.429710_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_OR_Bhubaneshwar-Patnaik.Intl.AP.429710_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_PB_AMRITSAR.420710_ISHRAE2014.EPW" DiskId="1" Guid="B7C88A75-6835-4FD1-A729-0434437DBA79">
+				<File Id="IND_PB_AMRITSAR.420710_ISHRAE2014.EPW" Name="IND_PB_Amritsar.420710_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_PB_Amritsar.420710_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_RJ_BARMER.424350_ISHRAE2014.EPW" DiskId="1" Guid="F9193E16-4AAF-4455-BF89-41FC97DA5EAB">
+				<File Id="IND_RJ_BARMER.424350_ISHRAE2014.EPW" Name="IND_RJ_Barmer.424350_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_RJ_Barmer.424350_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_RJ_BIKANER.421650_ISHRAE2014.EPW" DiskId="1" Guid="ABEC5E54-FEBB-4940-B3CA-D505AF9744F6">
+				<File Id="IND_RJ_BIKANER.421650_ISHRAE2014.EPW" Name="IND_RJ_Bikaner.421650_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_RJ_Bikaner.421650_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_RJ_JAIPUR.INTL.AP.423480_ISHRAE2014.EPW" DiskId="1" Guid="B9311BAD-5B9B-47D6-9CFC-DDACBC20FF69">
+				<File Id="IND_RJ_JAIPUR.INTL.AP.423480_ISHRAE2014.EPW" Name="IND_RJ_Jaipur.Intl.AP.423480_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_RJ_Jaipur.Intl.AP.423480_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_RJ_JAISALMER.423280_ISHRAE2014.EPW" DiskId="1" Guid="76C37EDC-688E-4DC9-A180-FD9F87CCF8A4">
+				<File Id="IND_RJ_JAISALMER.423280_ISHRAE2014.EPW" Name="IND_RJ_Jaisalmer.423280_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_RJ_Jaisalmer.423280_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_RJ_JODHPUR.423390_ISHRAE2014.EPW" DiskId="1" Guid="6627E589-E861-4140-94E8-2DB2D5050BF6">
+				<File Id="IND_RJ_JODHPUR.423390_ISHRAE2014.EPW" Name="IND_RJ_Jodhpur.423390_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_RJ_Jodhpur.423390_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_RJ_KOTA.AP.424520_ISHRAE2014.EPW" DiskId="1" Guid="8F6DF693-E779-4664-A07C-8CD1EC237080">
+				<File Id="IND_RJ_KOTA.AP.424520_ISHRAE2014.EPW" Name="IND_RJ_Kota.AP.424520_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_RJ_Kota.AP.424520_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_TG_HYDERABAD_GANDHI.INTL.AP.431280_ISHRAE2014.EPW" DiskId="1" Guid="FDF9262D-7935-4C30-A192-2DD512074732">
+				<File Id="IND_TG_HYDERABAD_GANDHI.INTL.AP.431280_ISHRAE2014.EPW" Name="IND_TG_Hyderabad-Gandhi.Intl.AP.431280_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_TG_Hyderabad-Gandhi.Intl.AP.431280_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_TG_RAMAGUNDAM.RS.430860_ISHRAE2014.EPW" DiskId="1" Guid="47969F39-E0EF-45EB-B1D6-C3AD4B86389F">
+				<File Id="IND_TG_RAMAGUNDAM.RS.430860_ISHRAE2014.EPW" Name="IND_TG_Ramagundam.RS.430860_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_TG_Ramagundam.RS.430860_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_TN_CHENNAI.INTL.AP.432790_ISHRAE2014.EPW" DiskId="1" Guid="B6045926-4901-4BA4-9B3E-2949F6AACD47">
+				<File Id="IND_TN_CHENNAI.INTL.AP.432790_ISHRAE2014.EPW" Name="IND_TN_Chennai.Intl.AP.432790_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_TN_Chennai.Intl.AP.432790_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_TN_KODAIKANAL.433390_ISHRAE2014.EPW" DiskId="1" Guid="6FCDBAED-F789-4A45-882B-0A36CA626904">
+				<File Id="IND_TN_KODAIKANAL.433390_ISHRAE2014.EPW" Name="IND_TN_Kodaikanal.433390_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_TN_Kodaikanal.433390_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_TN_TIRUCHIRAPALLI.INTL.AP.433440_ISHRAE2014.EPW" DiskId="1" Guid="F7EE4DE0-CB2E-495F-8ED9-DC8830C16FC6">
+				<File Id="IND_TN_TIRUCHIRAPALLI.INTL.AP.433440_ISHRAE2014.EPW" Name="IND_TN_Tiruchirapalli.Intl.AP.433440_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_TN_Tiruchirapalli.Intl.AP.433440_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_UP_ALLAHABAD_BAMRAULI.AP.424750_ISHRAE2014.EPW" DiskId="1" Guid="49B10C2B-2EC5-4BB8-8A4C-738AEA0E32FB">
+				<File Id="IND_UP_ALLAHABAD_BAMRAULI.AP.424750_ISHRAE2014.EPW" Name="IND_UP_Allahabad-Bamrauli.AP.424750_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_UP_Allahabad-Bamrauli.AP.424750_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_UP_GORAKHPUR.423790_ISHRAE2014.EPW" DiskId="1" Guid="87103BAA-6A87-46C0-A1C4-5D4FFC7E6759">
+				<File Id="IND_UP_GORAKHPUR.423790_ISHRAE2014.EPW" Name="IND_UP_Gorakhpur.423790_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_UP_Gorakhpur.423790_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_UP_LUCKNOW_AMAUSI_SINGH.INTL.AP.423690_ISHRAE2014.EPW" DiskId="1" Guid="3AEB64E2-BC87-410B-A3F8-2EDC57908BB2">
+				<File Id="IND_UP_LUCKNOW_AMAUSI_SINGH.INTL.AP.423690_ISHRAE2014.EPW" Name="IND_UP_Lucknow-Amausi-Singh.Intl.AP.423690_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_UP_Lucknow-Amausi-Singh.Intl.AP.423690_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_UP_ROORKEE.421400_ISHRAE2014.EPW" DiskId="1" Guid="D3855A73-E0E5-4AA3-8F17-647A6AE02574">
+				<File Id="IND_UP_ROORKEE.421400_ISHRAE2014.EPW" Name="IND_UP_Roorkee.421400_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_UP_Roorkee.421400_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_UP_VARANASI_SHASTRI.INTL.AP.424790_ISHRAE2014.EPW" DiskId="1" Guid="06D341BE-57E2-4EB6-9EA9-780D5509837D">
+				<File Id="IND_UP_VARANASI_SHASTRI.INTL.AP.424790_ISHRAE2014.EPW" Name="IND_UP_Varanasi-Shastri.Intl.AP.424790_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_UP_Varanasi-Shastri.Intl.AP.424790_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_UT_DEHRADUN.421110_ISHRAE2014.EPW" DiskId="1" Guid="BE49AA82-395F-43D2-AC73-CFF8D3C7E052">
+				<File Id="IND_UT_DEHRADUN.421110_ISHRAE2014.EPW" Name="IND_UT_Dehradun.421110_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_UT_Dehradun.421110_ISHRAE2014.epw" />
+			</Component>
+			<Component Id="IND_WB_KOLKATA_BOSE.INTL.AP.428090_ISHRAE2014.EPW" DiskId="1" Guid="C26E88B3-D065-4D44-AE44-5B56D2B65F26">
+				<File Id="IND_WB_KOLKATA_BOSE.INTL.AP.428090_ISHRAE2014.EPW" Name="IND_WB_Kolkata-Bose.Intl.AP.428090_ISHRAE2014.epw" Source="..\EDS\bin\Debug\EDS_Database\Weather_Files\IND_WB_Kolkata-Bose.Intl.AP.428090_ISHRAE2014.epw" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+	
+</Wix>
