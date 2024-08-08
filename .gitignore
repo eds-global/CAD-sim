@@ -14,3 +14,5 @@
 /ResourceLib/.vs
 /MockupDesign/.vs
 /EDS/.vs
+bin
+obj

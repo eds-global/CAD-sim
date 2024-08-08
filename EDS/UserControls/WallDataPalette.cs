@@ -91,6 +91,8 @@ namespace EDS.UserControls
             f1Type1.SelectedItem = f1Type2.SelectedItem = f1Type3.SelectedItem = null;
             f2Type1.SelectedItem = f2Type2.SelectedItem = f2Type3.SelectedItem = null;
             uValueCheck.Checked = false;
+            progressBar1.Value = 0;
+            //treeView1.Nodes.Clear();
         }
 
         private void SelectButton_Click(object sender, EventArgs e)
@@ -176,13 +178,15 @@ namespace EDS.UserControls
 
         private void scanButton_Click(object sender, EventArgs e)
         {
+            progressBar1.Value = 25;
             EDSWallCreation creation = new EDSWallCreation();
             creation.FindClosedLoop();
+            progressBar1.Value = 100;
         }
 
         static void UpdateProgressBar()
         {
-
+            
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
