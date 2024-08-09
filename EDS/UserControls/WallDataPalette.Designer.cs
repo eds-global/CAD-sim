@@ -74,6 +74,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             treeView1 = new System.Windows.Forms.TreeView();
             this.treeView2 = new System.Windows.Forms.TreeView();
+            this.unitLabel = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -561,12 +562,23 @@
             this.treeView2.Size = new System.Drawing.Size(8, 8);
             this.treeView2.TabIndex = 29;
             // 
+            // unitLabel
+            // 
+            this.unitLabel.AutoSize = true;
+            this.unitLabel.ForeColor = System.Drawing.Color.Red;
+            this.unitLabel.Location = new System.Drawing.Point(450, 40);
+            this.unitLabel.Name = "unitLabel";
+            this.unitLabel.Size = new System.Drawing.Size(48, 13);
+            this.unitLabel.TabIndex = 30;
+            this.unitLabel.Text = "W/sqmk";
+            // 
             // WallDataPalette
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.Controls.Add(this.unitLabel);
             this.Controls.Add(this.treeView2);
             this.Controls.Add(treeView1);
             this.Controls.Add(this.progressBar1);
@@ -594,7 +606,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "WallDataPalette";
-            this.Size = new System.Drawing.Size(460, 352);
+            this.Size = new System.Drawing.Size(443, 335);
             this.Load += new System.EventHandler(this.WallDataPalette_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -652,6 +664,7 @@
         private System.Windows.Forms.Button scanButton;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.TreeView treeView2;
+        private System.Windows.Forms.Label unitLabel;
         public static System.Windows.Forms.TreeView treeView1;
     }
 }
