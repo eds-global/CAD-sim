@@ -578,101 +578,6 @@ namespace EDS.AEC
 
     }
 
-    public class ClosedLoopFinder
-    {
-        public List<Line> GetLines(Database db)
-        {
-            List<Line> lines = new List<Line>();
-
-            using (Transaction tr = db.TransactionManager.StartTransaction())
-            {
-                BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead) as BlockTableRecord;
-
-                foreach (ObjectId objId in btr)
-                {
-                    Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                    if (entity is Line)
-                    {
-                        lines.Add(entity as Line);
-                    }
-                }
-
-                tr.Commit();
-            }
-
-            return lines;
-        }
-
-        public bool DoLinesIntersect(Line line1, Line line2)
-        {
-            Point3dCollection points = new Point3dCollection();
-            line1.IntersectWith(line2, Intersect.OnBothOperands, points, IntPtr.Zero, IntPtr.Zero);
-            return points.Count > 0;
-        }
-
-        public Dictionary<Line, List<Line>> BuildGraph(List<Line> lines)
-        {
-            Dictionary<Line, List<Line>> graph = new Dictionary<Line, List<Line>>();
-
-            foreach (Line line in lines)
-            {
-                graph[line] = new List<Line>();
-            }
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                for (int j = i + 1; j < lines.Count; j++)
-                {
-                    if (DoLinesIntersect(lines[i], lines[j]))
-                    {
-                        graph[lines[i]].Add(lines[j]);
-                        graph[lines[j]].Add(lines[i]);
-                    }
-                }
-            }
-
-            return graph;
-        }
-
-        public List<List<Line>> FindClosedLoops(Dictionary<Line, List<Line>> graph)
-        {
-            List<List<Line>> closedLoops = new List<List<Line>>();
-            HashSet<Line> visited = new HashSet<Line>();
-
-            foreach (Line line in graph.Keys)
-            {
-                List<Line> currentPath = new List<Line>();
-                FindLoopsRecursive(line, line, visited, currentPath, closedLoops, graph);
-            }
-
-            return closedLoops;
-        }
-
-        private void FindLoopsRecursive(Line startLine, Line currentLine, HashSet<Line> visited, List<Line> currentPath, List<List<Line>> closedLoops, Dictionary<Line, List<Line>> graph)
-        {
-            visited.Add(currentLine);
-            currentPath.Add(currentLine);
-
-            foreach (Line neighbor in graph[currentLine])
-            {
-                if (neighbor == startLine && currentPath.Count > 2)
-                {
-                    closedLoops.Add(new List<Line>(currentPath));
-                }
-                else if (!visited.Contains(neighbor))
-                {
-                    FindLoopsRecursive(startLine, neighbor, visited, currentPath, closedLoops, graph);
-                }
-            }
-
-            currentPath.Remove(currentLine);
-            visited.Remove(currentLine);
-        }
-
-
-    }
-
     public class EDSWall
     {
         public string extWallType { get; set; }
@@ -706,5 +611,6 @@ namespace EDS.AEC
             this.uValueCheck = uValueCheck;
         }
     }
+
 
 }

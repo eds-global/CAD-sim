@@ -58,11 +58,13 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="ZwDatabaseMgd">
-      <HintPath>..\..\ZWCAD\ZwDatabaseMgd.dll</HintPath>
+    <Reference Include="ZwDatabaseMgd, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Depenedencies\ZwDatabaseMgd.dll</HintPath>
     </Reference>
-    <Reference Include="ZwManaged">
-      <HintPath>..\..\ZWCAD\ZwManaged.dll</HintPath>
+    <Reference Include="ZwManaged, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Depenedencies\ZwManaged.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
