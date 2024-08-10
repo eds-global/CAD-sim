@@ -472,6 +472,7 @@
             this.wallMatchButton.TabIndex = 21;
             this.wallMatchButton.Text = "Match";
             this.wallMatchButton.UseVisualStyleBackColor = false;
+            this.wallMatchButton.Click += new System.EventHandler(this.wallMatchButton_Click);
             // 
             // wallUpdateButton
             // 
@@ -484,6 +485,7 @@
             this.wallUpdateButton.TabIndex = 20;
             this.wallUpdateButton.Text = "Update";
             this.wallUpdateButton.UseVisualStyleBackColor = false;
+            this.wallUpdateButton.Click += new System.EventHandler(this.wallUpdateButton_Click);
             // 
             // label15
             // 
@@ -606,7 +608,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "WallDataPalette";
-            this.Size = new System.Drawing.Size(443, 335);
+            this.Size = new System.Drawing.Size(426, 318);
             this.Load += new System.EventHandler(this.WallDataPalette_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

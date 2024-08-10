@@ -206,5 +206,33 @@ namespace EDS.UserControls
             }
             catch { }
         }
+
+        private void wallUpdateButton_Click(object sender, EventArgs e)
+        {
+            EDSWallCreation wallCreation = new EDSWallCreation();
+
+            EDSWall wall = new EDSWall()
+            {
+                extWallType = extWallCombo.SelectedItem == null ? "" : extWallCombo.SelectedItem.ToString(),
+                intWallType = intWallCombo.SelectedItem == null ? "" : intWallCombo.SelectedItem.ToString(),
+                uValue = uValue.Text,
+                eDS1Faces1 = f1Type1.SelectedItem == null ? "" : f1Type1.SelectedItem.ToString() + "-" + f1Type1CompText.Text,
+                eDS1Faces2 = f1Type2.SelectedItem == null ? "" : f1Type2.SelectedItem.ToString() + "-" + f1Type2CompText.Text,
+                eDS1Faces3 = f1Type3.SelectedItem == null ? "" : f1Type3.SelectedItem.ToString() + "-" + f1Type3CompText.Text,
+                eDS2Faces1 = f2Type1.SelectedItem == null ? "" : f2Type1.SelectedItem.ToString() + "-" + f2Type1CompText.Text,
+                eDS2Faces2 = f2Type2.SelectedItem == null ? "" : f2Type2.SelectedItem.ToString() + "-" + f2Type2CompText.Text,
+                eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text
+            };
+
+            wallCreation.UpdateLine(wall);
+
+            RefreshUI();
+        }
+
+        private void wallMatchButton_Click(object sender, EventArgs e)
+        {
+            EDSWallCreation wallCreation = new EDSWallCreation();
+            wallCreation.MatchLine();
+        }
     }
 }
