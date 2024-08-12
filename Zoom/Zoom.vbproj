@@ -51,11 +51,13 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="ZwDatabaseMgd">
-      <HintPath>..\..\ZWCAD\ZwDatabaseMgd.dll</HintPath>
+    <Reference Include="ZwDatabaseMgd, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\EDS\Depenedencies\ZwDatabaseMgd.dll</HintPath>
     </Reference>
-    <Reference Include="ZwManaged">
-      <HintPath>..\..\ZWCAD\ZwManaged.dll</HintPath>
+    <Reference Include="ZwManaged, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\EDS\Depenedencies\ZwManaged.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
