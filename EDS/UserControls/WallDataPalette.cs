@@ -81,7 +81,8 @@ namespace EDS.UserControls
                 eDS1Faces3 = f1Type3.SelectedItem == null ? "" : f1Type3.SelectedItem.ToString() + "-" + f1Type3CompText.Text,
                 eDS2Faces1 = f2Type1.SelectedItem == null ? "" : f2Type1.SelectedItem.ToString() + "-" + f2Type1CompText.Text,
                 eDS2Faces2 = f2Type2.SelectedItem == null ? "" : f2Type2.SelectedItem.ToString() + "-" + f2Type2CompText.Text,
-                eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text
+                eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text,
+                uValueCheck = uValueCheck.Checked.ToString(),
             };
 
             wallCreation.UpdateLine(wall);
@@ -99,7 +100,7 @@ namespace EDS.UserControls
             f2Type1.SelectedItem = f2Type2.SelectedItem = f2Type3.SelectedItem = null;
             uValueCheck.Checked = false;
             progressBar1.Value = 0;
-            //treeView1.Nodes.Clear();
+            treeView1.Nodes.Clear();
         }
 
         private void SelectButton_Click(object sender, EventArgs e)

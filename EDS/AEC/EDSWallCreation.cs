@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,7 @@ using ZwSoft.ZwCAD.DatabaseServices;
 using ZwSoft.ZwCAD.EditorInput;
 using ZwSoft.ZwCAD.Geometry;
 using ZwSoft.ZwCAD.Runtime;
+using static System.Windows.Forms.LinkLabel;
 using Line = ZwSoft.ZwCAD.DatabaseServices.Line;
 
 namespace EDS.AEC
@@ -196,49 +198,79 @@ namespace EDS.AEC
 
             PromptSelectionResult res = ed.SelectImplied(); ;
 
-            doc.LockDocument();
-
-            if (res.Status == PromptStatus.OK)
+            if (res.Value==null)
             {
-                SelectionSet selectionSet = res.Value;
-                using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
-                {
-                    foreach (SelectedObject selObj in selectionSet)
-                    {
-                        if (selObj != null)
-                        {
-                            Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForRead);
-                            Line line = entity as Line;
-                            if (line != null)
-                            {
-                                linesLayer.Add(line.Layer);
-                            }
-                        }
-                    }
-                    tr.Commit();
-                }
+                System.Windows.Forms.MessageBox.Show("No items selected for update" + "\n" + "Please select the walls for update");
+                PromptSelectionOptions targetOptions = new PromptSelectionOptions();
+                targetOptions.MessageForAdding = "\nSelect target objects: ";
+                PromptSelectionResult targetResult = ed.GetSelection(targetOptions, selectionFilter);
 
-                if (!linesLayer.All(x => x.Equals(layerName)))
+                doc.LockDocument();
+
+                if (targetResult.Status == PromptStatus.OK)
                 {
-                    MessageBoxResult result = System.Windows.MessageBox.Show("We have found lines in the different layer." + "\n" + "Do you want to move lines to ZWall layer?", "Warning", MessageBoxButton.YesNo);
-                    if (result == MessageBoxResult.Yes)
+                    SelectionSet selectionSet = targetResult.Value;
+                    using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
                     {
-                        using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
+                        foreach (SelectedObject selObj in selectionSet)
                         {
-                            foreach (SelectedObject selObj in selectionSet)
+                            if (selObj != null)
                             {
-                                if (selObj != null)
+                                Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForRead);
+                                Line line = entity as Line;
+                                if (line != null)
                                 {
-                                    Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForWrite);
-                                    Line line = entity as Line;
-                                    if (line != null)
-                                    {
-                                        line.Layer = layerName;
-                                        SetXDataForLine(wall, line);
-                                    }
+                                    linesLayer.Add(line.Layer);
                                 }
                             }
-                            tr.Commit();
+                        }
+                        tr.Commit();
+                    }
+
+                    if (!linesLayer.All(x => x.Equals(layerName)))
+                    {
+                        MessageBoxResult result = System.Windows.MessageBox.Show("We have found lines in the different layer." + "\n" + "Do you want to move lines to ZWall layer?", "Warning", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
+                            {
+                                foreach (SelectedObject selObj in selectionSet)
+                                {
+                                    if (selObj != null)
+                                    {
+                                        Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForWrite);
+                                        Line line = entity as Line;
+                                        if (line != null)
+                                        {
+                                            line.Layer = layerName;
+                                            SetXDataForLine(wall, line);
+                                        }
+                                    }
+                                }
+                                tr.Commit();
+                            }
+                        }
+                        else
+                        {
+                            using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
+                            {
+                                foreach (SelectedObject selObj in selectionSet)
+                                {
+                                    if (selObj != null)
+                                    {
+                                        Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForWrite);
+                                        Line line = entity as Line;
+                                        if (line != null)
+                                        {
+                                            if (line.Layer == layerName)
+                                            {
+                                                SetXDataForLine(wall, line);
+                                            }
+                                        }
+                                    }
+                                }
+                                tr.Commit();
+                            }
                         }
                     }
                     else
@@ -263,30 +295,103 @@ namespace EDS.AEC
                             tr.Commit();
                         }
                     }
+                    ed.SetImpliedSelection(new ObjectId[0]);
                 }
-                else
+            }
+            else
+            {
+                doc.LockDocument();
+
+                if (res.Status == PromptStatus.OK)
                 {
+                    SelectionSet selectionSet = res.Value;
                     using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
                     {
                         foreach (SelectedObject selObj in selectionSet)
                         {
                             if (selObj != null)
                             {
-                                Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForWrite);
+                                Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForRead);
                                 Line line = entity as Line;
                                 if (line != null)
                                 {
-                                    if (line.Layer == layerName)
-                                    {
-                                        SetXDataForLine(wall, line);
-                                    }
+                                    linesLayer.Add(line.Layer);
                                 }
                             }
                         }
                         tr.Commit();
                     }
+
+                    if (!linesLayer.All(x => x.Equals(layerName)))
+                    {
+                        MessageBoxResult result = System.Windows.MessageBox.Show("We have found lines in the different layer." + "\n" + "Do you want to move lines to ZWall layer?", "Warning", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
+                            {
+                                foreach (SelectedObject selObj in selectionSet)
+                                {
+                                    if (selObj != null)
+                                    {
+                                        Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForWrite);
+                                        Line line = entity as Line;
+                                        if (line != null)
+                                        {
+                                            line.Layer = layerName;
+                                            SetXDataForLine(wall, line);
+                                        }
+                                    }
+                                }
+                                tr.Commit();
+                            }
+                        }
+                        else
+                        {
+                            using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
+                            {
+                                foreach (SelectedObject selObj in selectionSet)
+                                {
+                                    if (selObj != null)
+                                    {
+                                        Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForWrite);
+                                        Line line = entity as Line;
+                                        if (line != null)
+                                        {
+                                            if (line.Layer == layerName)
+                                            {
+                                                SetXDataForLine(wall, line);
+                                            }
+                                        }
+                                    }
+                                }
+                                tr.Commit();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
+                        {
+                            foreach (SelectedObject selObj in selectionSet)
+                            {
+                                if (selObj != null)
+                                {
+                                    Entity entity = (Entity)tr.GetObject(selObj.ObjectId, OpenMode.ForWrite);
+                                    Line line = entity as Line;
+                                    if (line != null)
+                                    {
+                                        if (line.Layer == layerName)
+                                        {
+                                            SetXDataForLine(wall, line);
+                                        }
+                                    }
+                                }
+                            }
+                            tr.Commit();
+                        }
+                    }
+                    ed.SetImpliedSelection(new ObjectId[0]);
                 }
-                ed.SetImpliedSelection(new ObjectId[0]);
             }
         }
 
@@ -368,7 +473,36 @@ namespace EDS.AEC
             Database db = doc.Database;
             Editor ed = doc.Editor;
 
-            doc.LockDocument();
+            #region GenericLogicFromClosedLoop
+
+            //doc.LockDocument();
+            //using (Transaction transaction = doc.TransactionManager.StartTransaction())
+            //{
+            //    BlockTable blockTable = (BlockTable)transaction.GetObject(db.BlockTableId, OpenMode.ForRead);
+            //    BlockTableRecord modelSpace = (BlockTableRecord)transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+
+            //    foreach (ObjectId objId in modelSpace)
+            //    {
+            //        Entity entity = transaction.GetObject(objId, OpenMode.ForRead) as Entity;
+            //        if (entity is Line)
+            //        {
+            //            lines.Add(entity as Line);
+            //        }
+            //    }
+            //}
+
+            //foreach (Line line in lines)
+            //{
+            //    var midPoint = GetLineMidpoint(line);
+            //    DetectClosedLoops(new Point3d(midPoint.X + 5, midPoint.Y, midPoint.Z));
+            //    DetectClosedLoops(new Point3d(midPoint.X - 5, midPoint.Y, midPoint.Z));
+            //    DetectClosedLoops(new Point3d(midPoint.X, midPoint.Y + 5, midPoint.Z));
+            //    DetectClosedLoops(new Point3d(midPoint.X, midPoint.Y - 5, midPoint.Z));
+            //}
+            #endregion
+
+
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
                 List<Line> lines = new List<Line>();
@@ -404,67 +538,70 @@ namespace EDS.AEC
 
                     CreateTreeNode(lines);
 
-                    // Create an adjacency list
-                    Dictionary<Point3d, List<Line>> adjacencyList = new Dictionary<Point3d, List<Line>>();
+                    #region HiglightLogicForClosedLoop
 
-                    foreach (Line line in lines)
-                    {
-                        if (!adjacencyList.ContainsKey(line.StartPoint))
-                        {
-                            adjacencyList[line.StartPoint] = new List<Line>();
-                        }
-                        if (!adjacencyList.ContainsKey(line.EndPoint))
-                        {
-                            adjacencyList[line.EndPoint] = new List<Line>();
-                        }
+                    //// Create an adjacency list
+                    //Dictionary<Point3d, List<Line>> adjacencyList = new Dictionary<Point3d, List<Line>>();
 
-                        adjacencyList[line.StartPoint].Add(line);
-                        adjacencyList[line.EndPoint].Add(line);
-                    }
+                    //foreach (Line line in lines)
+                    //{
+                    //    if (!adjacencyList.ContainsKey(line.StartPoint))
+                    //    {
+                    //        adjacencyList[line.StartPoint] = new List<Line>();
+                    //    }
+                    //    if (!adjacencyList.ContainsKey(line.EndPoint))
+                    //    {
+                    //        adjacencyList[line.EndPoint] = new List<Line>();
+                    //    }
 
-                    // Find all possible loops using DFS
-                    List<List<Line>> loops = new List<List<Line>>();
-                    HashSet<Line> visitedLines = new HashSet<Line>();
+                    //    adjacencyList[line.StartPoint].Add(line);
+                    //    adjacencyList[line.EndPoint].Add(line);
+                    //}
 
-                    foreach (Line line in lines)
-                    {
-                        if (!visitedLines.Contains(line))
-                        {
-                            List<Line> currentLoop = new List<Line>();
-                            FindLoops(adjacencyList, line, line.StartPoint, line.StartPoint, currentLoop, loops, visitedLines);
-                        }
-                    }
+                    //// Find all possible loops using DFS
+                    //List<List<Line>> loops = new List<List<Line>>();
+                    //HashSet<Line> visitedLines = new HashSet<Line>();
 
-                    // Calculate areas of the loops and find the best loop
-                    double maxArea = double.NegativeInfinity;
-                    List<Line> bestLoop = null;
+                    //foreach (Line line in lines)
+                    //{
+                    //    if (!visitedLines.Contains(line))
+                    //    {
+                    //        List<Line> currentLoop = new List<Line>();
+                    //        FindLoops(adjacencyList, line, line.StartPoint, line.StartPoint, currentLoop, loops, visitedLines);
+                    //    }
+                    //}
 
-                    foreach (var loop in loops)
-                    {
-                        double area = CalculateLoopArea(loop);
-                        if (area > maxArea)
-                        {
-                            maxArea = area;
-                            bestLoop = loop;
-                        }
-                    }
+                    //// Calculate areas of the loops and find the best loop
+                    //double maxArea = double.NegativeInfinity;
+                    //List<Line> bestLoop = null;
 
-                    // Output the best loop
-                    if (bestLoop != null)
-                    {
-                        foreach (Line loopLine in bestLoop)
-                        {
-                            loopLine.UpgradeOpen();
-                            loopLine.Color = Color.FromColor(System.Drawing.Color.Yellow);
-                            loopLine.DowngradeOpen();
-                            doc.Editor.WriteMessage($"\nLine from {loopLine.StartPoint} to {loopLine.EndPoint}");
-                        }
-                        doc.Editor.WriteMessage($"\nMaximum Area: {maxArea}");
-                    }
-                    else
-                    {
-                        doc.Editor.WriteMessage("\nNo closed loops found.");
-                    }
+                    //foreach (var loop in loops)
+                    //{
+                    //    double area = CalculateLoopArea(loop);
+                    //    if (area > maxArea)
+                    //    {
+                    //        maxArea = area;
+                    //        bestLoop = loop;
+                    //    }
+                    //}
+
+                    //// Output the best loop
+                    //if (bestLoop != null)
+                    //{
+                    //    foreach (Line loopLine in bestLoop)
+                    //    {
+                    //        loopLine.UpgradeOpen();
+                    //        loopLine.Color = Color.FromColor(System.Drawing.Color.Yellow);
+                    //        loopLine.DowngradeOpen();
+                    //        doc.Editor.WriteMessage($"\nLine from {loopLine.StartPoint} to {loopLine.EndPoint}");
+                    //    }
+                    //    doc.Editor.WriteMessage($"\nMaximum Area: {maxArea}");
+                    //}
+                    //else
+                    //{
+                    //    doc.Editor.WriteMessage("\nNo closed loops found.");
+                    //} 
+                    #endregion
 
                 }
                 tr.Commit();
@@ -598,103 +735,73 @@ namespace EDS.AEC
             }
         }
 
-    }
-
-    public class ClosedLoopFinder
-    {
-        public List<Line> GetLines(Database db)
+        public Point3d GetLineMidpoint(Line line)
         {
-            List<Line> lines = new List<Line>();
+            // Ensure the line object is not null
+            if (line == null)
+                throw new ArgumentNullException(nameof(line));
 
+            // Get the start and end points of the line
+            Point3d startPoint = line.StartPoint;
+            Point3d endPoint = line.EndPoint;
+
+            // Calculate the midpoint
+            Point3d midpoint = new Point3d(
+                (startPoint.X + endPoint.X) / 2,
+                (startPoint.Y + endPoint.Y) / 2,
+                (startPoint.Z + endPoint.Z) / 2
+            );
+
+            return midpoint;
+        }
+
+        public void DetectClosedLoops(Point3d seedPoint)
+        {
+            Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+            Database db = doc.Database;
+            doc.LockDocument();
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
-                BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead) as BlockTableRecord;
-
-                foreach (ObjectId objId in btr)
+                BlockTable blockTable = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord modelSpace = (BlockTableRecord)tr.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+                try
                 {
-                    Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                    if (entity is Line)
+
+                    DBObjectCollection boundaries = ed.TraceBoundary(seedPoint, false);
+
+                    if (boundaries.Count > 0)
                     {
-                        lines.Add(entity as Line);
+                        foreach (DBObject obj in boundaries)
+                        {
+                            if (obj is ZwSoft.ZwCAD.DatabaseServices.Polyline polyline)
+                            {
+                                modelSpace.AppendEntity(polyline);
+                                tr.AddNewlyCreatedDBObject(polyline, true);
+                                // Process the closed loop polyline here
+                                ed.WriteMessage($"\nClosed loop found with {polyline.NumberOfVertices} vertices.");
+                            }
+                            else if (obj is Region region)
+                            {
+                                // Process the closed region here
+                                ed.WriteMessage($"\nClosed region found.");
+                            }
+                        }
                     }
+                    else
+                    {
+                        ed.WriteMessage("\nNo closed loop found at the specified point.");
+                    }
+                }
+                catch (System.Exception)
+                {
+
                 }
 
                 tr.Commit();
             }
-
-            return lines;
         }
-
-        public bool DoLinesIntersect(Line line1, Line line2)
-        {
-            Point3dCollection points = new Point3dCollection();
-            line1.IntersectWith(line2, Intersect.OnBothOperands, points, IntPtr.Zero, IntPtr.Zero);
-            return points.Count > 0;
-        }
-
-        public Dictionary<Line, List<Line>> BuildGraph(List<Line> lines)
-        {
-            Dictionary<Line, List<Line>> graph = new Dictionary<Line, List<Line>>();
-
-            foreach (Line line in lines)
-            {
-                graph[line] = new List<Line>();
-            }
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                for (int j = i + 1; j < lines.Count; j++)
-                {
-                    if (DoLinesIntersect(lines[i], lines[j]))
-                    {
-                        graph[lines[i]].Add(lines[j]);
-                        graph[lines[j]].Add(lines[i]);
-                    }
-                }
-            }
-
-            return graph;
-        }
-
-        public List<List<Line>> FindClosedLoops(Dictionary<Line, List<Line>> graph)
-        {
-            List<List<Line>> closedLoops = new List<List<Line>>();
-            HashSet<Line> visited = new HashSet<Line>();
-
-            foreach (Line line in graph.Keys)
-            {
-                List<Line> currentPath = new List<Line>();
-                FindLoopsRecursive(line, line, visited, currentPath, closedLoops, graph);
-            }
-
-            return closedLoops;
-        }
-
-        private void FindLoopsRecursive(Line startLine, Line currentLine, HashSet<Line> visited, List<Line> currentPath, List<List<Line>> closedLoops, Dictionary<Line, List<Line>> graph)
-        {
-            visited.Add(currentLine);
-            currentPath.Add(currentLine);
-
-            foreach (Line neighbor in graph[currentLine])
-            {
-                if (neighbor == startLine && currentPath.Count > 2)
-                {
-                    closedLoops.Add(new List<Line>(currentPath));
-                }
-                else if (!visited.Contains(neighbor))
-                {
-                    FindLoopsRecursive(startLine, neighbor, visited, currentPath, closedLoops, graph);
-                }
-            }
-
-            currentPath.Remove(currentLine);
-            visited.Remove(currentLine);
-        }
-
-
     }
-
     public class EDSWall
     {
         public string extWallType { get; set; }
