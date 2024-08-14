@@ -84,12 +84,34 @@ namespace EDS.UserControls
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void toggleSwitch1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!toggleSwitch1.Checked)
+            {
+                unitLabel.Text = "W/sqmk";
+            }
+            else
+            {
+                unitLabel.Text = "Btu/(h.ft2.F)";
+            }
+        }
+
+        private void matchButton_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void ExtMatchButton_Click(object sender, EventArgs e)
+        private void updateButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void selectButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void addButton_Click(object sender, EventArgs e)
         {
 
         }

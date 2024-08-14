@@ -22,7 +22,8 @@ namespace EDS.AEC
 {
     public class EDSWallCreation
     {
-        public static string layerName = "ZWall";
+        public static string wallLayerName = "ZWall";
+        public static string roomLayerName = "ZRoomTag";
 
         public static string extWallType = "ExtWall";
         public static string intWallType = "IntWall";
@@ -66,7 +67,7 @@ namespace EDS.AEC
                         LayerTable layerTable = (LayerTable)trans.GetObject(HostApplicationServices.WorkingDatabase.LayerTableId, OpenMode.ForRead);
 
                         // Check if the layer already exists
-                        if (!layerTable.Has(layerName))
+                        if (!layerTable.Has(wallLayerName))
                         {
                             // Open the layer table for write
                             layerTable.UpgradeOpen();
@@ -74,7 +75,7 @@ namespace EDS.AEC
                             // Create a new layer table record
                             LayerTableRecord newLayer = new LayerTableRecord
                             {
-                                Name = layerName,
+                                Name = wallLayerName,
                                 Color = Color.FromColorIndex(ColorMethod.ByAci, 1) // 1 = red color
                             };
 
@@ -143,7 +144,7 @@ namespace EDS.AEC
                                 line.StartPoint = new Point3d(points[0].X, points[0].Y, 0);
                                 line.EndPoint = new Point3d(points[0 + 1].X, points[0 + 1].Y, 0);
 
-                                line.Layer = layerName;
+                                line.Layer = wallLayerName;
 
                                 btr.AppendEntity(line);
                                 tr.AddNewlyCreatedDBObject(line, true);
@@ -227,7 +228,7 @@ namespace EDS.AEC
                         tr.Commit();
                     }
 
-                    if (!linesLayer.All(x => x.Equals(layerName)))
+                    if (!linesLayer.All(x => x.Equals(wallLayerName)))
                     {
                         MessageBoxResult result = System.Windows.MessageBox.Show("We have found lines in the different layer." + "\n" + "Do you want to move lines to ZWall layer?", "Warning", MessageBoxButton.YesNo);
                         if (result == MessageBoxResult.Yes)
@@ -242,7 +243,7 @@ namespace EDS.AEC
                                         Line line = entity as Line;
                                         if (line != null)
                                         {
-                                            line.Layer = layerName;
+                                            line.Layer = wallLayerName;
                                             SetXDataForLine(wall, line);
                                         }
                                     }
@@ -262,7 +263,7 @@ namespace EDS.AEC
                                         Line line = entity as Line;
                                         if (line != null)
                                         {
-                                            if (line.Layer == layerName)
+                                            if (line.Layer == wallLayerName)
                                             {
                                                 SetXDataForLine(wall, line);
                                             }
@@ -285,7 +286,7 @@ namespace EDS.AEC
                                     Line line = entity as Line;
                                     if (line != null)
                                     {
-                                        if (line.Layer == layerName)
+                                        if (line.Layer == wallLayerName)
                                         {
                                             SetXDataForLine(wall, line);
                                         }
@@ -322,7 +323,7 @@ namespace EDS.AEC
                         tr.Commit();
                     }
 
-                    if (!linesLayer.All(x => x.Equals(layerName)))
+                    if (!linesLayer.All(x => x.Equals(wallLayerName)))
                     {
                         MessageBoxResult result = System.Windows.MessageBox.Show("We have found lines in the different layer." + "\n" + "Do you want to move lines to ZWall layer?", "Warning", MessageBoxButton.YesNo);
                         if (result == MessageBoxResult.Yes)
@@ -337,7 +338,7 @@ namespace EDS.AEC
                                         Line line = entity as Line;
                                         if (line != null)
                                         {
-                                            line.Layer = layerName;
+                                            line.Layer = wallLayerName;
                                             SetXDataForLine(wall, line);
                                         }
                                     }
@@ -357,7 +358,7 @@ namespace EDS.AEC
                                         Line line = entity as Line;
                                         if (line != null)
                                         {
-                                            if (line.Layer == layerName)
+                                            if (line.Layer == wallLayerName)
                                             {
                                                 SetXDataForLine(wall, line);
                                             }
@@ -380,7 +381,7 @@ namespace EDS.AEC
                                     Line line = entity as Line;
                                     if (line != null)
                                     {
-                                        if (line.Layer == layerName)
+                                        if (line.Layer == wallLayerName)
                                         {
                                             SetXDataForLine(wall, line);
                                         }
@@ -431,7 +432,7 @@ namespace EDS.AEC
                             if (line != null)
                             {
                                 //ed.WriteMessage($"\nLine: Start Point({line.StartPoint}), End Point({line.EndPoint})");
-                                if (line.Layer == layerName)
+                                if (line.Layer == wallLayerName)
                                     walls.Add(GetXDataForLine(line));
                             }
                         }
@@ -531,7 +532,7 @@ namespace EDS.AEC
                         Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
                         if (entity is Line)
                         {
-                            if (entity.Layer == layerName)
+                            if (entity.Layer == wallLayerName)
                                 lines.Add(entity as Line);
                         }
                     }

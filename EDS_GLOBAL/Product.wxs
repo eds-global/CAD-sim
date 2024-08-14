@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="EDS_GLOBAL" Language="1033" Version="1.0.0.0" Manufacturer="HP" UpgradeCode="887472d4-fb1a-4137-82aa-bbe036b6f8f6">
+	<Product Id="*" Name="EDS_GLOBAL" Language="1033" Version="1.1.0.0" Manufacturer="HP" UpgradeCode="887472d4-fb1a-4137-82aa-bbe036b6f8f6">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" />
 		<WixVariable Id="WixUILicenseRtf" Value="EDS.rtf" />
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
@@ -54,9 +54,6 @@
 			</Component>
 			<Component Id="EXCELDATAREADER.XML" DiskId="1" Guid="32FBCE34-21C6-4C31-A6A9-4DBB9A7D26BB">
 				<File Id="EXCELDATAREADER.XML" Name="ExcelDataReader.xml" Source="..\EDS\bin\Debug\ExcelDataReader.xml" />
-			</Component>
-			<Component Id="MFCMIFC80.DLL" DiskId="1" Guid="CC72F1CB-2726-4411-83BD-7EDC95D27840">
-				<File Id="MFCMIFC80.DLL" Name="MFCMIFC80.dll" Source="..\EDS\bin\Debug\MFCMIFC80.dll" />
 			</Component>
 			<Component Id="NEWTONSOFT.JSON.DLL" DiskId="1" Guid="53413A55-12BC-4B7B-B4E0-4B0AC022B7B4">
 				<File Id="NEWTONSOFT.JSON.DLL" Name="Newtonsoft.Json.dll" Source="..\EDS\bin\Debug\Newtonsoft.Json.dll" />

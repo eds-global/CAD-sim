@@ -59,14 +59,19 @@
             this.freshAirCheck = new System.Windows.Forms.CheckBox();
             this.ceilCheck = new System.Windows.Forms.CheckBox();
             this.floorCheck = new System.Windows.Forms.CheckBox();
-            this.MatchButton = new System.Windows.Forms.Button();
-            this.UpdateButton = new System.Windows.Forms.Button();
-            this.SelectButton = new System.Windows.Forms.Button();
-            this.AddButton = new System.Windows.Forms.Button();
+            this.matchButton = new System.Windows.Forms.Button();
+            this.updateButton = new System.Windows.Forms.Button();
+            this.selectButton = new System.Windows.Forms.Button();
+            this.addButton = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.unitLabel = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label6
@@ -100,6 +105,7 @@
             this.toggleSwitch1.Size = new System.Drawing.Size(50, 19);
             this.toggleSwitch1.Style = JCS.ToggleSwitch.ToggleSwitchStyle.IOS5;
             this.toggleSwitch1.TabIndex = 20;
+            this.toggleSwitch1.CheckedChanged += new JCS.ToggleSwitch.CheckedChangedDelegate(this.toggleSwitch1_CheckedChanged);
             // 
             // ExtMatchButton
             // 
@@ -113,7 +119,6 @@
             this.ExtMatchButton.TabIndex = 24;
             this.ExtMatchButton.Text = "Next";
             this.ExtMatchButton.UseVisualStyleBackColor = false;
-            this.ExtMatchButton.Click += new System.EventHandler(this.ExtMatchButton_Click);
             // 
             // button1
             // 
@@ -127,7 +132,6 @@
             this.button1.TabIndex = 25;
             this.button1.Text = "Back";
             this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // spaceComboBox
             // 
@@ -273,25 +277,25 @@
             // lpdText1
             // 
             this.lpdText1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lpdText1.Location = new System.Drawing.Point(218, 106);
+            this.lpdText1.Location = new System.Drawing.Point(219, 108);
             this.lpdText1.Name = "lpdText1";
-            this.lpdText1.Size = new System.Drawing.Size(50, 20);
+            this.lpdText1.Size = new System.Drawing.Size(65, 20);
             this.lpdText1.TabIndex = 40;
             // 
             // lpdText2
             // 
             this.lpdText2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lpdText2.Location = new System.Drawing.Point(274, 106);
+            this.lpdText2.Location = new System.Drawing.Point(285, 108);
             this.lpdText2.Name = "lpdText2";
-            this.lpdText2.Size = new System.Drawing.Size(50, 20);
+            this.lpdText2.Size = new System.Drawing.Size(61, 20);
             this.lpdText2.TabIndex = 41;
             // 
             // epdText2
             // 
             this.epdText2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.epdText2.Location = new System.Drawing.Point(274, 133);
+            this.epdText2.Location = new System.Drawing.Point(285, 133);
             this.epdText2.Name = "epdText2";
-            this.epdText2.Size = new System.Drawing.Size(50, 20);
+            this.epdText2.Size = new System.Drawing.Size(61, 20);
             this.epdText2.TabIndex = 43;
             // 
             // epdText1
@@ -299,15 +303,15 @@
             this.epdText1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.epdText1.Location = new System.Drawing.Point(218, 133);
             this.epdText1.Name = "epdText1";
-            this.epdText1.Size = new System.Drawing.Size(50, 20);
+            this.epdText1.Size = new System.Drawing.Size(66, 20);
             this.epdText1.TabIndex = 42;
             // 
             // occuText2
             // 
             this.occuText2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.occuText2.Location = new System.Drawing.Point(274, 178);
+            this.occuText2.Location = new System.Drawing.Point(285, 178);
             this.occuText2.Name = "occuText2";
-            this.occuText2.Size = new System.Drawing.Size(50, 20);
+            this.occuText2.Size = new System.Drawing.Size(61, 20);
             this.occuText2.TabIndex = 45;
             // 
             // occuText1
@@ -315,7 +319,7 @@
             this.occuText1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.occuText1.Location = new System.Drawing.Point(218, 178);
             this.occuText1.Name = "occuText1";
-            this.occuText1.Size = new System.Drawing.Size(50, 20);
+            this.occuText1.Size = new System.Drawing.Size(65, 20);
             this.occuText1.TabIndex = 44;
             // 
             // lpdCheck
@@ -378,53 +382,57 @@
             this.floorCheck.TabIndex = 50;
             this.floorCheck.UseVisualStyleBackColor = true;
             // 
-            // MatchButton
+            // matchButton
             // 
-            this.MatchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.MatchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MatchButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.MatchButton.Location = new System.Drawing.Point(294, 329);
-            this.MatchButton.Name = "MatchButton";
-            this.MatchButton.Size = new System.Drawing.Size(95, 34);
-            this.MatchButton.TabIndex = 55;
-            this.MatchButton.Text = "Match";
-            this.MatchButton.UseVisualStyleBackColor = false;
+            this.matchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.matchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.matchButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.matchButton.Location = new System.Drawing.Point(294, 329);
+            this.matchButton.Name = "matchButton";
+            this.matchButton.Size = new System.Drawing.Size(95, 34);
+            this.matchButton.TabIndex = 55;
+            this.matchButton.Text = "Match";
+            this.matchButton.UseVisualStyleBackColor = false;
+            this.matchButton.Click += new System.EventHandler(this.matchButton_Click);
             // 
-            // UpdateButton
+            // updateButton
             // 
-            this.UpdateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.UpdateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.UpdateButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.UpdateButton.Location = new System.Drawing.Point(202, 328);
-            this.UpdateButton.Name = "UpdateButton";
-            this.UpdateButton.Size = new System.Drawing.Size(88, 34);
-            this.UpdateButton.TabIndex = 54;
-            this.UpdateButton.Text = "Update";
-            this.UpdateButton.UseVisualStyleBackColor = false;
+            this.updateButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.updateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.updateButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.updateButton.Location = new System.Drawing.Point(202, 328);
+            this.updateButton.Name = "updateButton";
+            this.updateButton.Size = new System.Drawing.Size(88, 34);
+            this.updateButton.TabIndex = 54;
+            this.updateButton.Text = "Update";
+            this.updateButton.UseVisualStyleBackColor = false;
+            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
             // 
-            // SelectButton
+            // selectButton
             // 
-            this.SelectButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.SelectButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SelectButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.SelectButton.Location = new System.Drawing.Point(97, 329);
-            this.SelectButton.Name = "SelectButton";
-            this.SelectButton.Size = new System.Drawing.Size(95, 34);
-            this.SelectButton.TabIndex = 53;
-            this.SelectButton.Text = "Select";
-            this.SelectButton.UseVisualStyleBackColor = false;
+            this.selectButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.selectButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.selectButton.Location = new System.Drawing.Point(97, 329);
+            this.selectButton.Name = "selectButton";
+            this.selectButton.Size = new System.Drawing.Size(95, 34);
+            this.selectButton.TabIndex = 53;
+            this.selectButton.Text = "Select";
+            this.selectButton.UseVisualStyleBackColor = false;
+            this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
             // 
-            // AddButton
+            // addButton
             // 
-            this.AddButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.AddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AddButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.AddButton.Location = new System.Drawing.Point(5, 328);
-            this.AddButton.Name = "AddButton";
-            this.AddButton.Size = new System.Drawing.Size(88, 34);
-            this.AddButton.TabIndex = 52;
-            this.AddButton.Text = "Add";
-            this.AddButton.UseVisualStyleBackColor = false;
+            this.addButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.addButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.addButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.addButton.Location = new System.Drawing.Point(5, 328);
+            this.addButton.Name = "addButton";
+            this.addButton.Size = new System.Drawing.Size(88, 34);
+            this.addButton.TabIndex = 52;
+            this.addButton.Text = "Add";
+            this.addButton.UseVisualStyleBackColor = false;
+            this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
             // label14
             // 
@@ -453,23 +461,83 @@
             // label12
             // 
             this.label12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label12.Location = new System.Drawing.Point(345, 103);
+            this.label12.Location = new System.Drawing.Point(348, 102);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(2, 210);
             this.label12.TabIndex = 59;
+            // 
+            // unitLabel
+            // 
+            this.unitLabel.AutoSize = true;
+            this.unitLabel.ForeColor = System.Drawing.Color.Red;
+            this.unitLabel.Location = new System.Drawing.Point(338, 51);
+            this.unitLabel.Name = "unitLabel";
+            this.unitLabel.Size = new System.Drawing.Size(48, 13);
+            this.unitLabel.TabIndex = 60;
+            this.unitLabel.Text = "W/sqmk";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.ForeColor = System.Drawing.Color.Red;
+            this.label13.Location = new System.Drawing.Point(220, 90);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(47, 15);
+            this.label13.TabIndex = 61;
+            this.label13.Text = "(W/sqmk)";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.ForeColor = System.Drawing.Color.Red;
+            this.label15.Location = new System.Drawing.Point(220, 162);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(62, 15);
+            this.label15.TabIndex = 62;
+            this.label15.Text = "(sqm/person)";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.BackColor = System.Drawing.Color.Transparent;
+            this.label16.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.ForeColor = System.Drawing.Color.Black;
+            this.label16.Location = new System.Drawing.Point(282, 162);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 15);
+            this.label16.TabIndex = 63;
+            this.label16.Text = "(No of person)";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.ForeColor = System.Drawing.Color.Black;
+            this.label17.Location = new System.Drawing.Point(309, 90);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(21, 15);
+            this.label17.TabIndex = 64;
+            this.label17.Text = "(W)";
             // 
             // RoomDataPalette
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.unitLabel);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label14);
-            this.Controls.Add(this.MatchButton);
-            this.Controls.Add(this.UpdateButton);
-            this.Controls.Add(this.SelectButton);
-            this.Controls.Add(this.AddButton);
+            this.Controls.Add(this.matchButton);
+            this.Controls.Add(this.updateButton);
+            this.Controls.Add(this.selectButton);
+            this.Controls.Add(this.addButton);
             this.Controls.Add(this.ceilCheck);
             this.Controls.Add(this.floorCheck);
             this.Controls.Add(this.freshAirCheck);
@@ -502,7 +570,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "RoomDataPalette";
-            this.Size = new System.Drawing.Size(399, 378);
+            this.Size = new System.Drawing.Size(396, 378);
             this.Load += new System.EventHandler(this.RoomDataPalette_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -542,13 +610,18 @@
         private System.Windows.Forms.CheckBox freshAirCheck;
         private System.Windows.Forms.CheckBox ceilCheck;
         private System.Windows.Forms.CheckBox floorCheck;
-        private System.Windows.Forms.Button MatchButton;
-        private System.Windows.Forms.Button UpdateButton;
-        private System.Windows.Forms.Button SelectButton;
-        private System.Windows.Forms.Button AddButton;
+        private System.Windows.Forms.Button matchButton;
+        private System.Windows.Forms.Button updateButton;
+        private System.Windows.Forms.Button selectButton;
+        private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label unitLabel;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label17;
     }
 }
