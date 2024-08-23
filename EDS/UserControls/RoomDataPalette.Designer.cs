@@ -30,9 +30,6 @@
         {
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.toggleSwitch1 = new JCS.ToggleSwitch();
-            this.ExtMatchButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.spaceComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -72,6 +69,10 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.toggleSwitch1 = new JCS.ToggleSwitch();
+            this.levelPreFix = new System.Windows.Forms.TextBox();
+            this.refreshButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label6
@@ -85,53 +86,12 @@
             // label1
             // 
             this.label1.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(3, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(150, 23);
             this.label1.TabIndex = 19;
             this.label1.Text = "Room/Space/Zone Tag";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
-            // 
-            // toggleSwitch1
-            // 
-            this.toggleSwitch1.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.toggleSwitch1.Location = new System.Drawing.Point(336, 14);
-            this.toggleSwitch1.Name = "toggleSwitch1";
-            this.toggleSwitch1.OffFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toggleSwitch1.OffText = "SI";
-            this.toggleSwitch1.OnFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toggleSwitch1.OnText = "IP";
-            this.toggleSwitch1.Size = new System.Drawing.Size(50, 19);
-            this.toggleSwitch1.Style = JCS.ToggleSwitch.ToggleSwitchStyle.IOS5;
-            this.toggleSwitch1.TabIndex = 20;
-            this.toggleSwitch1.CheckedChanged += new JCS.ToggleSwitch.CheckedChangedDelegate(this.toggleSwitch1_CheckedChanged);
-            // 
-            // ExtMatchButton
-            // 
-            this.ExtMatchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ExtMatchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ExtMatchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ExtMatchButton.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.ExtMatchButton.Location = new System.Drawing.Point(255, 12);
-            this.ExtMatchButton.Name = "ExtMatchButton";
-            this.ExtMatchButton.Size = new System.Drawing.Size(66, 25);
-            this.ExtMatchButton.TabIndex = 24;
-            this.ExtMatchButton.Text = "Next";
-            this.ExtMatchButton.UseVisualStyleBackColor = false;
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.button1.Location = new System.Drawing.Point(183, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(66, 25);
-            this.button1.TabIndex = 25;
-            this.button1.Text = "Back";
-            this.button1.UseVisualStyleBackColor = false;
             // 
             // spaceComboBox
             // 
@@ -152,7 +112,6 @@
             this.label2.Size = new System.Drawing.Size(88, 23);
             this.label2.TabIndex = 27;
             this.label2.Text = "Space Type";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
@@ -173,6 +132,7 @@
             this.lpdComboBox.Name = "lpdComboBox";
             this.lpdComboBox.Size = new System.Drawing.Size(97, 21);
             this.lpdComboBox.TabIndex = 28;
+            this.lpdComboBox.SelectedIndexChanged += new System.EventHandler(this.lpdComboBox_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -193,6 +153,7 @@
             this.epdComboBox.Name = "epdComboBox";
             this.epdComboBox.Size = new System.Drawing.Size(97, 21);
             this.epdComboBox.TabIndex = 30;
+            this.epdComboBox.SelectedIndexChanged += new System.EventHandler(this.epdComboBox_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -233,6 +194,7 @@
             this.occupComboBox.Name = "occupComboBox";
             this.occupComboBox.Size = new System.Drawing.Size(97, 21);
             this.occupComboBox.TabIndex = 32;
+            this.occupComboBox.SelectedIndexChanged += new System.EventHandler(this.occupComboBox_SelectedIndexChanged);
             // 
             // label8
             // 
@@ -281,6 +243,7 @@
             this.lpdText1.Name = "lpdText1";
             this.lpdText1.Size = new System.Drawing.Size(65, 20);
             this.lpdText1.TabIndex = 40;
+            this.lpdText1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.lpdText1_KeyPress);
             // 
             // lpdText2
             // 
@@ -289,6 +252,7 @@
             this.lpdText2.Name = "lpdText2";
             this.lpdText2.Size = new System.Drawing.Size(61, 20);
             this.lpdText2.TabIndex = 41;
+            this.lpdText2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.lpdText2_KeyPress);
             // 
             // epdText2
             // 
@@ -297,6 +261,7 @@
             this.epdText2.Name = "epdText2";
             this.epdText2.Size = new System.Drawing.Size(61, 20);
             this.epdText2.TabIndex = 43;
+            this.epdText2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.epdText2_KeyPress);
             // 
             // epdText1
             // 
@@ -305,6 +270,7 @@
             this.epdText1.Name = "epdText1";
             this.epdText1.Size = new System.Drawing.Size(66, 20);
             this.epdText1.TabIndex = 42;
+            this.epdText1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.epdText1_KeyPress);
             // 
             // occuText2
             // 
@@ -313,6 +279,7 @@
             this.occuText2.Name = "occuText2";
             this.occuText2.Size = new System.Drawing.Size(61, 20);
             this.occuText2.TabIndex = 45;
+            this.occuText2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.occuText2_KeyPress);
             // 
             // occuText1
             // 
@@ -321,6 +288,7 @@
             this.occuText1.Name = "occuText1";
             this.occuText1.Size = new System.Drawing.Size(65, 20);
             this.occuText1.TabIndex = 44;
+            this.occuText1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.occuText1_KeyPress);
             // 
             // lpdCheck
             // 
@@ -470,7 +438,7 @@
             // 
             this.unitLabel.AutoSize = true;
             this.unitLabel.ForeColor = System.Drawing.Color.Red;
-            this.unitLabel.Location = new System.Drawing.Point(338, 51);
+            this.unitLabel.Location = new System.Drawing.Point(341, 41);
             this.unitLabel.Name = "unitLabel";
             this.unitLabel.Size = new System.Drawing.Size(48, 13);
             this.unitLabel.TabIndex = 60;
@@ -483,30 +451,29 @@
             this.label13.ForeColor = System.Drawing.Color.Red;
             this.label13.Location = new System.Drawing.Point(220, 90);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(47, 15);
+            this.label13.Size = new System.Drawing.Size(42, 15);
             this.label13.TabIndex = 61;
-            this.label13.Text = "(W/sqmk)";
+            this.label13.Text = "(W/sqm)";
             // 
             // label15
             // 
-            this.label15.AutoSize = true;
+            this.label15.BackColor = System.Drawing.Color.Transparent;
             this.label15.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.ForeColor = System.Drawing.Color.Red;
             this.label15.Location = new System.Drawing.Point(220, 162);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(62, 15);
+            this.label15.Size = new System.Drawing.Size(62, 14);
             this.label15.TabIndex = 62;
             this.label15.Text = "(sqm/person)";
             // 
             // label16
             // 
-            this.label16.AutoSize = true;
             this.label16.BackColor = System.Drawing.Color.Transparent;
             this.label16.Font = new System.Drawing.Font("Arial Narrow", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label16.ForeColor = System.Drawing.Color.Black;
             this.label16.Location = new System.Drawing.Point(282, 162);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(66, 15);
+            this.label16.Size = new System.Drawing.Size(66, 14);
             this.label16.TabIndex = 63;
             this.label16.Text = "(No of person)";
             // 
@@ -521,10 +488,58 @@
             this.label17.TabIndex = 64;
             this.label17.Text = "(W)";
             // 
+            // label18
+            // 
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(208, 61);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(41, 23);
+            this.label18.TabIndex = 66;
+            this.label18.Text = "Level";
+            // 
+            // toggleSwitch1
+            // 
+            this.toggleSwitch1.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.toggleSwitch1.Location = new System.Drawing.Point(336, 14);
+            this.toggleSwitch1.Name = "toggleSwitch1";
+            this.toggleSwitch1.OffFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toggleSwitch1.OffText = "SI";
+            this.toggleSwitch1.OnFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toggleSwitch1.OnText = "IP";
+            this.toggleSwitch1.Size = new System.Drawing.Size(50, 19);
+            this.toggleSwitch1.Style = JCS.ToggleSwitch.ToggleSwitchStyle.IOS5;
+            this.toggleSwitch1.TabIndex = 20;
+            this.toggleSwitch1.CheckedChanged += new JCS.ToggleSwitch.CheckedChangedDelegate(this.toggleSwitch1_CheckedChanged);
+            // 
+            // levelPreFix
+            // 
+            this.levelPreFix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.levelPreFix.Location = new System.Drawing.Point(255, 61);
+            this.levelPreFix.Name = "levelPreFix";
+            this.levelPreFix.Size = new System.Drawing.Size(66, 20);
+            this.levelPreFix.TabIndex = 67;
+            // 
+            // refreshButton
+            // 
+            this.refreshButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.refreshButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.refreshButton.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.refreshButton.Location = new System.Drawing.Point(149, 368);
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(88, 34);
+            this.refreshButton.TabIndex = 68;
+            this.refreshButton.Text = "Refresh";
+            this.refreshButton.UseVisualStyleBackColor = false;
+            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
+            // 
             // RoomDataPalette
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
+            this.Controls.Add(this.refreshButton);
+            this.Controls.Add(this.levelPreFix);
+            this.Controls.Add(this.label18);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.label15);
@@ -564,13 +579,11 @@
             this.Controls.Add(this.lpdComboBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.spaceComboBox);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.ExtMatchButton);
             this.Controls.Add(this.toggleSwitch1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "RoomDataPalette";
-            this.Size = new System.Drawing.Size(396, 378);
+            this.Size = new System.Drawing.Size(355, 391);
             this.Load += new System.EventHandler(this.RoomDataPalette_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -582,8 +595,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label1;
         private JCS.ToggleSwitch toggleSwitch1;
-        private System.Windows.Forms.Button ExtMatchButton;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox spaceComboBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -604,12 +615,6 @@
         private System.Windows.Forms.TextBox epdText1;
         private System.Windows.Forms.TextBox occuText2;
         private System.Windows.Forms.TextBox occuText1;
-        private System.Windows.Forms.CheckBox lpdCheck;
-        private System.Windows.Forms.CheckBox epdCheck;
-        private System.Windows.Forms.CheckBox occuCheck;
-        private System.Windows.Forms.CheckBox freshAirCheck;
-        private System.Windows.Forms.CheckBox ceilCheck;
-        private System.Windows.Forms.CheckBox floorCheck;
         private System.Windows.Forms.Button matchButton;
         private System.Windows.Forms.Button updateButton;
         private System.Windows.Forms.Button selectButton;
@@ -623,5 +628,14 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.CheckBox lpdCheck;
+        private System.Windows.Forms.CheckBox epdCheck;
+        private System.Windows.Forms.CheckBox occuCheck;
+        private System.Windows.Forms.CheckBox freshAirCheck;
+        private System.Windows.Forms.CheckBox ceilCheck;
+        private System.Windows.Forms.CheckBox floorCheck;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox levelPreFix;
+        private System.Windows.Forms.Button refreshButton;
     }
 }

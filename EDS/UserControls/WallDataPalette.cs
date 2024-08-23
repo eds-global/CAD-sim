@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EDS.Models;
 
 namespace EDS.UserControls
 {
@@ -46,13 +47,21 @@ namespace EDS.UserControls
 
         private void DrawButton_Click(object sender, EventArgs e)
         {
-            EDSWallCreation wallCreation = new EDSWallCreation();
+            double resultValue = 0.0;
+            if (uValueCheck.Checked)
+            {
+                resultValue = double.Parse(uValue.Text);
+            }
+            else
+            {
+                resultValue = double.Parse(uValue.Text);
+            }
 
             EDSWall wall = new EDSWall()
             {
                 extWallType = extWallCombo.SelectedItem == null ? "" : extWallCombo.SelectedItem.ToString(),
                 intWallType = intWallCombo.SelectedItem == null ? "" : intWallCombo.SelectedItem.ToString(),
-                uValue = uValue.Text,
+                uValue = resultValue.ToString(),
                 eDS1Faces1 = f1Type1.SelectedItem == null ? "" : f1Type1.SelectedItem.ToString() + "-" + f1Type1CompText.Text,
                 eDS1Faces2 = f1Type2.SelectedItem == null ? "" : f1Type2.SelectedItem.ToString() + "-" + f1Type2CompText.Text,
                 eDS1Faces3 = f1Type3.SelectedItem == null ? "" : f1Type3.SelectedItem.ToString() + "-" + f1Type3CompText.Text,
@@ -61,7 +70,7 @@ namespace EDS.UserControls
                 eDS2Faces3 = f2Type3.SelectedItem == null ? "" : f2Type3.SelectedItem.ToString() + "-" + f2Type3CompText.Text,
                 uValueCheck = uValueCheck.Checked.ToString(),
             };
-            wallCreation.CreateWall(wall);
+            wall.CreateWall(wall);
 
             RefreshUI();
 
@@ -69,8 +78,6 @@ namespace EDS.UserControls
 
         private void UpdateAllButton_Click(object sender, EventArgs e)
         {
-            EDSWallCreation wallCreation = new EDSWallCreation();
-
             EDSWall wall = new EDSWall()
             {
                 extWallType = extWallCombo.SelectedItem == null ? "" : extWallCombo.SelectedItem.ToString(),
@@ -85,7 +92,7 @@ namespace EDS.UserControls
                 uValueCheck = uValueCheck.Checked.ToString(),
             };
 
-            wallCreation.UpdateLine(wall);
+            wall.UpdateLine(wall);
 
             RefreshUI();
 
@@ -105,7 +112,7 @@ namespace EDS.UserControls
 
         private void SelectButton_Click(object sender, EventArgs e)
         {
-            EDSWallCreation creation = new EDSWallCreation();
+            EDSWall creation = new EDSWall();
             var edsValue = creation.GetWallLine();
 
             extWallCombo.SelectedItem = CheckIfValueSame(edsValue.Select(x => x.extWallType).ToList()) ? edsValue.First().extWallType : "";
@@ -127,7 +134,7 @@ namespace EDS.UserControls
 
         private void MatchAllButton_Click(object sender, EventArgs e)
         {
-            EDSWallCreation wallCreation = new EDSWallCreation();
+            EDSWall wallCreation = new EDSWall();
             wallCreation.MatchLine();
         }
 
@@ -187,7 +194,7 @@ namespace EDS.UserControls
         private void scanButton_Click(object sender, EventArgs e)
         {
             progressBar1.Value = 25;
-            EDSWallCreation creation = new EDSWallCreation();
+            EDSWall creation = new EDSWall();
             creation.FindClosedLoop();
             progressBar1.Value = 100;
         }
@@ -210,7 +217,7 @@ namespace EDS.UserControls
 
         private void wallUpdateButton_Click(object sender, EventArgs e)
         {
-            EDSWallCreation wallCreation = new EDSWallCreation();
+            EDSWall wallCreation = new EDSWall();
 
             EDSWall wall = new EDSWall()
             {
@@ -232,7 +239,7 @@ namespace EDS.UserControls
 
         private void wallMatchButton_Click(object sender, EventArgs e)
         {
-            EDSWallCreation wallCreation = new EDSWallCreation();
+            EDSWall wallCreation = new EDSWall();
             wallCreation.MatchLine();
         }
     }
