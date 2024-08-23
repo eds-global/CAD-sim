@@ -638,7 +638,7 @@ namespace EDS.Models
                 TreeNode internalNode = new TreeNode("Internal Walls");
                 treeNode.Nodes.Add(internalNode);
 
-                TreeNode roomNode = new TreeNode(eds.spaceType + "(" + eds.roomArea + ")");
+                TreeNode roomNode = new TreeNode(eds.spaceType + " (" + eds.roomArea + ")");
                 roomNode.Tag = eds.curveHandleId;
                 roomNode.Nodes.Add(treeNode);
 
