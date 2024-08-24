@@ -105,6 +105,8 @@ namespace EDS.Models
 
         public void CreateRoom(EDSRoomTag roomTag)
         {
+            EDSCreation.CreateLayer(StringConstants.roomLayerName, 2);
+
             Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             Editor editor = doc.Editor;
@@ -114,7 +116,7 @@ namespace EDS.Models
             var roomId = GetRoomList(roomTag.levelId, roomTag.spaceType);
             roomId += 1;
 
-            PromptPointOptions promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type" + roomTag.spaceType + " " + roomId.ToString() + " or [Exit]: ");
+            PromptPointOptions promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type" + (roomTag.spaceType.Contains("-") == true ? roomTag.spaceType.Split('-')[0] : roomTag.spaceType) + " " + roomId.ToString() + " or [Exit]: ");
             PromptPointResult promptPointResult = doc.Editor.GetPoint(promptPointOptions);
 
             while (promptPointResult.Status == PromptStatus.OK)
@@ -144,7 +146,7 @@ namespace EDS.Models
                         {
                             Position = promptPointResult.Value,
                             Height = 100.0,
-                            TextString = roomTag.spaceType + "-" + roomId.ToString(),
+                            TextString = (roomTag.spaceType.Contains("-") == true ? roomTag.spaceType.Split('-')[0] : roomTag.spaceType) + "-" + roomId.ToString(),
                         };
 
                         ObjectId objectId = new ObjectId();
@@ -167,7 +169,7 @@ namespace EDS.Models
                     }
                     roomId += 1;
                     addTransaction.Commit();
-                    promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type" + roomTag.spaceType + " " + roomId.ToString() + " or [Exit]: ");
+                    promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type" + roomTag.spaceType.Split('-')[0] + " " + roomId.ToString() + " or [Exit]: ");
                     promptPointResult = doc.Editor.GetPoint(promptPointOptions);
 
                 }
@@ -183,7 +185,7 @@ namespace EDS.Models
             PromptEntityOptions promptEntityOptions1 = new PromptEntityOptions("\nSelect the Space Type or [Exit]: ");
             PromptEntityResult promptEntityOptions = doc.Editor.GetEntity(promptEntityOptions1);
 
-            if (promptEntityOptions.Status != PromptStatus.OK)
+            if (promptEntityOptions.Status == PromptStatus.OK)
             {
 
                 using (Transaction transaction = db.TransactionManager.StartTransaction())
@@ -268,6 +270,9 @@ namespace EDS.Models
                             return;
                     }
                 }
+
+                editor.SetImpliedSelection(new List<ObjectId>().ToArray());
+
                 transaction.Commit();
             }
         }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="EDS_GLOBAL" Language="1033" Version="1.1.0.0" Manufacturer="HP" UpgradeCode="887472d4-fb1a-4137-82aa-bbe036b6f8f6">
+	<Product Id="*" Name="EDS_GLOBAL" Language="1033" Version="1.2.0.0" Manufacturer="HP" UpgradeCode="887472d4-fb1a-4137-82aa-bbe036b6f8f6">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" />
 		<WixVariable Id="WixUILicenseRtf" Value="EDS.rtf" />
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />

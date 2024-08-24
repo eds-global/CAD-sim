@@ -114,6 +114,7 @@ namespace EDS.UserControls
         {
             EDSRoomTag wallCreation = new EDSRoomTag();
             wallCreation.MatchRoom(lpdCheck.Checked, epdCheck.Checked, occuCheck.Checked, freshAirCheck.Checked, floorCheck.Checked, ceilCheck.Checked);
+            RefreshUI();
         }
 
         private void updateButton_Click(object sender, EventArgs e)
@@ -342,6 +343,7 @@ namespace EDS.UserControls
                 occupancyText2 = occuText2.Text.ToString()
             };
             wallCreation.UpdateRoom(roomTag, lpdCheck.Checked, epdCheck.Checked, occuCheck.Checked, freshAirCheck.Checked, floorCheck.Checked, ceilCheck.Checked);
+            RefreshUI();
         }
 
         private void selectButton_Click(object sender, EventArgs e)
@@ -351,7 +353,7 @@ namespace EDS.UserControls
 
             if (result != null)
             {
-                spaceComboBox.SelectedItem = result.spaceType;
+                spaceComboBox.SelectedItem = result.spaceType.Split('-')[0];
                 epdComboBox.SelectedItem = result.epdType;
                 lpdComboBox.SelectedItem = result.lpdType;
                 occupComboBox.SelectedItem = result.occupancyType;
@@ -679,6 +681,13 @@ namespace EDS.UserControls
             occuText1.Text = "";
             occuText2.Text = "";
             levelPreFix.Text = "";
+            lpdCheck.Checked = false;
+            epdCheck.Checked = false;
+            occuCheck.Checked = false;
+            ceilCheck.Checked = false;
+            floorCheck.Checked = false;
+            freshAirCheck.Checked = false;
+
         }
 
         // Convert from watts per square foot to watts per square meter
