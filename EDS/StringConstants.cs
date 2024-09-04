@@ -20,7 +20,7 @@ namespace EDS
         public static string eDS2Faces2 = "Face2Type2";
         public static string eDS2Faces3 = "Face2Type3";
         public static string wallHandleId = "WallHandleId";
-        #endregion
+        #endregion 
 
         #region RoomStaticParameter
         public static string spaceType = "SpaceType";
@@ -45,6 +45,26 @@ namespace EDS
         #region LayerName
         public static string wallLayerName = "ZWall";
         public static string roomLayerName = "ZRoomTag";
+        public static string windowLayerName = "ZWindow";
+        #endregion
+
+        #region WindowStaticParameter
+
+        public static string InsertionMode = "InsertionMode";
+        public static string WindowType = "WindowType";
+        public static string OpenAble = "OpenAble";
+        public static string OverhangPF = "OverhangPF";
+        public static string VerticalPF = "VerticalPF";
+        public static string DayLightWindow = "DayLightWindow";
+        public static string InteriorLightSelf = "InteriorLightSelf";
+        public static string Height = "Height";
+        public static string Width = "Width";
+        public static string SillHeight = "SillHeight";
+        public static string Spacing = "Spacing";
+        public static string WWR = "WWR";
+        public static string SpecifyOnDrawing = "SpecifyOnDrawing";
+        public static double wallHeight = 25.0;
+
         #endregion
     }
 }

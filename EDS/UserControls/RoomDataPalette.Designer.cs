@@ -583,7 +583,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "RoomDataPalette";
-            this.Size = new System.Drawing.Size(355, 391);
+            this.Size = new System.Drawing.Size(338, 374);
             this.Load += new System.EventHandler(this.RoomDataPalette_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

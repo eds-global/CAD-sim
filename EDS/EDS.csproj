@@ -76,6 +76,7 @@
     <Compile Include="GenericModule.cs" />
     <Compile Include="Models\EDSRoomTag.cs" />
     <Compile Include="Models\EDSWall.cs" />
+    <Compile Include="Models\EDSWindow.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="UserControls\ExportPalette.cs">
       <SubType>UserControl</SubType>
@@ -100,6 +101,12 @@
     </Compile>
     <Compile Include="UserControls\WallDataPalette.Designer.cs">
       <DependentUpon>WallDataPalette.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WindowDataPalette.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\WindowDataPalette.Designer.cs">
+      <DependentUpon>WindowDataPalette.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\WindowsDataPalette.cs">
       <SubType>UserControl</SubType>
@@ -145,6 +152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\WallDataPalette.resx">
       <DependentUpon>WallDataPalette.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\WindowDataPalette.resx">
+      <DependentUpon>WindowDataPalette.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\WindowsDataPalette.resx">
       <DependentUpon>WindowsDataPalette.cs</DependentUpon>
