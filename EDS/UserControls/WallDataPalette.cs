@@ -54,7 +54,7 @@ namespace EDS.UserControls
             }
             else
             {
-                resultValue = double.Parse(uValue.Text);
+                //resultValue = double.Parse(uValue.Text);
             }
 
             EDSWall wall = new EDSWall()

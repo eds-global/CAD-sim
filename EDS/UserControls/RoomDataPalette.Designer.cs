@@ -99,7 +99,7 @@
             this.spaceComboBox.FormattingEnabled = true;
             this.spaceComboBox.IntegralHeight = false;
             this.spaceComboBox.ItemHeight = 13;
-            this.spaceComboBox.Location = new System.Drawing.Point(97, 61);
+            this.spaceComboBox.Location = new System.Drawing.Point(105, 61);
             this.spaceComboBox.Name = "spaceComboBox";
             this.spaceComboBox.Size = new System.Drawing.Size(97, 21);
             this.spaceComboBox.TabIndex = 26;
@@ -111,7 +111,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(88, 23);
             this.label2.TabIndex = 27;
-            this.label2.Text = "Space Type";
+            this.label2.Text = "Space Type*";
             // 
             // label3
             // 
@@ -120,7 +120,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(88, 23);
             this.label3.TabIndex = 29;
-            this.label3.Text = "LPD";
+            this.label3.Text = "LPD*";
             // 
             // lpdComboBox
             // 
@@ -128,7 +128,7 @@
             this.lpdComboBox.FormattingEnabled = true;
             this.lpdComboBox.IntegralHeight = false;
             this.lpdComboBox.ItemHeight = 13;
-            this.lpdComboBox.Location = new System.Drawing.Point(97, 103);
+            this.lpdComboBox.Location = new System.Drawing.Point(107, 103);
             this.lpdComboBox.Name = "lpdComboBox";
             this.lpdComboBox.Size = new System.Drawing.Size(97, 21);
             this.lpdComboBox.TabIndex = 28;
@@ -141,7 +141,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(88, 23);
             this.label4.TabIndex = 31;
-            this.label4.Text = "EPD";
+            this.label4.Text = "EPD*";
             // 
             // epdComboBox
             // 
@@ -149,7 +149,7 @@
             this.epdComboBox.FormattingEnabled = true;
             this.epdComboBox.IntegralHeight = false;
             this.epdComboBox.ItemHeight = 13;
-            this.epdComboBox.Location = new System.Drawing.Point(97, 130);
+            this.epdComboBox.Location = new System.Drawing.Point(107, 130);
             this.epdComboBox.Name = "epdComboBox";
             this.epdComboBox.Size = new System.Drawing.Size(97, 21);
             this.epdComboBox.TabIndex = 30;
@@ -162,7 +162,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(88, 23);
             this.label5.TabIndex = 35;
-            this.label5.Text = "Fresh Air";
+            this.label5.Text = "Fresh Air*";
             // 
             // freshAirComboBox
             // 
@@ -170,7 +170,7 @@
             this.freshAirComboBox.FormattingEnabled = true;
             this.freshAirComboBox.IntegralHeight = false;
             this.freshAirComboBox.ItemHeight = 13;
-            this.freshAirComboBox.Location = new System.Drawing.Point(97, 202);
+            this.freshAirComboBox.Location = new System.Drawing.Point(107, 202);
             this.freshAirComboBox.Name = "freshAirComboBox";
             this.freshAirComboBox.Size = new System.Drawing.Size(97, 21);
             this.freshAirComboBox.TabIndex = 34;
@@ -182,7 +182,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(88, 23);
             this.label7.TabIndex = 33;
-            this.label7.Text = "Occupancy";
+            this.label7.Text = "Occupancy*";
             // 
             // occupComboBox
             // 
@@ -190,7 +190,7 @@
             this.occupComboBox.FormattingEnabled = true;
             this.occupComboBox.IntegralHeight = false;
             this.occupComboBox.ItemHeight = 13;
-            this.occupComboBox.Location = new System.Drawing.Point(97, 175);
+            this.occupComboBox.Location = new System.Drawing.Point(107, 175);
             this.occupComboBox.Name = "occupComboBox";
             this.occupComboBox.Size = new System.Drawing.Size(97, 21);
             this.occupComboBox.TabIndex = 32;
@@ -201,9 +201,9 @@
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(3, 268);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(88, 23);
+            this.label8.Size = new System.Drawing.Size(98, 23);
             this.label8.TabIndex = 39;
-            this.label8.Text = "Ceiling Finish";
+            this.label8.Text = "Ceiling Finish*";
             // 
             // ceilFinishComboBox
             // 
@@ -211,7 +211,7 @@
             this.ceilFinishComboBox.FormattingEnabled = true;
             this.ceilFinishComboBox.IntegralHeight = false;
             this.ceilFinishComboBox.ItemHeight = 13;
-            this.ceilFinishComboBox.Location = new System.Drawing.Point(97, 268);
+            this.ceilFinishComboBox.Location = new System.Drawing.Point(107, 268);
             this.ceilFinishComboBox.Name = "ceilFinishComboBox";
             this.ceilFinishComboBox.Size = new System.Drawing.Size(97, 21);
             this.ceilFinishComboBox.TabIndex = 38;
@@ -223,7 +223,7 @@
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(88, 23);
             this.label9.TabIndex = 37;
-            this.label9.Text = "Floor Finish";
+            this.label9.Text = "Floor Finish*";
             // 
             // floorFinishComboBox
             // 
@@ -231,7 +231,7 @@
             this.floorFinishComboBox.FormattingEnabled = true;
             this.floorFinishComboBox.IntegralHeight = false;
             this.floorFinishComboBox.ItemHeight = 13;
-            this.floorFinishComboBox.Location = new System.Drawing.Point(97, 241);
+            this.floorFinishComboBox.Location = new System.Drawing.Point(107, 241);
             this.floorFinishComboBox.Name = "floorFinishComboBox";
             this.floorFinishComboBox.Size = new System.Drawing.Size(97, 21);
             this.floorFinishComboBox.TabIndex = 36;
@@ -493,9 +493,9 @@
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label18.Location = new System.Drawing.Point(208, 61);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(41, 23);
+            this.label18.Size = new System.Drawing.Size(50, 23);
             this.label18.TabIndex = 66;
-            this.label18.Text = "Level";
+            this.label18.Text = "Level*";
             // 
             // toggleSwitch1
             // 
@@ -514,7 +514,7 @@
             // levelPreFix
             // 
             this.levelPreFix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.levelPreFix.Location = new System.Drawing.Point(255, 61);
+            this.levelPreFix.Location = new System.Drawing.Point(264, 61);
             this.levelPreFix.Name = "levelPreFix";
             this.levelPreFix.Size = new System.Drawing.Size(66, 20);
             this.levelPreFix.TabIndex = 67;
@@ -583,7 +583,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "RoomDataPalette";
-            this.Size = new System.Drawing.Size(338, 374);
+            this.Size = new System.Drawing.Size(321, 357);
             this.Load += new System.EventHandler(this.RoomDataPalette_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
