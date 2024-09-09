@@ -193,10 +193,7 @@ namespace EDS.UserControls
 
         private void scanButton_Click(object sender, EventArgs e)
         {
-            progressBar1.Value = 25;
-            EDSWall creation = new EDSWall();
-            creation.FindClosedLoop();
-            progressBar1.Value = 100;
+
         }
 
         static void UpdateProgressBar()

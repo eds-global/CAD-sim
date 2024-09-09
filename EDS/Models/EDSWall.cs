@@ -12,6 +12,8 @@ using ZwSoft.ZwCAD.EditorInput;
 using ZwSoft.ZwCAD.Geometry;
 using EDS.AEC;
 using Polyline = ZwSoft.ZwCAD.DatabaseServices.Polyline;
+using System.Windows.Shapes;
+using Line = ZwSoft.ZwCAD.DatabaseServices.Line;
 
 namespace EDS.Models
 {
@@ -29,6 +31,8 @@ namespace EDS.Models
         public string wallHandleId { get; set; }
 
         public string uValueCheck { get; set; }
+
+        List<ObjectId> erasedPolylineIds = new List<ObjectId>();
 
         public EDSWall()
         {
@@ -430,12 +434,12 @@ namespace EDS.Models
             return xData;
         }
 
-        public void FindClosedLoop()
+        public void FindClosedLoop(System.Windows.Forms.TreeView treeView)
         {
             Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             Editor ed = doc.Editor;
-
+            doc.LockDocument();
             #region GenericLogicFromClosedLoop
 
             //doc.LockDocument();
@@ -479,156 +483,176 @@ namespace EDS.Models
 
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
-                List<Line> lines = new List<Line>();
+                List<Line> wallLines = new List<Line>();
                 List<EDSRoomTag> edsRooms = new List<EDSRoomTag>();
+                List<Polyline> windowLines = new List<Polyline>();
                 if (res.Status == PromptStatus.OK)
                 {
                     SelectionSet selectionSet = res.Value;
 
-                    // Collect all lines from the drawing
-                    foreach (SelectedObject so in selectionSet)
-                    {
-                        ObjectId objId = so.ObjectId;
+                    ExportValidation exportValidation = new ExportValidation();
 
-                        Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                        if (entity is Line)
+                    exportValidation.IdentifyOpenLoopLinesWithCircles(db, selectionSet, treeView);
+                    exportValidation.HighlightLineWithoutEndpointIntersection(db, selectionSet, treeView);
+
+                    if (treeView.Nodes.Count == 0)
+                    {
+
+                        // Collect all lines from the drawing
+                        foreach (SelectedObject so in selectionSet)
                         {
-                            if (entity.Layer == StringConstants.wallLayerName)
-                                lines.Add(entity as Line);
-                        }
-                        if (entity is DBText)
-                        {
-                            if (entity.Layer == StringConstants.roomLayerName)
+                            ObjectId objId = so.ObjectId;
+
+                            Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
+                            if (entity is Line)
                             {
-                                EDSRoomTag tag = new EDSRoomTag();
-                                edsRooms.Add(tag.GetXDataForRoom(entity.ObjectId));
+                                if (entity.Layer == StringConstants.wallLayerName)
+                                    wallLines.Add(entity as Line);
+                            }
+                            if (entity is DBText)
+                            {
+                                if (entity.Layer == StringConstants.roomLayerName)
+                                {
+                                    EDSRoomTag tag = new EDSRoomTag();
+                                    edsRooms.Add(tag.GetXDataForRoom(entity.ObjectId));
+                                }
+                            }
+                            if (entity is Polyline)
+                            {
+                                if (entity.Layer == StringConstants.windowLayerName)
+                                {
+                                    windowLines.Add(entity as Polyline);
+                                }
                             }
                         }
+
+                        if (edsRooms.Count > 0)
+                        {
+                            CreateTreeNodes(edsRooms, wallLines, windowLines, treeView);
+
+                        }
+                        else
+                        {
+                            System.Windows.MessageBox.Show("No rooms found");
+                            //CreateTreeNode(wallLines, windowLines,treeView);
+                        }
+
+                        #region HiglightLogicForClosedLoop
+
+                        //// Create an adjacency list
+                        //Dictionary<Point3d, List<Line>> adjacencyList = new Dictionary<Point3d, List<Line>>();
+
+                        //foreach (Line line in lines)
+                        //{
+                        //    if (!adjacencyList.ContainsKey(line.StartPoint))
+                        //    {
+                        //        adjacencyList[line.StartPoint] = new List<Line>();
+                        //    }
+                        //    if (!adjacencyList.ContainsKey(line.EndPoint))
+                        //    {
+                        //        adjacencyList[line.EndPoint] = new List<Line>();
+                        //    }
+
+                        //    adjacencyList[line.StartPoint].Add(line);
+                        //    adjacencyList[line.EndPoint].Add(line);
+                        //}
+
+                        //// Find all possible loops using DFS
+                        //List<List<Line>> loops = new List<List<Line>>();
+                        //HashSet<Line> visitedLines = new HashSet<Line>();
+
+                        //foreach (Line line in lines)
+                        //{
+                        //    if (!visitedLines.Contains(line))
+                        //    {
+                        //        List<Line> currentLoop = new List<Line>();
+                        //        FindLoops(adjacencyList, line, line.StartPoint, line.StartPoint, currentLoop, loops, visitedLines);
+                        //    }
+                        //}
+
+                        //// Calculate areas of the loops and find the best loop
+                        //double maxArea = double.NegativeInfinity;
+                        //List<Line> bestLoop = null;
+
+                        //foreach (var loop in loops)
+                        //{
+                        //    double area = CalculateLoopArea(loop);
+                        //    if (area > maxArea)
+                        //    {
+                        //        maxArea = area;
+                        //        bestLoop = loop;
+                        //    }
+                        //}
+
+                        //// Output the best loop
+                        //if (bestLoop != null)
+                        //{
+                        //    foreach (Line loopLine in bestLoop)
+                        //    {
+                        //        loopLine.UpgradeOpen();
+                        //        loopLine.Color = Color.FromColor(System.Drawing.Color.Yellow);
+                        //        loopLine.DowngradeOpen();
+                        //        doc.Editor.WriteMessage($"\nLine from {loopLine.StartPoint} to {loopLine.EndPoint}");
+                        //    }
+                        //    doc.Editor.WriteMessage($"\nMaximum Area: {maxArea}");
+                        //}
+                        //else
+                        //{
+                        //    doc.Editor.WriteMessage("\nNo closed loops found.");
+                        //} 
+                        #endregion
+
                     }
-
-                    if (edsRooms.Count > 0)
-                    {
-                        CreateTreeNodes(edsRooms, lines);
-
-                    }
-                    else
-                    {
-                        CreateTreeNode(lines);
-                    }
-
-                    #region HiglightLogicForClosedLoop
-
-                    //// Create an adjacency list
-                    //Dictionary<Point3d, List<Line>> adjacencyList = new Dictionary<Point3d, List<Line>>();
-
-                    //foreach (Line line in lines)
-                    //{
-                    //    if (!adjacencyList.ContainsKey(line.StartPoint))
-                    //    {
-                    //        adjacencyList[line.StartPoint] = new List<Line>();
-                    //    }
-                    //    if (!adjacencyList.ContainsKey(line.EndPoint))
-                    //    {
-                    //        adjacencyList[line.EndPoint] = new List<Line>();
-                    //    }
-
-                    //    adjacencyList[line.StartPoint].Add(line);
-                    //    adjacencyList[line.EndPoint].Add(line);
-                    //}
-
-                    //// Find all possible loops using DFS
-                    //List<List<Line>> loops = new List<List<Line>>();
-                    //HashSet<Line> visitedLines = new HashSet<Line>();
-
-                    //foreach (Line line in lines)
-                    //{
-                    //    if (!visitedLines.Contains(line))
-                    //    {
-                    //        List<Line> currentLoop = new List<Line>();
-                    //        FindLoops(adjacencyList, line, line.StartPoint, line.StartPoint, currentLoop, loops, visitedLines);
-                    //    }
-                    //}
-
-                    //// Calculate areas of the loops and find the best loop
-                    //double maxArea = double.NegativeInfinity;
-                    //List<Line> bestLoop = null;
-
-                    //foreach (var loop in loops)
-                    //{
-                    //    double area = CalculateLoopArea(loop);
-                    //    if (area > maxArea)
-                    //    {
-                    //        maxArea = area;
-                    //        bestLoop = loop;
-                    //    }
-                    //}
-
-                    //// Output the best loop
-                    //if (bestLoop != null)
-                    //{
-                    //    foreach (Line loopLine in bestLoop)
-                    //    {
-                    //        loopLine.UpgradeOpen();
-                    //        loopLine.Color = Color.FromColor(System.Drawing.Color.Yellow);
-                    //        loopLine.DowngradeOpen();
-                    //        doc.Editor.WriteMessage($"\nLine from {loopLine.StartPoint} to {loopLine.EndPoint}");
-                    //    }
-                    //    doc.Editor.WriteMessage($"\nMaximum Area: {maxArea}");
-                    //}
-                    //else
-                    //{
-                    //    doc.Editor.WriteMessage("\nNo closed loops found.");
-                    //} 
-                    #endregion
-
                 }
                 tr.Commit();
             }
         }
 
-        private void CreateTreeNodes(List<EDSRoomTag> edsRooms, List<Line> lines)
+        private void CreateTreeNodes(List<EDSRoomTag> edsRooms, List<Line> wallLines, List<Polyline> windowLines, TreeView treeView)
         {
             foreach (var room in edsRooms)
             {
+                Dictionary<ObjectId, List<Polyline>> wallWindows = new Dictionary<ObjectId, List<Polyline>>();
                 room.allWalls = new List<Line>();
                 var objectId = CADUtilities.HandleToObjectId(room.textHandleId);
                 if (objectId != null)
                 {
                     var roomLines = GetRoomLines(objectId, room);
+
                     if (roomLines != null)
                     {
                         foreach (var rmLine in roomLines)
                         {
-                            var matchLines = lines.FindAll(x => x.Length.Equals(rmLine.Length));
-                            foreach (var macLine in matchLines)
+                            var point = GetMidpoint(rmLine);
+                            //var matchLines = wallLines.FindAll(x => x.Length.Equals(rmLine.Length));
+                            foreach (var macLine in wallLines)
                             {
-                                if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))
+                                if (/*LinesOverlap(rmLine, macLine) && AreLinesParallel(rmLine, macLine)*/IsPointOnLine(macLine, point))
                                 {
-                                    if (rmLine.StartPoint.IsEqualTo(macLine.StartPoint) && rmLine.EndPoint.IsEqualTo(macLine.EndPoint))
+                                    if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))
                                     {
                                         room.allWalls.Add(macLine);
+                                        FindWindowsForWall(macLine.Id, windowLines, ref wallWindows);
                                         break;
                                     }
-                                    else if (rmLine.EndPoint.IsEqualTo(macLine.StartPoint) && rmLine.StartPoint.IsEqualTo(macLine.EndPoint))
-                                    {
-                                        room.allWalls.Add(macLine);
-                                        break;
-                                    }
+
                                 }
                             }
                         }
+                        room.allWindows = wallWindows;
                     }
                 }
             }
 
 
             TreeNode roomNodes = new TreeNode("Rooms");
-            WallDataPalette.treeView1.Nodes.Clear();
+            treeView.Nodes.Clear();
 
             foreach (var eds in edsRooms)
             {
                 int exCount = 1;
                 int inCount = 1;
+                int windowCount = 1;
 
                 TreeNode treeNode = new TreeNode("Walls");
 
@@ -638,7 +662,7 @@ namespace EDS.Models
                 TreeNode internalNode = new TreeNode("Internal Walls");
                 treeNode.Nodes.Add(internalNode);
 
-                TreeNode roomNode = new TreeNode(eds.spaceType + " (" + eds.roomArea + ")");
+                TreeNode roomNode = new TreeNode(eds.spaceType + " (" + Math.Round(double.Parse(eds.roomArea)).ToString() + ")");
                 roomNode.Tag = eds.curveHandleId;
                 roomNode.Nodes.Add(treeNode);
 
@@ -651,6 +675,18 @@ namespace EDS.Models
                     {
                         TreeNode child = new TreeNode("Line " + exCount.ToString());
                         child.Tag = line.Handle.ToString();
+
+                        if (eds.allWindows.ContainsKey(line.ObjectId))
+                        {
+                            foreach (var win in eds.allWindows[line.ObjectId])
+                            {
+                                TreeNode windowNode = new TreeNode("Window " + windowCount.ToString());
+                                windowNode.Tag = win.Handle.ToString();
+                                child.Nodes.Add(windowNode);
+
+                                windowCount++;
+                            }
+                        }
                         externalNode.Nodes.Add(child);
 
                         exCount++;
@@ -659,6 +695,19 @@ namespace EDS.Models
                     {
                         TreeNode child = new TreeNode("Line " + inCount.ToString());
                         child.Tag = line.Handle.ToString();
+
+                        if (eds.allWindows.ContainsKey(line.ObjectId))
+                        {
+                            foreach (var win in eds.allWindows[line.ObjectId])
+                            {
+                                TreeNode windowNode = new TreeNode("Window " + windowCount.ToString());
+                                windowNode.Tag = win.Handle.ToString();
+                                child.Nodes.Add(windowNode);
+
+                                windowCount++;
+                            }
+                        }
+
                         internalNode.Nodes.Add(child);
 
                         inCount++;
@@ -666,7 +715,32 @@ namespace EDS.Models
                 }
             }
 
-            WallDataPalette.treeView1.Nodes.Add(roomNodes);
+            treeView.Nodes.Add(roomNodes);
+        }
+
+        private void ManageWindowVisiblity(List<Polyline> windowLines, bool visible)
+        {
+            foreach (Polyline windowData in windowLines)
+            {
+                CADUtilities.ChangeVisibility(CADUtilities.HandleToObjectId(windowData.Id.Handle.ToString()), visible);
+            }
+        }
+
+        void FindWindowsForWall(ObjectId objectId, List<Polyline> windowLines, ref Dictionary<ObjectId, List<Polyline>> wallWindows)
+        {
+            List<Polyline> objectIds = new List<Polyline>();
+            foreach (var line in windowLines)
+            {
+                if (CADUtilities.GetIntersectPointBtwTwoIds(objectId, line.Id).Count != 0)
+                {
+                    objectIds.Add(line);
+                }
+            }
+
+            if (!wallWindows.ContainsKey(objectId))
+                wallWindows.Add(objectId, objectIds);
+            else
+                wallWindows[objectId].AddRange(objectIds);
         }
 
         private List<Line> GetRoomLines(ObjectId objectId, EDSRoomTag roomTag)
@@ -713,11 +787,12 @@ namespace EDS.Models
 
                             if (lines.Count > 0)
                             {
-                                polyline.Visible = false;
-                                var id = blockTableRecord.AppendEntity(polyline);
-                                transaction.AddNewlyCreatedDBObject(polyline, false);
+                                polyline.Layer = StringConstants.windowLayerName;
+                                //polyline.Visible = false;
+                                //var id = blockTableRecord.AppendEntity(polyline);
+                                //transaction.AddNewlyCreatedDBObject(polyline, false);
 
-                                roomTag.curveHandleId = id.Handle.ToString();
+                                //roomTag.curveHandleId = id.Handle.ToString();
                                 return lines;
                             }
 
@@ -730,11 +805,13 @@ namespace EDS.Models
             return null;
         }
 
-        private void CreateTreeNode(List<Line> lines)
+        private void CreateTreeNode(List<Line> wallLines, List<Polyline> windowLines, TreeView treeView)
         {
             int exCount = 1;
             int inCount = 1;
-            WallDataPalette.treeView1.Nodes.Clear();
+            int windowCount = 1;
+
+            treeView.Nodes.Clear();
             TreeNode treeNode = new TreeNode("Walls");
 
             TreeNode externalNode = new TreeNode("External Walls");
@@ -744,8 +821,8 @@ namespace EDS.Models
             treeNode.Nodes.Add(internalNode);
 
 
-            WallDataPalette.treeView1.Nodes.Add(treeNode);
-            foreach (Line line in lines)
+            treeView.Nodes.Add(treeNode);
+            foreach (Line line in wallLines)
             {
                 var wall = GetXDataForLine(line);
                 if (bool.Parse(wall.uValueCheck) == false)
@@ -819,6 +896,79 @@ namespace EDS.Models
             }
         }
 
+        private bool LinesOverlap(Line line1, Line line2)
+        {
+            Point3d intersection;
 
+            Point3dCollection intersectionCollection = new Point3dCollection();
+
+            line1.IntersectWith(line2, Intersect.OnBothOperands, intersectionCollection, IntPtr.Zero, IntPtr.Zero);
+
+            if (intersectionCollection.Count == 0)
+                return false;
+            else
+                intersection = intersectionCollection[0];
+
+            // Check if the intersection point is within the bounds of both line segments
+            bool IsPointOnLineSegment(Line line, Point3d point)
+            {
+                double minX = Math.Min(line.StartPoint.X, line.EndPoint.X);
+                double maxX = Math.Max(line.StartPoint.X, line.EndPoint.X);
+                double minY = Math.Min(line.StartPoint.Y, line.EndPoint.Y);
+                double maxY = Math.Max(line.StartPoint.Y, line.EndPoint.Y);
+
+                return point.X >= minX && point.X <= maxX &&
+                       point.Y >= minY && point.Y <= maxY;
+            }
+
+            return IsPointOnLineSegment(line1, intersection) && IsPointOnLineSegment(line2, intersection);
+        }
+
+        private bool AreLinesParallel(Line line1, Line line2)
+        {
+            Vector2d vector1 = new Vector2d(line1.EndPoint.X - line1.StartPoint.X, line1.EndPoint.Y - line1.StartPoint.Y);
+            Vector2d vector2 = new Vector2d(line2.EndPoint.X - line2.StartPoint.X, line2.EndPoint.Y - line2.StartPoint.Y);
+
+            // Check if the cross product is zero
+            double crossProduct = vector1.X * vector2.Y - vector1.Y * vector2.X;
+            return Math.Abs(crossProduct) < 1e-10; // Small epsilon for floating point comparison
+        }
+
+        public Point3d GetMidpoint(Line line)
+        {
+            Point3d startPoint = line.StartPoint;
+            Point3d endPoint = line.EndPoint;
+
+            // Calculate the midpoint
+            Point3d midpoint = new Point3d(
+                (startPoint.X + endPoint.X) / 2.0,
+                (startPoint.Y + endPoint.Y) / 2.0,
+                (startPoint.Z + endPoint.Z) / 2.0
+            );
+
+            return midpoint;
+        }
+
+        // Method to check if a point lies on a given line
+        public bool IsPointOnLine(Line line, Point3d point)
+        {
+            Point3d startPoint = line.StartPoint;
+            Point3d endPoint = line.EndPoint;
+
+            // Check if the point is collinear with the line
+            Vector3d lineVector = endPoint - startPoint;
+            Vector3d pointVector = point - startPoint;
+
+            double crossProduct = lineVector.CrossProduct(pointVector).Length;
+            if (Math.Abs(crossProduct) > Tolerance.Global.EqualPoint)
+                return false;
+
+            // Check if the point lies within the line segment
+            double dotProduct = pointVector.DotProduct(lineVector);
+            if (dotProduct < 0 || dotProduct > lineVector.LengthSqrd)
+                return false;
+
+            return true;
+        }
     }
 }

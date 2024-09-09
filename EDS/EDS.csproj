@@ -77,6 +77,7 @@
     <Compile Include="Models\EDSRoomTag.cs" />
     <Compile Include="Models\EDSWall.cs" />
     <Compile Include="Models\EDSWindow.cs" />
+    <Compile Include="Models\ExportValidation.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="UserControls\ExportPalette.cs">
       <SubType>UserControl</SubType>

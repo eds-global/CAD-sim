@@ -36,6 +36,7 @@ namespace EDS.Models
         public int levelId { get; set; }
         public string textHandleId { get; set; }
         public List<Line> allWalls { get; set; }
+        public Dictionary<ObjectId,List<ZwSoft.ZwCAD.DatabaseServices.Polyline>> allWindows {  get; set; }
 
         public EDSRoomTag() { }
 

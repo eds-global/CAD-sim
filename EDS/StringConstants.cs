@@ -63,7 +63,7 @@ namespace EDS
         public static string Spacing = "Spacing";
         public static string WWR = "WWR";
         public static string SpecifyOnDrawing = "SpecifyOnDrawing";
-        public static double wallHeight = 25.0;
+        public static double wallHeight = 250.0;
 
         #endregion
     }

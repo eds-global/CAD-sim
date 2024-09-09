@@ -478,7 +478,6 @@ namespace EDS.Models
 
                 SetXDataForWindow(objectId, window);
             }
-
         }
 
         // Helper function to check if a point lies on the line segment between start and end

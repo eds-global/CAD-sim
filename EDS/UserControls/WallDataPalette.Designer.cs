@@ -72,7 +72,7 @@
             this.toggleSwitch1 = new JCS.ToggleSwitch();
             this.scanButton = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            treeView1 = new System.Windows.Forms.TreeView();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.treeView2 = new System.Windows.Forms.TreeView();
             this.unitLabel = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
@@ -540,6 +540,7 @@
             this.scanButton.TabIndex = 26;
             this.scanButton.Text = "Scan";
             this.scanButton.UseVisualStyleBackColor = false;
+            this.scanButton.Visible = false;
             this.scanButton.Click += new System.EventHandler(this.scanButton_Click);
             // 
             // progressBar1
@@ -548,14 +549,16 @@
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(359, 23);
             this.progressBar1.TabIndex = 27;
+            this.progressBar1.Visible = false;
             // 
             // treeView1
             // 
-            treeView1.Location = new System.Drawing.Point(15, 364);
-            treeView1.Name = "treeView1";
-            treeView1.Size = new System.Drawing.Size(476, 169);
-            treeView1.TabIndex = 28;
-            treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.Location = new System.Drawing.Point(15, 364);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(476, 169);
+            this.treeView1.TabIndex = 28;
+            this.treeView1.Visible = false;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // treeView2
             // 
@@ -582,7 +585,7 @@
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.Controls.Add(this.unitLabel);
             this.Controls.Add(this.treeView2);
-            this.Controls.Add(treeView1);
+            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.scanButton);
             this.Controls.Add(this.refreshButton);
@@ -608,7 +611,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "WallDataPalette";
-            this.Size = new System.Drawing.Size(358, 250);
+            this.Size = new System.Drawing.Size(341, 233);
             this.Load += new System.EventHandler(this.WallDataPalette_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -667,6 +670,6 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.TreeView treeView2;
         private System.Windows.Forms.Label unitLabel;
-        public static System.Windows.Forms.TreeView treeView1;
+        public System.Windows.Forms.TreeView treeView1;
     }
 }
