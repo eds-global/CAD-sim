@@ -25,6 +25,8 @@ namespace EDS
             EDSWall creation = new EDSWall();
             creation.FindClosedLoop(treeView1);
             progressBar1.Value = 100;
+
+
         }
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {

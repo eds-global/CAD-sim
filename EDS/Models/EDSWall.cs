@@ -14,6 +14,9 @@ using EDS.AEC;
 using Polyline = ZwSoft.ZwCAD.DatabaseServices.Polyline;
 using System.Windows.Shapes;
 using Line = ZwSoft.ZwCAD.DatabaseServices.Line;
+using System.Reflection;
+using System.IO;
+using OfficeOpenXml;
 
 namespace EDS.Models
 {
@@ -30,6 +33,7 @@ namespace EDS.Models
         public string eDS2Faces3 { get; set; }
         public string wallHandleId { get; set; }
 
+        List<EDSExcelRoom> rooms = new List<EDSExcelRoom>();
         public string uValueCheck { get; set; }
 
         List<ObjectId> erasedPolylineIds = new List<ObjectId>();
@@ -131,7 +135,7 @@ namespace EDS.Models
 
         }
 
-        private void SetXDataForLine(EDSWall dSWall, Line line)
+        public void SetXDataForLine(EDSWall dSWall, Line line)
         {
             CADUtilities.SetXData(line.ObjectId, StringConstants.extWallType, dSWall.extWallType);
             CADUtilities.SetXData(line.ObjectId, StringConstants.intWallType, dSWall.intWallType);
@@ -492,8 +496,41 @@ namespace EDS.Models
 
                     ExportValidation exportValidation = new ExportValidation();
 
+                    foreach (SelectedObject so in selectionSet)
+                    {
+                        ObjectId objId = so.ObjectId;
+
+                        Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
+                        if (entity is Line)
+                        {
+                            if (entity.Layer == StringConstants.wallLayerName)
+                                wallLines.Add(entity as Line);
+                        }
+                    }
+                    Point3dCollection intersections = exportValidation.FindIntersections(wallLines, tr);
+
+                    if (intersections.Count == 0)
+                    {
+                        ed.WriteMessage("\nNo intersection points found.");
+                        return;
+                    }
+
+                    ed.WriteMessage($"\nIntersection point count: {intersections.Count}");
+
+                    // Break lines at each intersection point
+                    int i = 0;
+                    foreach (Point3d intersection in intersections)
+                    {
+                        exportValidation.BreakLinesAtPoint(wallLines, intersection, tr);
+                        i++;
+
+                        // Progress reporting
+                        double progress = (double)i / intersections.Count * 100;
+                        ed.WriteMessage($"\n{progress:0.00}% processed...");
+                    }
+
                     exportValidation.IdentifyOpenLoopLinesWithCircles(db, selectionSet, treeView);
-                    exportValidation.HighlightLineWithoutEndpointIntersection(db, selectionSet, treeView);
+
 
                     if (treeView.Nodes.Count == 0)
                     {
@@ -504,11 +541,11 @@ namespace EDS.Models
                             ObjectId objId = so.ObjectId;
 
                             Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                            if (entity is Line)
-                            {
-                                if (entity.Layer == StringConstants.wallLayerName)
-                                    wallLines.Add(entity as Line);
-                            }
+                            //if (entity is Line)
+                            //{
+                            //    if (entity.Layer == StringConstants.wallLayerName)
+                            //        wallLines.Add(entity as Line);
+                            //}
                             if (entity is DBText)
                             {
                                 if (entity.Layer == StringConstants.roomLayerName)
@@ -537,71 +574,44 @@ namespace EDS.Models
                             //CreateTreeNode(wallLines, windowLines,treeView);
                         }
 
-                        #region HiglightLogicForClosedLoop
 
-                        //// Create an adjacency list
-                        //Dictionary<Point3d, List<Line>> adjacencyList = new Dictionary<Point3d, List<Line>>();
 
-                        //foreach (Line line in lines)
-                        //{
-                        //    if (!adjacencyList.ContainsKey(line.StartPoint))
-                        //    {
-                        //        adjacencyList[line.StartPoint] = new List<Line>();
-                        //    }
-                        //    if (!adjacencyList.ContainsKey(line.EndPoint))
-                        //    {
-                        //        adjacencyList[line.EndPoint] = new List<Line>();
-                        //    }
+                        if (rooms.Count > 0)
+                        {
+                            string dllPath = Assembly.GetExecutingAssembly().Location;
+                            string directoryName = System.IO.Path.GetDirectoryName(dllPath);
 
-                        //    adjacencyList[line.StartPoint].Add(line);
-                        //    adjacencyList[line.EndPoint].Add(line);
-                        //}
+                            string fileName = System.IO.Path.Combine(directoryName, "CAD Output Template.xlsx");
 
-                        //// Find all possible loops using DFS
-                        //List<List<Line>> loops = new List<List<Line>>();
-                        //HashSet<Line> visitedLines = new HashSet<Line>();
+                            var name = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Name;
 
-                        //foreach (Line line in lines)
-                        //{
-                        //    if (!visitedLines.Contains(line))
-                        //    {
-                        //        List<Line> currentLoop = new List<Line>();
-                        //        FindLoops(adjacencyList, line, line.StartPoint, line.StartPoint, currentLoop, loops, visitedLines);
-                        //    }
-                        //}
+                            if (!System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx")))
+                                System.IO.File.Copy(fileName, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx"));
+                            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                            var cadOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx");
 
-                        //// Calculate areas of the loops and find the best loop
-                        //double maxArea = double.NegativeInfinity;
-                        //List<Line> bestLoop = null;
+                            using (ExcelPackage package = new ExcelPackage(cadOutputFile))
+                            {
+                                //get the first worksheet in the workbook
+                                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                                worksheet.Cells[1, 4].Value = "Project1";
+                                worksheet.Cells[2, 4].Value = "Text";
+                                worksheet.Cells[3, 4].Value = "Text";
 
-                        //foreach (var loop in loops)
-                        //{
-                        //    double area = CalculateLoopArea(loop);
-                        //    if (area > maxArea)
-                        //    {
-                        //        maxArea = area;
-                        //        bestLoop = loop;
-                        //    }
-                        //}
+                                int rowCount = 8;
 
-                        //// Output the best loop
-                        //if (bestLoop != null)
-                        //{
-                        //    foreach (Line loopLine in bestLoop)
-                        //    {
-                        //        loopLine.UpgradeOpen();
-                        //        loopLine.Color = Color.FromColor(System.Drawing.Color.Yellow);
-                        //        loopLine.DowngradeOpen();
-                        //        doc.Editor.WriteMessage($"\nLine from {loopLine.StartPoint} to {loopLine.EndPoint}");
-                        //    }
-                        //    doc.Editor.WriteMessage($"\nMaximum Area: {maxArea}");
-                        //}
-                        //else
-                        //{
-                        //    doc.Editor.WriteMessage("\nNo closed loops found.");
-                        //} 
-                        #endregion
+                                foreach (var room in rooms)
+                                {
+                                    for (int iNo = 0; iNo < room.walls.Count; iNo++)
+                                    {
+                                        worksheet.Cells[rowCount, 3].Value = room.walls[iNo].wall.wallHandleId;
+                                        worksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString() + "_" + room.walls[iNo].wall.wallHandleId;
+                                    }
+                                }
 
+                                package.Save();
+                            }
+                        }
                     }
                 }
                 tr.Commit();
@@ -648,11 +658,18 @@ namespace EDS.Models
             TreeNode roomNodes = new TreeNode("Rooms");
             treeView.Nodes.Clear();
 
+            rooms = new List<EDSExcelRoom>();
             foreach (var eds in edsRooms)
             {
+                EDSExcelRoom excelFormat = new EDSExcelRoom();
+                excelFormat.walls = new List<EDSExcelWall>();
+                excelFormat.room = eds;
+
                 int exCount = 1;
                 int inCount = 1;
                 int windowCount = 1;
+
+                EDSWall wall1 = new EDSWall();
 
                 TreeNode treeNode = new TreeNode("Walls");
 
@@ -670,7 +687,10 @@ namespace EDS.Models
 
                 foreach (Line line in eds.allWalls)
                 {
+                    EDSExcelWall eDSExcelWall = new EDSExcelWall();
                     var wall = GetXDataForLine(line);
+                    eDSExcelWall.wall = wall;
+
                     if (bool.Parse(wall.uValueCheck) == false)
                     {
                         TreeNode child = new TreeNode("Line " + exCount.ToString());
@@ -678,15 +698,19 @@ namespace EDS.Models
 
                         if (eds.allWindows.ContainsKey(line.ObjectId))
                         {
+                            EDSWindow window = new EDSWindow();
+
+                            eDSExcelWall.windows = new List<EDSWindow>();
                             foreach (var win in eds.allWindows[line.ObjectId])
                             {
                                 TreeNode windowNode = new TreeNode("Window " + windowCount.ToString());
                                 windowNode.Tag = win.Handle.ToString();
                                 child.Nodes.Add(windowNode);
-
+                                eDSExcelWall.windows.Add(window.GetXDataForWindow(win.ObjectId));
                                 windowCount++;
                             }
                         }
+                        excelFormat.walls.Add(eDSExcelWall);
                         externalNode.Nodes.Add(child);
 
                         exCount++;
@@ -707,15 +731,17 @@ namespace EDS.Models
                                 windowCount++;
                             }
                         }
-
+                        excelFormat.walls.Add(eDSExcelWall);
                         internalNode.Nodes.Add(child);
 
                         inCount++;
                     }
                 }
+                rooms.Add(excelFormat);
             }
 
             treeView.Nodes.Add(roomNodes);
+
         }
 
         private void ManageWindowVisiblity(List<Polyline> windowLines, bool visible)
@@ -757,7 +783,7 @@ namespace EDS.Models
 
 
                 var dbText = transaction.GetObject(objectId, OpenMode.ForRead) as DBText;
-                DBObjectCollection dBObject = editor.TraceBoundary(dbText.Position, false);
+                DBObjectCollection dBObject = editor.TraceBoundary(dbText.Position, true);
                 if (dBObject.Count == 0)
                 {
                     string msg = "Selected walls are not close properly. Kindly review it and run the tool again.";

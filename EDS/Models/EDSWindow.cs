@@ -17,7 +17,7 @@ using Polyline = ZwSoft.ZwCAD.DatabaseServices.Polyline;
 
 namespace EDS.Models
 {
-    internal class EDSWindow
+    public class EDSWindow
     {
         public string InsertionMode { get; set; }
         public string WindowType { get; set; }

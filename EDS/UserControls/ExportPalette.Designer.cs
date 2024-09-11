@@ -53,7 +53,7 @@
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -70,7 +70,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer1.Size = new System.Drawing.Size(416, 619);
-            this.splitContainer1.SplitterDistance = 114;
+            this.splitContainer1.SplitterDistance = 126;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -78,7 +78,7 @@
             // 
             this.chkValidate.AutoSize = true;
             this.chkValidate.Location = new System.Drawing.Point(14, 13);
-            this.chkValidate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkValidate.Margin = new System.Windows.Forms.Padding(2);
             this.chkValidate.Name = "chkValidate";
             this.chkValidate.Size = new System.Drawing.Size(297, 17);
             this.chkValidate.TabIndex = 8;
@@ -120,7 +120,7 @@
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(103, 72);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(308, 37);
             this.progressBar1.TabIndex = 1;
@@ -128,7 +128,7 @@
             // btnScan
             // 
             this.btnScan.Location = new System.Drawing.Point(13, 72);
-            this.btnScan.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnScan.Margin = new System.Windows.Forms.Padding(2);
             this.btnScan.Name = "btnScan";
             this.btnScan.Size = new System.Drawing.Size(85, 37);
             this.btnScan.TabIndex = 0;
@@ -142,20 +142,20 @@
             this.tabControl1.Controls.Add(this.tabExportedFiles);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(416, 502);
+            this.tabControl1.Size = new System.Drawing.Size(416, 490);
             this.tabControl1.TabIndex = 0;
             // 
             // tabProjectData
             // 
             this.tabProjectData.Controls.Add(this.treeView1);
             this.tabProjectData.Location = new System.Drawing.Point(4, 22);
-            this.tabProjectData.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabProjectData.Margin = new System.Windows.Forms.Padding(2);
             this.tabProjectData.Name = "tabProjectData";
-            this.tabProjectData.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabProjectData.Size = new System.Drawing.Size(408, 476);
+            this.tabProjectData.Padding = new System.Windows.Forms.Padding(2);
+            this.tabProjectData.Size = new System.Drawing.Size(408, 464);
             this.tabProjectData.TabIndex = 0;
             this.tabProjectData.Text = "Project Data";
             this.tabProjectData.UseVisualStyleBackColor = true;
@@ -164,9 +164,9 @@
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(2, 2);
-            this.treeView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.treeView1.Margin = new System.Windows.Forms.Padding(2);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(404, 472);
+            this.treeView1.Size = new System.Drawing.Size(404, 460);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
@@ -174,9 +174,9 @@
             // 
             this.tabExportedFiles.Controls.Add(this.webBrowser1);
             this.tabExportedFiles.Location = new System.Drawing.Point(4, 22);
-            this.tabExportedFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabExportedFiles.Margin = new System.Windows.Forms.Padding(2);
             this.tabExportedFiles.Name = "tabExportedFiles";
-            this.tabExportedFiles.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabExportedFiles.Padding = new System.Windows.Forms.Padding(2);
             this.tabExportedFiles.Size = new System.Drawing.Size(408, 476);
             this.tabExportedFiles.TabIndex = 1;
             this.tabExportedFiles.Text = "Exported Files";
@@ -186,7 +186,7 @@
             // 
             this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.webBrowser1.Location = new System.Drawing.Point(2, 2);
-            this.webBrowser1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.webBrowser1.Margin = new System.Windows.Forms.Padding(2);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(15, 16);
             this.webBrowser1.Name = "webBrowser1";
             this.webBrowser1.Size = new System.Drawing.Size(404, 472);
@@ -197,7 +197,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ExportPalette";
             this.Size = new System.Drawing.Size(416, 619);
             this.splitContainer1.Panel1.ResumeLayout(false);
