@@ -17,6 +17,7 @@ using Line = ZwSoft.ZwCAD.DatabaseServices.Line;
 using System.Reflection;
 using System.IO;
 using OfficeOpenXml;
+using static System.Windows.Forms.LinkLabel;
 
 namespace EDS.Models
 {
@@ -37,6 +38,8 @@ namespace EDS.Models
         public string uValueCheck { get; set; }
 
         List<ObjectId> erasedPolylineIds = new List<ObjectId>();
+
+        List<Polyline> windowLines = new List<Polyline>();
 
         public EDSWall()
         {
@@ -485,11 +488,12 @@ namespace EDS.Models
                 res = ed.SelectImplied();
             }
 
+            HideWindows(db, res, false);
+
             using (Transaction tr = db.TransactionManager.StartTransaction())
             {
                 List<Line> wallLines = new List<Line>();
                 List<EDSRoomTag> edsRooms = new List<EDSRoomTag>();
-                List<Polyline> windowLines = new List<Polyline>();
                 if (res.Status == PromptStatus.OK)
                 {
                     SelectionSet selectionSet = res.Value;
@@ -541,24 +545,12 @@ namespace EDS.Models
                             ObjectId objId = so.ObjectId;
 
                             Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                            //if (entity is Line)
-                            //{
-                            //    if (entity.Layer == StringConstants.wallLayerName)
-                            //        wallLines.Add(entity as Line);
-                            //}
                             if (entity is DBText)
                             {
                                 if (entity.Layer == StringConstants.roomLayerName)
                                 {
                                     EDSRoomTag tag = new EDSRoomTag();
                                     edsRooms.Add(tag.GetXDataForRoom(entity.ObjectId));
-                                }
-                            }
-                            if (entity is Polyline)
-                            {
-                                if (entity.Layer == StringConstants.windowLayerName)
-                                {
-                                    windowLines.Add(entity as Polyline);
                                 }
                             }
                         }
@@ -571,55 +563,150 @@ namespace EDS.Models
                         else
                         {
                             System.Windows.MessageBox.Show("No rooms found");
-                            //CreateTreeNode(wallLines, windowLines,treeView);
                         }
 
-
+                        UnHideWindows(db, true);
 
                         if (rooms.Count > 0)
                         {
-                            string dllPath = Assembly.GetExecutingAssembly().Location;
-                            string directoryName = System.IO.Path.GetDirectoryName(dllPath);
-
-                            string fileName = System.IO.Path.Combine(directoryName, "CAD Output Template.xlsx");
-
-                            var name = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Name;
-
-                            if (!System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx")))
-                                System.IO.File.Copy(fileName, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx"));
-                            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                            var cadOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx");
-
-                            using (ExcelPackage package = new ExcelPackage(cadOutputFile))
+                            using (Transaction transaction = db.TransactionManager.StartTransaction())
                             {
-                                //get the first worksheet in the workbook
-                                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                                worksheet.Cells[1, 4].Value = "Project1";
-                                worksheet.Cells[2, 4].Value = "Text";
-                                worksheet.Cells[3, 4].Value = "Text";
+                                ProjectInformationPalette.LoadProjectInformation();
 
-                                int rowCount = 8;
+                                string dllPath = Assembly.GetExecutingAssembly().Location;
+                                string directoryName = System.IO.Path.GetDirectoryName(dllPath);
 
-                                foreach (var room in rooms)
+                                string fileName = System.IO.Path.Combine(directoryName, "CAD Output Template.xlsx");
+
+                                var name = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Name;
+
+                                if (!System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx")))
+                                    System.IO.File.Copy(fileName, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx"));
+
+
+                                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                                var cadOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx");
+
+                                using (ExcelPackage package = new ExcelPackage(cadOutputFile))
                                 {
-                                    for (int iNo = 0; iNo < room.walls.Count; iNo++)
-                                    {
-                                        worksheet.Cells[rowCount, 3].Value = room.walls[iNo].wall.wallHandleId;
-                                        worksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString() + "_" + room.walls[iNo].wall.wallHandleId;
-                                    }
-                                }
+                                    //get the first worksheet in the workbook
+                                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                                    worksheet.Cells[1, 4].Value = ProjectInformationPalette.projectInformation.ProjectName;
+                                    worksheet.Cells[2, 4].Value = ProjectInformationPalette.projectInformation.customLocation;
+                                    worksheet.Cells[3, 4].Value = ProjectInformationPalette.projectInformation.BuildingType;
 
-                                package.Save();
+                                    int rowCount = 8;
+
+                                    foreach (var room in rooms)
+                                    {
+                                        for (int iNo = 0; iNo < room.walls.Count; iNo++)
+                                        {
+                                            worksheet.Cells[rowCount, 3].Value = room.walls[iNo].wall.wallHandleId;
+                                            worksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString() + "_" + room.walls[iNo].wall.wallHandleId;
+                                            Entity entity = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].wall.wallHandleId), OpenMode.ForRead) as Entity;
+                                            if (entity is Line)
+                                            {
+                                                Line line = entity as Line;
+                                                worksheet.Cells[rowCount, 6].Value = Math.Round(line.Length);
+                                                worksheet.Cells[rowCount, 7].Value = StringConstants.TopHeight;
+                                            }
+
+                                            double totalArea = 0.0;
+                                            if (room.walls[iNo].windows.Count > 0)
+                                            {
+
+                                                for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
+                                                {
+                                                    Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
+                                                    if (entity1 is Polyline)
+                                                    {
+                                                        Polyline line = entity1 as Polyline;
+                                                        totalArea = totalArea + line.Area;
+                                                    }
+
+                                                }
+                                            }
+
+                                            worksheet.Cells[rowCount, 9].Value = totalArea;
+                                            worksheet.Cells[rowCount, 11].Value = room.room.spaceType;
+
+                                            rowCount++;
+                                        }
+                                    }
+
+                                    package.Save();
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        rooms = new List<EDSExcelRoom>();
+                        UnHideWindows(db, true);
                     }
                 }
                 tr.Commit();
             }
         }
 
+        private void HideWindows(Database db, PromptSelectionResult res, bool visible)
+        {
+            using (Transaction transaction = db.TransactionManager.StartTransaction())
+            {
+                windowLines = new List<Polyline>();
+                if (res.Status == PromptStatus.OK)
+                {
+                    SelectionSet selectionSet = res.Value;
+
+                    ExportValidation exportValidation = new ExportValidation();
+
+                    foreach (SelectedObject so in selectionSet)
+                    {
+                        ObjectId objId = so.ObjectId;
+
+                        Entity entity = transaction.GetObject(objId, OpenMode.ForWrite) as Entity;
+                        if (entity is Polyline)
+                        {
+                            if (entity.Layer == StringConstants.windowLayerName)
+                            {
+                                entity.Visible = visible;
+                                windowLines.Add(entity as Polyline);
+                            }
+                        }
+                    }
+                }
+
+                transaction.Commit();
+            }
+        }
+
+        private void UnHideWindows(Database db, bool visible)
+        {
+            using (Transaction transaction = db.TransactionManager.StartTransaction())
+            {
+                foreach (Polyline so in windowLines)
+                {
+                    ObjectId objId = so.ObjectId;
+
+                    Entity entity = transaction.GetObject(objId, OpenMode.ForWrite) as Entity;
+                    if (entity is Polyline)
+                    {
+                        if (entity.Layer == StringConstants.windowLayerName)
+                        {
+                            entity.Visible = visible;
+                            //windowLines.Add(entity as Polyline);
+                        }
+                    }
+                }
+
+                transaction.Commit();
+            }
+        }
+
         private void CreateTreeNodes(List<EDSRoomTag> edsRooms, List<Line> wallLines, List<Polyline> windowLines, TreeView treeView)
         {
+            rooms = new List<EDSExcelRoom>();
+
             foreach (var room in edsRooms)
             {
                 Dictionary<ObjectId, List<Polyline>> wallWindows = new Dictionary<ObjectId, List<Polyline>>();
@@ -633,21 +720,40 @@ namespace EDS.Models
                     {
                         foreach (var rmLine in roomLines)
                         {
-                            var point = GetMidpoint(rmLine);
-                            //var matchLines = wallLines.FindAll(x => x.Length.Equals(rmLine.Length));
-                            foreach (var macLine in wallLines)
+                            var matchLines = wallLines.FindAll(x => x.Length.Equals(rmLine.Length));
+                            foreach (var macLine in matchLines)
                             {
-                                if (/*LinesOverlap(rmLine, macLine) && AreLinesParallel(rmLine, macLine)*/IsPointOnLine(macLine, point))
+                                if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))
                                 {
-                                    if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))
+                                    if (rmLine.StartPoint.IsEqualTo(macLine.StartPoint) && rmLine.EndPoint.IsEqualTo(macLine.EndPoint))
                                     {
                                         room.allWalls.Add(macLine);
                                         FindWindowsForWall(macLine.Id, windowLines, ref wallWindows);
                                         break;
                                     }
-
+                                    else if (rmLine.EndPoint.IsEqualTo(macLine.StartPoint) && rmLine.StartPoint.IsEqualTo(macLine.EndPoint))
+                                    {
+                                        room.allWalls.Add(macLine);
+                                        FindWindowsForWall(macLine.Id, windowLines, ref wallWindows);
+                                        break;
+                                    }
                                 }
                             }
+                            //var point = GetMidpoint(rmLine);
+                            ////var matchLines = wallLines.FindAll(x => x.Length.Equals(rmLine.Length));
+                            //foreach (var macLine in wallLines)
+                            //{
+                            //    if (/*LinesOverlap(rmLine, macLine) && AreLinesParallel(rmLine, macLine)*/IsPointOnLine(macLine, point))
+                            //    {
+                            //        if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))
+                            //        {
+                            //            room.allWalls.Add(macLine);
+                            //            FindWindowsForWall(macLine.Id, windowLines, ref wallWindows);
+                            //            break;
+                            //        }
+
+                            //    }
+                            //}
                         }
                         room.allWindows = wallWindows;
                     }
@@ -744,14 +850,6 @@ namespace EDS.Models
 
         }
 
-        private void ManageWindowVisiblity(List<Polyline> windowLines, bool visible)
-        {
-            foreach (Polyline windowData in windowLines)
-            {
-                CADUtilities.ChangeVisibility(CADUtilities.HandleToObjectId(windowData.Id.Handle.ToString()), visible);
-            }
-        }
-
         void FindWindowsForWall(ObjectId objectId, List<Polyline> windowLines, ref Dictionary<ObjectId, List<Polyline>> wallWindows)
         {
             List<Polyline> objectIds = new List<Polyline>();
@@ -814,7 +912,7 @@ namespace EDS.Models
                             if (lines.Count > 0)
                             {
                                 polyline.Layer = StringConstants.windowLayerName;
-                                //polyline.Visible = false;
+                                polyline.Visible = false;
                                 //var id = blockTableRecord.AppendEntity(polyline);
                                 //transaction.AddNewlyCreatedDBObject(polyline, false);
 
@@ -978,23 +1076,26 @@ namespace EDS.Models
         // Method to check if a point lies on a given line
         public bool IsPointOnLine(Line line, Point3d point)
         {
+            // Get start and end points of the line
             Point3d startPoint = line.StartPoint;
             Point3d endPoint = line.EndPoint;
 
-            // Check if the point is collinear with the line
+            // Vector from start to end point
             Vector3d lineVector = endPoint - startPoint;
+
+            // Vector from start point to the given point
             Vector3d pointVector = point - startPoint;
 
-            double crossProduct = lineVector.CrossProduct(pointVector).Length;
-            if (Math.Abs(crossProduct) > Tolerance.Global.EqualPoint)
-                return false;
+            // Check if the cross product of these two vectors is zero (parallel vectors)
+            // Also check if the point lies within the bounds of the line segment
+            if (lineVector.CrossProduct(pointVector).Length == 0)
+            {
+                // The point is collinear, now check if it lies on the line segment
+                double dotProduct = pointVector.DotProduct(lineVector);
+                return (dotProduct >= 0 && dotProduct <= lineVector.LengthSqrd);
+            }
 
-            // Check if the point lies within the line segment
-            double dotProduct = pointVector.DotProduct(lineVector);
-            if (dotProduct < 0 || dotProduct > lineVector.LengthSqrd)
-                return false;
-
-            return true;
+            return false; // Point is not on the line
         }
     }
 }

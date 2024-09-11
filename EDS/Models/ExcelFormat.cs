@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResourceLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace EDS.Models
 {
+    public class EDSExcel
+    {
+        public ProjectInformation projectInformation { get; set; }
+        public List<EDSExcelRoom> roomList { get; set; }
+    }
+
     public class EDSExcelRoom
     {
         public EDSRoomTag room { get; set; }

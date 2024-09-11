@@ -158,7 +158,10 @@ namespace EDS.UserControls
                     width.Enabled = true;
                     sillHeight.Enabled = true;
                     spacing.Enabled = false;
+                    spacing.Text = "";
                     wwr.Enabled = false;
+                    wwr.Text = "";
+                    specifyOnDrawing.Enabled = false;
                 }
                 if (insertComboBox.SelectedItem.Equals("Repeating Window"))
                 {
@@ -167,14 +170,25 @@ namespace EDS.UserControls
                     sillHeight.Enabled = true;
                     spacing.Enabled = true;
                     wwr.Enabled = false;
+                    wwr.Text = "";
+                    if (specifyOnDrawing.Checked)
+                        specifyOnDrawing.Checked = false;
+                    specifyOnDrawing.Enabled = false;
                 }
                 if (insertComboBox.SelectedItem.Equals("Window To Wall Ratio"))
                 {
                     height.Enabled = false;
+                    height.Text = "";
                     width.Enabled = false;
+                    width.Text = "";
                     sillHeight.Enabled = true;
                     spacing.Enabled = false;
+                    spacing.Text = "";
                     wwr.Enabled = true;
+
+                    if (specifyOnDrawing.Checked)
+                        specifyOnDrawing.Checked = false;
+                    specifyOnDrawing.Enabled = false;
                 }
             }
         }

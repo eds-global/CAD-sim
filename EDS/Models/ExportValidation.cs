@@ -49,15 +49,15 @@ namespace EDS.Models
                 foreach (var line in lines)
                 {
                     // Increment connection count for start and end points
-                    if (pointConnections.ContainsKey(line.StartPoint))
-                        pointConnections[line.StartPoint]++;
+                    if (pointConnections.ContainsKey(RoundPoint(line.StartPoint,5)))
+                        pointConnections[RoundPoint(line.StartPoint, 5)]++;
                     else
-                        pointConnections[line.StartPoint] = 1;
+                        pointConnections[RoundPoint(line.StartPoint, 5)] = 1;
 
-                    if (pointConnections.ContainsKey(line.EndPoint))
-                        pointConnections[line.EndPoint]++;
+                    if (pointConnections.ContainsKey(RoundPoint(line.EndPoint, 5)))
+                        pointConnections[RoundPoint(line.EndPoint, 5)]++;
                     else
-                        pointConnections[line.EndPoint] = 1;
+                        pointConnections[RoundPoint(line.EndPoint, 5)] = 1;
                 }
 
 
@@ -85,6 +85,11 @@ namespace EDS.Models
 
                 trans.Commit();
             }
+        }
+
+        private Point3d RoundPoint(Point3d startPoint, int v)
+        {
+            return new Point3d(Math.Round(startPoint.X, v), Math.Round(startPoint.Y, v), Math.Round(startPoint.Z, v));
         }
 
         #region CustomHighlightUnBrokenLine
@@ -205,7 +210,7 @@ namespace EDS.Models
 
         public void BreakLinesAtPoint(List<Line> lines, Point3d breakPoint, Transaction tr)
         {
-            var newLines=new List<Line>();
+            var newLines = new List<Line>();
 
             foreach (Line selObj in lines)
             {
@@ -254,7 +259,7 @@ namespace EDS.Models
 
         private bool IsPointEqual(Point3d point1, Point3d point2)
         {
-            if (point1.X == point2.X && point1.Y == point2.Y && point1.Z == point2.Z) { return true; }
+            if (Math.Round(point1.X, 2) == Math.Round(point2.X, 2) && Math.Round(point1.Y, 2) == Math.Round(point2.Y, 2) && point1.Z == point2.Z) { return true; }
             else
                 return false;
         }

@@ -52,6 +52,15 @@ namespace EDS.UserControls
 
             occuText1.Enabled = false;
             occuText2.Enabled = false;
+
+            //spaceComboBox.SelectedIndex = 0;
+            //epdComboBox.SelectedIndex = 0;
+            //lpdComboBox.SelectedIndex = 0;
+            //occupComboBox.SelectedIndex = 0;
+            //floorFinishComboBox.SelectedIndex = 0;
+            //ceilFinishComboBox.SelectedIndex = 0;
+            //freshAirComboBox.SelectedIndex = 0;
+
         }
 
         private void RoomDataPalette_Load(object sender, EventArgs e)
@@ -96,6 +105,14 @@ namespace EDS.UserControls
                 spaceComboBox.Items.Add(value);
             }
 
+
+            spaceComboBox.SelectedIndex = 0;
+            epdComboBox.SelectedIndex = 0;
+            lpdComboBox.SelectedIndex = 0;
+            occupComboBox.SelectedIndex = 0;
+            floorFinishComboBox.SelectedIndex = 0;
+            ceilFinishComboBox.SelectedIndex = 0;
+            freshAirComboBox.SelectedIndex = 0;
         }
 
         private void toggleSwitch1_CheckedChanged(object sender, EventArgs e)
@@ -667,13 +684,13 @@ namespace EDS.UserControls
 
         private void RefreshUI()
         {
-            spaceComboBox.SelectedItem = null;
-            epdComboBox.SelectedItem = null;
-            lpdComboBox.SelectedItem = null;
-            occupComboBox.SelectedItem = null;
-            floorFinishComboBox.SelectedItem = null;
-            ceilFinishComboBox.SelectedItem = null;
-            freshAirComboBox.SelectedItem = null;
+            spaceComboBox.SelectedIndex = 0;
+            epdComboBox.SelectedIndex = 0;
+            lpdComboBox.SelectedIndex = 0;
+            occupComboBox.SelectedIndex = 0;
+            floorFinishComboBox.SelectedIndex = 0;
+            ceilFinishComboBox.SelectedIndex = 0;
+            freshAirComboBox.SelectedIndex = 0;
             lpdText1.Text = "";
             lpdText2.Text = "";
             epdText1.Text = "";

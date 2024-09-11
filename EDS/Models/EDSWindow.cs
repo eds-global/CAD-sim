@@ -32,6 +32,7 @@ namespace EDS.Models
         public string Spacing { get; set; }
         public string WWR { get; set; }
         public string SpecifyOnDrawing { get; set; }
+        public string WindHandleId { set; get; }
 
         public EDSWindow()
         {
@@ -221,6 +222,7 @@ namespace EDS.Models
             CADUtilities.SetXData(objectId, StringConstants.WWR, window.WWR.ToString());
             CADUtilities.SetXData(objectId, StringConstants.InteriorLightSelf, window.InteriorLightSelf.ToString());
             CADUtilities.SetXData(objectId, StringConstants.DayLightWindow, window.DayLightWindow.ToString());
+            CADUtilities.SetXData(objectId, StringConstants.WindHandleId, objectId.Handle.ToString());
         }
 
         public EDSWindow GetXDataForWindow(ObjectId objectId)
@@ -239,7 +241,7 @@ namespace EDS.Models
             window.SillHeight = CADUtilities.GetXData(objectId, StringConstants.SillHeight);
             window.Spacing = CADUtilities.GetXData(objectId, StringConstants.Spacing);
             window.WWR = CADUtilities.GetXData(objectId, StringConstants.WWR);
-
+            window.WindHandleId = CADUtilities.GetXData(objectId, StringConstants.WindHandleId);
             return window;
         }
 

@@ -75,7 +75,7 @@ namespace EDS
             //cbCities.Text = cbCities.Items[0].ToString();
 #endif
 
-            LoadProjectInformation();        
+            LoadProjectInformation();
         }
 
         private Point getPolarPoint(Point point, double radian, int r)
@@ -157,7 +157,7 @@ namespace EDS
             projectInformation.customLocation = customLocation.ToString();
             projectInformation.State = cbStates.Text;
 
-            if(customLocation == false)
+            if (customLocation == false)
             {
                 projectInformation.City = cbCities.Text;
                 projectInformation.Latitude = lbLatitude.Text;
@@ -168,7 +168,7 @@ namespace EDS
                 projectInformation.City = cbRepCity.Text;
                 projectInformation.Latitude = txtLat.Text;
                 projectInformation.Longitude = txtLong.Text;
-            } 
+            }
 
             projectInformation.ClimateType = lbClimateType.Text;
             projectInformation.Direction = txtAngle.Text;
@@ -190,7 +190,7 @@ namespace EDS
             float cx = w / 2;
             float cy = w / 2;
 
-            float x, y , r;
+            float x, y, r;
 
             x = 0;
             y = 0;
@@ -210,7 +210,7 @@ namespace EDS
 
             Point newPoint = getPolarPoint(point, radian, 50);
 
-            x2 = newPoint.X ;
+            x2 = newPoint.X;
             y2 = newPoint.Y;
 
             x1 = cx + x1;
@@ -331,7 +331,7 @@ namespace EDS
                             }
                             else
                             {
-                                if(projectInfoFound == true)
+                                if (projectInfoFound == true)
                                 {
                                     string[] array = s.Split(':');
 
@@ -366,14 +366,14 @@ namespace EDS
                                             projectInformation.City = array[1].Trim();
                                             break;
                                         case "Latitude":
-                                            if("True" == projectInformation.customLocation)
+                                            if ("True" == projectInformation.customLocation)
                                             {
                                                 projectInformation.Latitude = array[1].Trim() /*+ " : " + array[2].Trim()*/;
                                             }
                                             else
                                             {
                                                 projectInformation.Latitude = array[1].Trim() + " : " + array[2].Trim();
-                                            }                                            
+                                            }
                                             break;
                                         case "Longitude":
                                             if ("True" == projectInformation.customLocation)
@@ -383,7 +383,7 @@ namespace EDS
                                             else
                                             {
                                                 projectInformation.Longitude = array[1].Trim() + " : " + array[2].Trim();
-                                            }                                            
+                                            }
                                             break;
                                         case "Climate Type":
                                             if ("True" == projectInformation.customLocation)
@@ -392,8 +392,11 @@ namespace EDS
                                             }
                                             else
                                             {
-                                                projectInformation.ClimateType = array[1].Trim() + " : " + array[2].Trim();
-                                            }                                            
+                                                if (array.Length >= 3)
+                                                {
+                                                    projectInformation.ClimateType = array[1].Trim() + " : " + array[2].Trim();
+                                                }
+                                            }
                                             break;
                                         case "Direction":
                                             projectInformation.Direction = array[1].Trim();
@@ -421,13 +424,13 @@ namespace EDS
         }
         private void btnLoadProjectDetails_Click(object sender, EventArgs e)
         {
-            LoadProjectInformation();            
+            LoadProjectInformation();
         }
 
         private static void PopulatePalette(bool isEDSDrawing)
         {
             //if (projectInformation.ProjectName == null)
-            if(isEDSDrawing == false)
+            if (isEDSDrawing == false)
             {
                 txtProjectName.Text = "";
                 txtClientName.Text = "";
@@ -444,9 +447,9 @@ namespace EDS
                 //}
                 //else
                 //{
-                    cbRepCity.Text = "";
-                    txtLat.Text = "";
-                    txtLong.Text = "";
+                cbRepCity.Text = "";
+                txtLat.Text = "";
+                txtLong.Text = "";
                 //}  
 
                 lbClimateType.Text = "";
@@ -462,9 +465,9 @@ namespace EDS
                 cbBuildingTypes.Text = projectInformation.BuildingType;
                 cbStates.Text = projectInformation.State;
 
-                if("True" == projectInformation.customLocation)
+                if ("True" == projectInformation.customLocation)
                 {
-                    radCustomLocation.Checked  = true;
+                    radCustomLocation.Checked = true;
                     customLocation = true;
                 }
                 else
@@ -485,11 +488,14 @@ namespace EDS
                     cbRepCity.Text = projectInformation.City;
                     txtLat.Text = projectInformation.Latitude;
                     txtLong.Text = projectInformation.Longitude;
-                }                
-
-                double degree = Convert.ToDouble(projectInformation.Direction);
-                radian = (Math.PI / 180.0) * degree;
-                txtAngle.Text = degree.ToString();
+                }
+                ;
+                if (projectInformation.Direction != "")
+                {
+                    double degree = Convert.ToDouble(projectInformation.Direction);
+                    radian = (Math.PI / 180.0) * degree;
+                    txtAngle.Text = degree.ToString();
+                }
             }
         }
 
@@ -499,14 +505,14 @@ namespace EDS
             {
                 double degree = Convert.ToDouble(txtAngle.Text);
                 degree *= -1;
-                degree = 90 + degree ;                
+                degree = 90 + degree;
                 radian = (Math.PI / 180.0) * degree;
                 DrawNorthArrow();
             }
             catch
             {
 
-            }            
+            }
         }
 
         private void radCustomLocation_CheckedChanged(object sender, EventArgs e)
@@ -521,7 +527,7 @@ namespace EDS
 
         void onLocationChanged()
         {
-            if(radSelectLocation.Checked == true)
+            if (radSelectLocation.Checked == true)
             {
                 customLocation = false;
 
@@ -532,7 +538,7 @@ namespace EDS
                 cbStates.Enabled = true;
                 cbCities.Enabled = true;
 
-                
+
             }
             else
             {
@@ -543,7 +549,7 @@ namespace EDS
                 cbRepCity.Enabled = true;
 
                 cbStates.Enabled = false;
-                cbCities.Enabled = false;                
+                cbCities.Enabled = false;
             }
         }
 
@@ -625,7 +631,7 @@ namespace EDS
 
                 double degree = (180.0 / Math.PI) * radian;
 
-                degree = 90 - degree ;
+                degree = 90 - degree;
 
                 txtAngle.Text = degree.ToString("0.#");
 

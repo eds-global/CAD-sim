@@ -36,7 +36,7 @@ namespace EDS.Models
         public int levelId { get; set; }
         public string textHandleId { get; set; }
         public List<Line> allWalls { get; set; }
-        public Dictionary<ObjectId,List<ZwSoft.ZwCAD.DatabaseServices.Polyline>> allWindows {  get; set; }
+        public Dictionary<ObjectId, List<ZwSoft.ZwCAD.DatabaseServices.Polyline>> allWindows { get; set; }
 
         public EDSRoomTag() { }
 
@@ -132,7 +132,7 @@ namespace EDS.Models
 
                     DBObjectCollection objectCollection = editor.TraceBoundary(promptPointResult.Value, false);
 
-                    if (objectCollection.Count == 0)
+                    if (false)
                     {
                         string msg = "Selected walls are not close properly. Kindly review it and run the tool again.";
 
@@ -164,7 +164,7 @@ namespace EDS.Models
                                 addTransaction.AddNewlyCreatedDBObject(dbText, true);
                             }
                         }
-                        roomTag.spaceType = roomTag.spaceType + "-" + roomId.ToString();
+                        roomTag.spaceType = (roomTag.spaceType.Contains("-") == true ? roomTag.spaceType.Split('-')[0] : roomTag.spaceType) + "-" + roomId.ToString();
                         SetXDataForRoom(roomTag, objectId, areaValue);
                         //EDSCreation.UpdateSpaceData(roomTag.spaceType);
                     }
@@ -405,10 +405,18 @@ namespace EDS.Models
             EDSCreation.GetRoomData();
 
             var foundRooms = EDSRoomTag.storedRooms.FindAll(x => x.RoomName.Contains(spaceType));
-            if (EDSRoomTag.storedRooms.Any(x => x.RoomId.ToString().StartsWith(levelPrefix.ToString())))
+            if (foundRooms.Count > 0)
             {
-                var allRooms = EDSRoomTag.storedRooms.FindAll(x => x.RoomId.ToString().StartsWith(levelPrefix.ToString()));
-                return allRooms.Max(x => x.RoomId);
+                if (EDSRoomTag.storedRooms.Any(x => x.RoomId.ToString().StartsWith(levelPrefix.ToString())) && EDSRoomTag.storedRooms.Any(x => x.RoomName.Contains(spaceType)))
+                {
+                    var allRooms = EDSRoomTag.storedRooms.FindAll(x => x.RoomId.ToString().StartsWith(levelPrefix.ToString()));
+                    return allRooms.Max(x => x.RoomId);
+                }
+                else
+                {
+                    var stringValue = (levelPrefix.ToString()) + "00";
+                    return int.Parse(stringValue);
+                }
             }
             else
             {

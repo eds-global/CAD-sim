@@ -64,8 +64,8 @@
             this.drawButton = new System.Windows.Forms.Button();
             this.specifyOnDrawing = new System.Windows.Forms.CheckBox();
             this.label16 = new System.Windows.Forms.Label();
-            this.toggleSwitch1 = new JCS.ToggleSwitch();
             this.label17 = new System.Windows.Forms.Label();
+            this.toggleSwitch1 = new JCS.ToggleSwitch();
             this.SuspendLayout();
             // 
             // unitLabel
@@ -415,6 +415,16 @@
             this.label16.TabIndex = 96;
             this.label16.Text = "Specify on Drawing";
             // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.ForeColor = System.Drawing.Color.Red;
+            this.label17.Location = new System.Drawing.Point(127, 185);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(44, 13);
+            this.label17.TabIndex = 98;
+            this.label17.Text = "mm or ft";
+            // 
             // toggleSwitch1
             // 
             this.toggleSwitch1.BackColor = System.Drawing.SystemColors.ScrollBar;
@@ -428,16 +438,6 @@
             this.toggleSwitch1.Style = JCS.ToggleSwitch.ToggleSwitchStyle.IOS5;
             this.toggleSwitch1.TabIndex = 63;
             this.toggleSwitch1.CheckedChanged += new JCS.ToggleSwitch.CheckedChangedDelegate(this.toggleSwitch1_CheckedChanged);
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.ForeColor = System.Drawing.Color.Red;
-            this.label17.Location = new System.Drawing.Point(127, 185);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(36, 13);
-            this.label17.TabIndex = 98;
-            this.label17.Text = "m or ft";
             // 
             // WindowDataPalette
             // 
@@ -483,7 +483,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "WindowDataPalette";
-            this.Size = new System.Drawing.Size(282, 182);
+            this.Size = new System.Drawing.Size(248, 148);
             this.Load += new System.EventHandler(this.WindowDataPalette_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

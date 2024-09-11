@@ -26,6 +26,7 @@ namespace EDS.UserControls
             externalWalls = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Ext Construction");
             internalWalls = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Internal Construction");
             finishTypes = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Finishes");
+
         }
 
         private void toggleSwitch1_CheckedChanged(object sender, EventArgs e)
@@ -100,8 +101,8 @@ namespace EDS.UserControls
 
         private void RefreshUI()
         {
-            extWallCombo.SelectedItem = null;
-            intWallCombo.SelectedItem = null;
+            extWallCombo.SelectedIndex = 0;
+            intWallCombo.SelectedIndex = 0;
             uValue.Text = "";
             f1Type1.SelectedItem = f1Type2.SelectedItem = f1Type3.SelectedItem = null;
             f2Type1.SelectedItem = f2Type2.SelectedItem = f2Type3.SelectedItem = null;
@@ -160,6 +161,9 @@ namespace EDS.UserControls
                 f2Type2.Items.Add(fin);
                 f2Type3.Items.Add(fin);
             }
+
+            extWallCombo.SelectedIndex = 0;
+            intWallCombo.SelectedIndex = 0;
         }
 
         private void extWallCombo_SelectedIndexChanged(object sender, EventArgs e)

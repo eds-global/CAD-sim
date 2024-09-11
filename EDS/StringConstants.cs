@@ -40,6 +40,7 @@ namespace EDS
         public static string roomArea = "RoomArea";
         public static string roomLevel = "RoomLevel";
         public static string curveHandleId = "CurveHandleId";
+        public static double TopHeight = 1000.0;
         #endregion
 
         #region LayerName
@@ -64,6 +65,7 @@ namespace EDS
         public static string WWR = "WWR";
         public static string SpecifyOnDrawing = "SpecifyOnDrawing";
         public static double wallHeight = 250.0;
+        public static string WindHandleId = "WindHandleId";
 
         #endregion
     }
