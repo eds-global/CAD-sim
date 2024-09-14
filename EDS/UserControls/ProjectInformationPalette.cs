@@ -174,6 +174,8 @@ namespace EDS
             projectInformation.Direction = txtAngle.Text;
 
             SaveProjectInformation(projectInformation);
+
+            MessageBox.Show("Project Saved Successfully");
         }
 
         private void DrawNorthArrow()

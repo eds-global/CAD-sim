@@ -22,11 +22,22 @@ namespace EDS.UserControls
         public WallDataPalette()
         {
             InitializeComponent();
-
+            
+            // Hook up the KeyDown event handler
+            this.KeyDown += new KeyEventHandler(Form_KeyDown);
             externalWalls = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Ext Construction");
             internalWalls = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Internal Construction");
             finishTypes = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Finishes");
 
+        }
+
+        private void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                // Handle space bar press to repeat the last command
+                //RepeatLastCommand();
+            }
         }
 
         private void toggleSwitch1_CheckedChanged(object sender, EventArgs e)

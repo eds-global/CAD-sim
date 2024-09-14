@@ -102,7 +102,7 @@
             this.spaceComboBox.Location = new System.Drawing.Point(105, 61);
             this.spaceComboBox.Name = "spaceComboBox";
             this.spaceComboBox.Size = new System.Drawing.Size(97, 21);
-            this.spaceComboBox.TabIndex = 26;
+            this.spaceComboBox.TabIndex = 0;
             // 
             // label2
             // 
@@ -131,7 +131,7 @@
             this.lpdComboBox.Location = new System.Drawing.Point(107, 103);
             this.lpdComboBox.Name = "lpdComboBox";
             this.lpdComboBox.Size = new System.Drawing.Size(97, 21);
-            this.lpdComboBox.TabIndex = 28;
+            this.lpdComboBox.TabIndex = 2;
             this.lpdComboBox.SelectedIndexChanged += new System.EventHandler(this.lpdComboBox_SelectedIndexChanged);
             // 
             // label4
@@ -152,7 +152,7 @@
             this.epdComboBox.Location = new System.Drawing.Point(107, 130);
             this.epdComboBox.Name = "epdComboBox";
             this.epdComboBox.Size = new System.Drawing.Size(97, 21);
-            this.epdComboBox.TabIndex = 30;
+            this.epdComboBox.TabIndex = 3;
             this.epdComboBox.SelectedIndexChanged += new System.EventHandler(this.epdComboBox_SelectedIndexChanged);
             // 
             // label5
@@ -173,7 +173,7 @@
             this.freshAirComboBox.Location = new System.Drawing.Point(107, 202);
             this.freshAirComboBox.Name = "freshAirComboBox";
             this.freshAirComboBox.Size = new System.Drawing.Size(97, 21);
-            this.freshAirComboBox.TabIndex = 34;
+            this.freshAirComboBox.TabIndex = 5;
             // 
             // label7
             // 
@@ -193,7 +193,7 @@
             this.occupComboBox.Location = new System.Drawing.Point(107, 175);
             this.occupComboBox.Name = "occupComboBox";
             this.occupComboBox.Size = new System.Drawing.Size(97, 21);
-            this.occupComboBox.TabIndex = 32;
+            this.occupComboBox.TabIndex = 4;
             this.occupComboBox.SelectedIndexChanged += new System.EventHandler(this.occupComboBox_SelectedIndexChanged);
             // 
             // label8
@@ -214,7 +214,7 @@
             this.ceilFinishComboBox.Location = new System.Drawing.Point(107, 268);
             this.ceilFinishComboBox.Name = "ceilFinishComboBox";
             this.ceilFinishComboBox.Size = new System.Drawing.Size(97, 21);
-            this.ceilFinishComboBox.TabIndex = 38;
+            this.ceilFinishComboBox.TabIndex = 7;
             // 
             // label9
             // 
@@ -234,7 +234,7 @@
             this.floorFinishComboBox.Location = new System.Drawing.Point(107, 241);
             this.floorFinishComboBox.Name = "floorFinishComboBox";
             this.floorFinishComboBox.Size = new System.Drawing.Size(97, 21);
-            this.floorFinishComboBox.TabIndex = 36;
+            this.floorFinishComboBox.TabIndex = 6;
             // 
             // lpdText1
             // 
@@ -358,7 +358,7 @@
             this.matchButton.Location = new System.Drawing.Point(294, 329);
             this.matchButton.Name = "matchButton";
             this.matchButton.Size = new System.Drawing.Size(95, 34);
-            this.matchButton.TabIndex = 55;
+            this.matchButton.TabIndex = 11;
             this.matchButton.Text = "Match";
             this.matchButton.UseVisualStyleBackColor = false;
             this.matchButton.Click += new System.EventHandler(this.matchButton_Click);
@@ -371,7 +371,7 @@
             this.updateButton.Location = new System.Drawing.Point(202, 328);
             this.updateButton.Name = "updateButton";
             this.updateButton.Size = new System.Drawing.Size(88, 34);
-            this.updateButton.TabIndex = 54;
+            this.updateButton.TabIndex = 10;
             this.updateButton.Text = "Update";
             this.updateButton.UseVisualStyleBackColor = false;
             this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
@@ -384,7 +384,7 @@
             this.selectButton.Location = new System.Drawing.Point(97, 329);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(95, 34);
-            this.selectButton.TabIndex = 53;
+            this.selectButton.TabIndex = 9;
             this.selectButton.Text = "Select";
             this.selectButton.UseVisualStyleBackColor = false;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
@@ -397,7 +397,7 @@
             this.addButton.Location = new System.Drawing.Point(5, 328);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(88, 34);
-            this.addButton.TabIndex = 52;
+            this.addButton.TabIndex = 8;
             this.addButton.Text = "Add";
             this.addButton.UseVisualStyleBackColor = false;
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
@@ -517,7 +517,7 @@
             this.levelPreFix.Location = new System.Drawing.Point(264, 61);
             this.levelPreFix.Name = "levelPreFix";
             this.levelPreFix.Size = new System.Drawing.Size(66, 20);
-            this.levelPreFix.TabIndex = 67;
+            this.levelPreFix.TabIndex = 1;
             // 
             // refreshButton
             // 
@@ -527,7 +527,7 @@
             this.refreshButton.Location = new System.Drawing.Point(149, 368);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(88, 34);
-            this.refreshButton.TabIndex = 68;
+            this.refreshButton.TabIndex = 12;
             this.refreshButton.Text = "Refresh";
             this.refreshButton.UseVisualStyleBackColor = false;
             this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
@@ -583,7 +583,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "RoomDataPalette";
-            this.Size = new System.Drawing.Size(321, 357);
+            this.Size = new System.Drawing.Size(304, 340);
             this.Load += new System.EventHandler(this.RoomDataPalette_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

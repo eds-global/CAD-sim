@@ -36,8 +36,13 @@ namespace EDS
 
                 Zoom.ZoomManager.Zoom2Handle(handle);
             }
-            catch{}            
+            catch { }
         }
 
+        private void clearErrors_Click(object sender, EventArgs e)
+        {
+            EDSWall creation = new EDSWall();
+            creation.DeleteElementsFromLayer(StringConstants.errorLayerName);
+        }
     }
 }

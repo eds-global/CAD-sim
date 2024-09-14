@@ -47,6 +47,7 @@ namespace EDS
         public static string wallLayerName = "ZWall";
         public static string roomLayerName = "ZRoomTag";
         public static string windowLayerName = "ZWindow";
+        public static string errorLayerName = "ZError";
         #endregion
 
         #region WindowStaticParameter

@@ -523,19 +523,83 @@ namespace EDS.Models
                     Line line = tr.GetObject(objectId, OpenMode.ForRead) as Line;
 
                     // Define parameters for the rectangle creation
+                    #region OldWindowCode
+                    //double width = double.Parse(window.Width);  // Width of the rectangle
+                    //double height = StringConstants.wallHeight;  // Height of the rectangle
+                    //double spacing = double.Parse(window.Spacing); // Spacing between rectangles
+
+                    //// Get the line's midpoint
+                    //Point3d midPoint = line.GetPointAtParameter(line.EndParam / 2);
+
+                    //// Get the direction vector of the line
+                    //Vector3d lineDirection = (line.EndPoint - line.StartPoint).GetNormal();
+
+                    //// Call the function to create rectangles along the line
+                    //CreateRectanglesAlongLine(midPoint, width, height, spacing, lineDirection, line.StartPoint, line.EndPoint, window);
+
+                    #endregion
+
                     double width = double.Parse(window.Width);  // Width of the rectangle
                     double height = StringConstants.wallHeight;  // Height of the rectangle
                     double spacing = double.Parse(window.Spacing); // Spacing between rectangles
+                    double halfWindowHeight = StringConstants.wallHeight / 2.0;
 
-                    // Get the line's midpoint
-                    Point3d midPoint = line.GetPointAtParameter(line.EndParam / 2);
+                    double wallLength = line.Length;
 
-                    // Get the direction vector of the line
-                    Vector3d lineDirection = (line.EndPoint - line.StartPoint).GetNormal();
+                    // Step 2: Calculate how many windows can fit on the wall
+                    int maxWindows = (int)(wallLength / (width + spacing));
 
-                    // Call the function to create rectangles along the line
-                    CreateRectanglesAlongLine(midPoint, width, height, spacing, lineDirection, line.StartPoint, line.EndPoint, window);
+                    // Step 3: Check if an additional window can fit
+                    if (((width + spacing) * maxWindows - spacing) <= wallLength)
+                    {
+                        maxWindows++;
+                    }
 
+                    // Step 4: Calculate total window placement width and the center offset
+                    double totalWidth = (width + spacing) * maxWindows - spacing;
+                    double offset = (wallLength - totalWidth) / 2;
+
+                    // Step 5: Calculate the wall's direction as a unit vector
+                    Vector3d wallDirection = line.EndPoint - line.StartPoint;
+                    wallDirection = wallDirection.GetNormal();
+
+                    // Get the perpendicular direction (normal) to place the window height
+                    Vector3d windowHeightDirection = wallDirection.RotateBy(Math.PI / 2, Vector3d.ZAxis);
+
+                    // Open the Block Table and Block Table Record (ModelSpace) for writing
+                    BlockTable bt = tr.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+                    // Step 6: Draw the windows aligned to the wall
+                    for (int i = 0; i < maxWindows; i++)
+                    {
+                        // Calculate the starting point for each window along the wall
+                        Point3d windowBasePoint = line.StartPoint + (offset + i * (width + spacing)) * wallDirection;
+
+                        // Create the four corners of the window rectangle
+                        Point3d bottomLeft = windowBasePoint - halfWindowHeight * windowHeightDirection;
+                        Point3d bottomRight = bottomLeft + width * wallDirection;
+                        Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
+                        Point3d topRight = topLeft + width * wallDirection;
+
+
+
+                        // Create the polyline (rectangle) representing the window
+                        Polyline polyWindow = new Polyline();
+                        polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
+                        polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
+                        polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
+                        polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
+                        polyWindow.Closed = true;
+
+                        polyWindow.Layer = StringConstants.windowLayerName;
+
+                        // Add the window to the drawing
+                        ObjectId objectId1 = btr.AppendEntity(polyWindow);
+                        tr.AddNewlyCreatedDBObject(polyWindow, true);
+
+                        SetXDataForWindow(objectId1, window);
+                    }
                 }
                 // Commit the transaction
                 tr.Commit();

@@ -127,7 +127,7 @@
             this.uValue.Location = new System.Drawing.Point(382, 37);
             this.uValue.Name = "uValue";
             this.uValue.Size = new System.Drawing.Size(50, 20);
-            this.uValue.TabIndex = 5;
+            this.uValue.TabIndex = 3;
             // 
             // uValueCheck
             // 
@@ -136,7 +136,7 @@
             this.uValueCheck.Location = new System.Drawing.Point(299, 40);
             this.uValueCheck.Name = "uValueCheck";
             this.uValueCheck.Size = new System.Drawing.Size(15, 14);
-            this.uValueCheck.TabIndex = 6;
+            this.uValueCheck.TabIndex = 2;
             this.uValueCheck.UseVisualStyleBackColor = true;
             this.uValueCheck.CheckedChanged += new System.EventHandler(this.uValueCheck_CheckedChanged);
             // 
@@ -149,7 +149,7 @@
             this.extWallCombo.Location = new System.Drawing.Point(119, 37);
             this.extWallCombo.Name = "extWallCombo";
             this.extWallCombo.Size = new System.Drawing.Size(143, 21);
-            this.extWallCombo.TabIndex = 7;
+            this.extWallCombo.TabIndex = 0;
             this.extWallCombo.SelectedIndexChanged += new System.EventHandler(this.extWallCombo_SelectedIndexChanged);
             // 
             // intWallCombo
@@ -161,7 +161,7 @@
             this.intWallCombo.Location = new System.Drawing.Point(119, 70);
             this.intWallCombo.Name = "intWallCombo";
             this.intWallCombo.Size = new System.Drawing.Size(143, 21);
-            this.intWallCombo.TabIndex = 12;
+            this.intWallCombo.TabIndex = 1;
             this.intWallCombo.SelectedIndexChanged += new System.EventHandler(this.intWallCombo_SelectedIndexChanged);
             // 
             // label5
@@ -182,7 +182,7 @@
             this.DrawButton.Location = new System.Drawing.Point(15, 280);
             this.DrawButton.Name = "DrawButton";
             this.DrawButton.Size = new System.Drawing.Size(88, 34);
-            this.DrawButton.TabIndex = 13;
+            this.DrawButton.TabIndex = 19;
             this.DrawButton.Text = "Draw";
             this.DrawButton.UseVisualStyleBackColor = false;
             this.DrawButton.Click += new System.EventHandler(this.DrawButton_Click);
@@ -195,7 +195,7 @@
             this.SelectButton.Location = new System.Drawing.Point(107, 281);
             this.SelectButton.Name = "SelectButton";
             this.SelectButton.Size = new System.Drawing.Size(95, 34);
-            this.SelectButton.TabIndex = 14;
+            this.SelectButton.TabIndex = 20;
             this.SelectButton.Text = "Select";
             this.SelectButton.UseVisualStyleBackColor = false;
             this.SelectButton.Click += new System.EventHandler(this.SelectButton_Click);
@@ -241,7 +241,7 @@
             this.f1Type3CompText.Location = new System.Drawing.Point(136, 110);
             this.f1Type3CompText.Name = "f1Type3CompText";
             this.f1Type3CompText.Size = new System.Drawing.Size(50, 20);
-            this.f1Type3CompText.TabIndex = 22;
+            this.f1Type3CompText.TabIndex = 11;
             // 
             // f1Type2CompText
             // 
@@ -249,7 +249,7 @@
             this.f1Type2CompText.Location = new System.Drawing.Point(136, 83);
             this.f1Type2CompText.Name = "f1Type2CompText";
             this.f1Type2CompText.Size = new System.Drawing.Size(50, 20);
-            this.f1Type2CompText.TabIndex = 21;
+            this.f1Type2CompText.TabIndex = 9;
             // 
             // f1Type1CompText
             // 
@@ -257,7 +257,7 @@
             this.f1Type1CompText.Location = new System.Drawing.Point(136, 56);
             this.f1Type1CompText.Name = "f1Type1CompText";
             this.f1Type1CompText.Size = new System.Drawing.Size(50, 20);
-            this.f1Type1CompText.TabIndex = 18;
+            this.f1Type1CompText.TabIndex = 7;
             // 
             // f1Type3
             // 
@@ -268,7 +268,7 @@
             this.f1Type3.Location = new System.Drawing.Point(12, 109);
             this.f1Type3.Name = "f1Type3";
             this.f1Type3.Size = new System.Drawing.Size(97, 21);
-            this.f1Type3.TabIndex = 20;
+            this.f1Type3.TabIndex = 10;
             // 
             // f1Type2
             // 
@@ -279,7 +279,7 @@
             this.f1Type2.Location = new System.Drawing.Point(12, 82);
             this.f1Type2.Name = "f1Type2";
             this.f1Type2.Size = new System.Drawing.Size(97, 21);
-            this.f1Type2.TabIndex = 19;
+            this.f1Type2.TabIndex = 8;
             // 
             // f1Type1
             // 
@@ -290,7 +290,7 @@
             this.f1Type1.Location = new System.Drawing.Point(12, 55);
             this.f1Type1.Name = "f1Type1";
             this.f1Type1.Size = new System.Drawing.Size(97, 21);
-            this.f1Type1.TabIndex = 18;
+            this.f1Type1.TabIndex = 6;
             // 
             // label8
             // 
@@ -337,7 +337,7 @@
             this.f2Type3CompText.Location = new System.Drawing.Point(137, 111);
             this.f2Type3CompText.Name = "f2Type3CompText";
             this.f2Type3CompText.Size = new System.Drawing.Size(50, 20);
-            this.f2Type3CompText.TabIndex = 28;
+            this.f2Type3CompText.TabIndex = 18;
             // 
             // label13
             // 
@@ -364,7 +364,7 @@
             this.f2Type2CompText.Location = new System.Drawing.Point(137, 84);
             this.f2Type2CompText.Name = "f2Type2CompText";
             this.f2Type2CompText.Size = new System.Drawing.Size(50, 20);
-            this.f2Type2CompText.TabIndex = 27;
+            this.f2Type2CompText.TabIndex = 16;
             // 
             // sameFaceCheck
             // 
@@ -373,7 +373,7 @@
             this.sameFaceCheck.Location = new System.Drawing.Point(64, 5);
             this.sameFaceCheck.Name = "sameFaceCheck";
             this.sameFaceCheck.Size = new System.Drawing.Size(15, 14);
-            this.sameFaceCheck.TabIndex = 3;
+            this.sameFaceCheck.TabIndex = 12;
             this.sameFaceCheck.UseVisualStyleBackColor = false;
             // 
             // f2Type1CompText
@@ -382,7 +382,7 @@
             this.f2Type1CompText.Location = new System.Drawing.Point(137, 57);
             this.f2Type1CompText.Name = "f2Type1CompText";
             this.f2Type1CompText.Size = new System.Drawing.Size(50, 20);
-            this.f2Type1CompText.TabIndex = 23;
+            this.f2Type1CompText.TabIndex = 14;
             // 
             // label9
             // 
@@ -403,7 +403,7 @@
             this.f2Type3.Location = new System.Drawing.Point(13, 110);
             this.f2Type3.Name = "f2Type3";
             this.f2Type3.Size = new System.Drawing.Size(97, 21);
-            this.f2Type3.TabIndex = 26;
+            this.f2Type3.TabIndex = 17;
             // 
             // f2Type1
             // 
@@ -414,7 +414,7 @@
             this.f2Type1.Location = new System.Drawing.Point(13, 56);
             this.f2Type1.Name = "f2Type1";
             this.f2Type1.Size = new System.Drawing.Size(97, 21);
-            this.f2Type1.TabIndex = 24;
+            this.f2Type1.TabIndex = 13;
             // 
             // f2Type2
             // 
@@ -425,7 +425,7 @@
             this.f2Type2.Location = new System.Drawing.Point(13, 83);
             this.f2Type2.Name = "f2Type2";
             this.f2Type2.Size = new System.Drawing.Size(97, 21);
-            this.f2Type2.TabIndex = 25;
+            this.f2Type2.TabIndex = 15;
             // 
             // label6
             // 
@@ -443,7 +443,7 @@
             this.MatchAllButton.Location = new System.Drawing.Point(304, 281);
             this.MatchAllButton.Name = "MatchAllButton";
             this.MatchAllButton.Size = new System.Drawing.Size(95, 34);
-            this.MatchAllButton.TabIndex = 19;
+            this.MatchAllButton.TabIndex = 22;
             this.MatchAllButton.Text = "Match All";
             this.MatchAllButton.UseVisualStyleBackColor = false;
             this.MatchAllButton.Click += new System.EventHandler(this.MatchAllButton_Click);
@@ -456,7 +456,7 @@
             this.UpdateAllButton.Location = new System.Drawing.Point(212, 280);
             this.UpdateAllButton.Name = "UpdateAllButton";
             this.UpdateAllButton.Size = new System.Drawing.Size(88, 34);
-            this.UpdateAllButton.TabIndex = 18;
+            this.UpdateAllButton.TabIndex = 21;
             this.UpdateAllButton.Text = "Update All";
             this.UpdateAllButton.UseVisualStyleBackColor = false;
             this.UpdateAllButton.Click += new System.EventHandler(this.UpdateAllButton_Click);
@@ -469,7 +469,7 @@
             this.wallMatchButton.Location = new System.Drawing.Point(403, 64);
             this.wallMatchButton.Name = "wallMatchButton";
             this.wallMatchButton.Size = new System.Drawing.Size(88, 30);
-            this.wallMatchButton.TabIndex = 21;
+            this.wallMatchButton.TabIndex = 5;
             this.wallMatchButton.Text = "Match";
             this.wallMatchButton.UseVisualStyleBackColor = false;
             this.wallMatchButton.Click += new System.EventHandler(this.wallMatchButton_Click);
@@ -482,7 +482,7 @@
             this.wallUpdateButton.Location = new System.Drawing.Point(293, 64);
             this.wallUpdateButton.Name = "wallUpdateButton";
             this.wallUpdateButton.Size = new System.Drawing.Size(88, 30);
-            this.wallUpdateButton.TabIndex = 20;
+            this.wallUpdateButton.TabIndex = 4;
             this.wallUpdateButton.Text = "Update";
             this.wallUpdateButton.UseVisualStyleBackColor = false;
             this.wallUpdateButton.Click += new System.EventHandler(this.wallUpdateButton_Click);
@@ -511,7 +511,7 @@
             this.refreshButton.Location = new System.Drawing.Point(408, 281);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(95, 34);
-            this.refreshButton.TabIndex = 25;
+            this.refreshButton.TabIndex = 23;
             this.refreshButton.Text = "Refresh";
             this.refreshButton.UseVisualStyleBackColor = false;
             this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
@@ -611,7 +611,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Name = "WallDataPalette";
-            this.Size = new System.Drawing.Size(341, 233);
+            this.Size = new System.Drawing.Size(324, 216);
             this.Load += new System.EventHandler(this.WallDataPalette_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

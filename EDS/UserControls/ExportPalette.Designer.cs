@@ -40,6 +40,7 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.tabExportedFiles = new System.Windows.Forms.TabPage();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+            this.clearErrors = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -59,6 +60,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.clearErrors);
             this.splitContainer1.Panel1.Controls.Add(this.chkValidate);
             this.splitContainer1.Panel1.Controls.Add(this.antiClckWiseRdBttn);
             this.splitContainer1.Panel1.Controls.Add(this.clckWiseRdBttn);
@@ -70,7 +72,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer1.Size = new System.Drawing.Size(416, 619);
-            this.splitContainer1.SplitterDistance = 126;
+            this.splitContainer1.SplitterDistance = 125;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -145,7 +147,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(416, 490);
+            this.tabControl1.Size = new System.Drawing.Size(416, 491);
             this.tabControl1.TabIndex = 0;
             // 
             // tabProjectData
@@ -155,7 +157,7 @@
             this.tabProjectData.Margin = new System.Windows.Forms.Padding(2);
             this.tabProjectData.Name = "tabProjectData";
             this.tabProjectData.Padding = new System.Windows.Forms.Padding(2);
-            this.tabProjectData.Size = new System.Drawing.Size(408, 464);
+            this.tabProjectData.Size = new System.Drawing.Size(408, 465);
             this.tabProjectData.TabIndex = 0;
             this.tabProjectData.Text = "Project Data";
             this.tabProjectData.UseVisualStyleBackColor = true;
@@ -166,7 +168,7 @@
             this.treeView1.Location = new System.Drawing.Point(2, 2);
             this.treeView1.Margin = new System.Windows.Forms.Padding(2);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(404, 460);
+            this.treeView1.Size = new System.Drawing.Size(404, 461);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
@@ -177,7 +179,7 @@
             this.tabExportedFiles.Margin = new System.Windows.Forms.Padding(2);
             this.tabExportedFiles.Name = "tabExportedFiles";
             this.tabExportedFiles.Padding = new System.Windows.Forms.Padding(2);
-            this.tabExportedFiles.Size = new System.Drawing.Size(408, 476);
+            this.tabExportedFiles.Size = new System.Drawing.Size(408, 464);
             this.tabExportedFiles.TabIndex = 1;
             this.tabExportedFiles.Text = "Exported Files";
             this.tabExportedFiles.UseVisualStyleBackColor = true;
@@ -189,8 +191,20 @@
             this.webBrowser1.Margin = new System.Windows.Forms.Padding(2);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(15, 16);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(404, 472);
+            this.webBrowser1.Size = new System.Drawing.Size(404, 460);
             this.webBrowser1.TabIndex = 0;
+            // 
+            // clearErrors
+            // 
+            this.clearErrors.BackColor = System.Drawing.Color.IndianRed;
+            this.clearErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.clearErrors.Location = new System.Drawing.Point(316, 13);
+            this.clearErrors.Name = "clearErrors";
+            this.clearErrors.Size = new System.Drawing.Size(94, 30);
+            this.clearErrors.TabIndex = 9;
+            this.clearErrors.Text = "Clear Errors";
+            this.clearErrors.UseVisualStyleBackColor = false;
+            this.clearErrors.Click += new System.EventHandler(this.clearErrors_Click);
             // 
             // ExportPalette
             // 
@@ -226,5 +240,6 @@
         private System.Windows.Forms.RadioButton clckWiseRdBttn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkValidate;
+        private System.Windows.Forms.Button clearErrors;
     }
 }

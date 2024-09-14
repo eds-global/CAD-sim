@@ -1,4 +1,5 @@
 ﻿
+using EDS.AEC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace EDS.Models
     {
         public void IdentifyOpenLoopLinesWithCircles(Database db, SelectionSet selectionSet, System.Windows.Forms.TreeView treeView)
         {
+            EDSCreation.CreateLayer(StringConstants.errorLayerName, 5);
             List<Line> lines = new List<Line>();
 
             using (Transaction trans = db.TransactionManager.StartTransaction())
@@ -49,7 +51,7 @@ namespace EDS.Models
                 foreach (var line in lines)
                 {
                     // Increment connection count for start and end points
-                    if (pointConnections.ContainsKey(RoundPoint(line.StartPoint,5)))
+                    if (pointConnections.ContainsKey(RoundPoint(line.StartPoint, 5)))
                         pointConnections[RoundPoint(line.StartPoint, 5)]++;
                     else
                         pointConnections[RoundPoint(line.StartPoint, 5)] = 1;
@@ -76,7 +78,7 @@ namespace EDS.Models
                         openCircle.ColorIndex = 2;
                         var objectid = btr.AppendEntity(openCircle);
                         trans.AddNewlyCreatedDBObject(openCircle, true);
-
+                        openCircle.Layer = StringConstants.errorLayerName;
                         TreeNode treeNode = new TreeNode("Errors");
                         treeNode.Tag = objectid.Handle.ToString();
                         treeView.Nodes.Add(treeNode);

@@ -42,6 +42,23 @@ namespace EDS.UserControls
                 }
             }
 
+            if (insertComboBox.SelectedIndex == 0 || insertComboBox.SelectedIndex == 1)
+            {
+                if (string.IsNullOrEmpty(width.Text))
+                {
+                    MessageBox.Show("Please provide the width of window.");
+                    return;
+                }
+            }
+
+            if (insertComboBox.SelectedIndex == 1)
+            {
+                if (string.IsNullOrEmpty(spacing.Text))
+                {
+                    MessageBox.Show("Please provide the spacing of window.");
+                    return;
+                }
+            }
 
             EDSWindow window = new EDSWindow()
             {

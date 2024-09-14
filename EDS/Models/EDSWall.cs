@@ -18,6 +18,7 @@ using System.Reflection;
 using System.IO;
 using OfficeOpenXml;
 using static System.Windows.Forms.LinkLabel;
+using Application = ZwSoft.ZwCAD.ApplicationServices.Application;
 
 namespace EDS.Models
 {
@@ -612,19 +613,22 @@ namespace EDS.Models
                                             }
 
                                             double totalArea = 0.0;
-                                            if (room.walls[iNo].windows.Count > 0)
+                                            if (room.walls[iNo].windows!=null)
                                             {
-
-                                                for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
+                                                if (room.walls[iNo].windows.Count > 0)
                                                 {
-                                                    Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
-                                                    if (entity1 is Polyline)
-                                                    {
-                                                        Polyline line = entity1 as Polyline;
-                                                        totalArea = totalArea + line.Area;
-                                                    }
 
-                                                }
+                                                    for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
+                                                    {
+                                                        Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
+                                                        if (entity1 is Polyline)
+                                                        {
+                                                            Polyline line = entity1 as Polyline;
+                                                            totalArea = totalArea + line.Area;
+                                                        }
+
+                                                    }
+                                                } 
                                             }
 
                                             worksheet.Cells[rowCount, 9].Value = totalArea;
@@ -705,6 +709,7 @@ namespace EDS.Models
 
         private void CreateTreeNodes(List<EDSRoomTag> edsRooms, List<Line> wallLines, List<Polyline> windowLines, TreeView treeView)
         {
+            Dictionary<LineSegment, int> segmentCount = new Dictionary<LineSegment, int>();
             rooms = new List<EDSExcelRoom>();
 
             foreach (var room in edsRooms)
@@ -721,8 +726,21 @@ namespace EDS.Models
                         foreach (var rmLine in roomLines)
                         {
                             var matchLines = wallLines.FindAll(x => x.Length.Equals(rmLine.Length));
+
                             foreach (var macLine in matchLines)
                             {
+                                LineSegment segment = new LineSegment(macLine.StartPoint, macLine.EndPoint);
+                                if (segmentCount.ContainsKey(segment))
+                                {
+                                    // Increment the count if it's already there
+                                    segmentCount[segment]++;
+                                }
+                                else
+                                {
+                                    // Otherwise, add it to the dictionary
+                                    segmentCount.Add(segment, 1);
+                                }
+
                                 if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))
                                 {
                                     if (rmLine.StartPoint.IsEqualTo(macLine.StartPoint) && rmLine.EndPoint.IsEqualTo(macLine.EndPoint))
@@ -797,7 +815,7 @@ namespace EDS.Models
                     var wall = GetXDataForLine(line);
                     eDSExcelWall.wall = wall;
 
-                    if (bool.Parse(wall.uValueCheck) == false)
+                    if (segmentCount[new LineSegment(line.StartPoint, line.EndPoint)] == 1)
                     {
                         TreeNode child = new TreeNode("Line " + exCount.ToString());
                         child.Tag = line.Handle.ToString();
@@ -911,12 +929,14 @@ namespace EDS.Models
 
                             if (lines.Count > 0)
                             {
-                                polyline.Layer = StringConstants.windowLayerName;
+                                //polyline.Layer = StringConstants.windowLayerName;
                                 polyline.Visible = false;
-                                //var id = blockTableRecord.AppendEntity(polyline);
-                                //transaction.AddNewlyCreatedDBObject(polyline, false);
 
-                                //roomTag.curveHandleId = id.Handle.ToString();
+                                BlockTableRecord currentSpace = transaction.GetObject(db.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                                var id = currentSpace.AppendEntity(obj as Entity);
+                                transaction.AddNewlyCreatedDBObject(polyline, false);
+
+                                roomTag.curveHandleId = id.Handle.ToString();
                                 return lines;
                             }
 
@@ -1096,6 +1116,78 @@ namespace EDS.Models
             }
 
             return false; // Point is not on the line
+        }
+
+        public void DeleteElementsFromLayer(string layerName)
+        {
+            // Get the current document and its database
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            doc.LockDocument();
+
+            using (Transaction trans = db.TransactionManager.StartTransaction())
+            {
+                // Get the LayerTable from the database
+                LayerTable layerTable = (LayerTable)trans.GetObject(db.LayerTableId, OpenMode.ForRead);
+
+                // Check if the layer exists
+                if (!layerTable.Has(layerName))
+                {
+                    doc.Editor.WriteMessage($"\nLayer '{layerName}' does not exist.");
+                    return;
+                }
+
+                // Open the BlockTable for reading
+                BlockTable blockTable = (BlockTable)trans.GetObject(db.BlockTableId, OpenMode.ForRead);
+
+                // Open the ModelSpace block table record for writing
+                BlockTableRecord modelSpace = (BlockTableRecord)trans.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+                // Iterate through all entities in the ModelSpace
+                foreach (ObjectId objId in modelSpace)
+                {
+                    Entity ent = (Entity)trans.GetObject(objId, OpenMode.ForRead);
+
+                    // Check if the entity is on the target layer
+                    if (ent.Layer == layerName)
+                    {
+                        // Upgrade the entity to write mode to delete it
+                        ent.UpgradeOpen();
+                        ent.Erase();
+                    }
+                }
+
+                // Commit the transaction
+                trans.Commit();
+            }
+        }
+    }
+
+    public class LineSegment
+    {
+        public Point3d StartPoint { get; set; }
+        public Point3d EndPoint { get; set; }
+
+        public LineSegment(Point3d start, Point3d end)
+        {
+            StartPoint = start;
+            EndPoint = end;
+        }
+
+        // Equality members (used to compare segments for equality)
+        public override bool Equals(object obj)
+        {
+            if (obj is LineSegment other)
+            {
+                return (StartPoint.Equals(other.StartPoint) && EndPoint.Equals(other.EndPoint)) ||
+                       (StartPoint.Equals(other.EndPoint) && EndPoint.Equals(other.StartPoint));
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return StartPoint.GetHashCode() ^ EndPoint.GetHashCode();
         }
     }
 }
