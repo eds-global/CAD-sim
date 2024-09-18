@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToggleSwitch", "EDS\ToggleS
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "EDS_GLOBAL", "EDS_GLOBAL\EDS_GLOBAL.wixproj", "{60B8D6D8-4A42-402D-A8A9-3584818512E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAction", "CustomAction\CustomAction.csproj", "{421B1689-5C30-461C-B455-1D1E159DFF59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,14 @@ Global
 		{60B8D6D8-4A42-402D-A8A9-3584818512E0}.Release|Any CPU.Build.0 = Release|x86
 		{60B8D6D8-4A42-402D-A8A9-3584818512E0}.Release|x86.ActiveCfg = Release|x86
 		{60B8D6D8-4A42-402D-A8A9-3584818512E0}.Release|x86.Build.0 = Release|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Debug|Any CPU.Build.0 = Debug|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Debug|x86.ActiveCfg = Debug|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Debug|x86.Build.0 = Debug|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Release|Any CPU.ActiveCfg = Release|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Release|Any CPU.Build.0 = Release|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Release|x86.ActiveCfg = Release|x86
+		{421B1689-5C30-461C-B455-1D1E159DFF59}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

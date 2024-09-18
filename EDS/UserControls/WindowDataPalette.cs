@@ -13,12 +13,38 @@ namespace EDS.UserControls
 {
     public partial class WindowDataPalette : UserControl
     {
+        string LastCommad = string.Empty;
         public WindowDataPalette()
         {
+            this.KeyDown += new KeyEventHandler(Form_KeyDown);
             InitializeComponent();
         }
 
+        private void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                if (!string.IsNullOrEmpty(LastCommad))
+                {
+                    if (LastCommad == "D")
+                        DrawCustomWindow();
+                    else if (LastCommad == "U")
+                        UpdateCustomWindow();
+                    else if (LastCommad == "S")
+                        SelectCustomWindow();
+                    else if (LastCommad == "M")
+                        MatchCustomWindow();
+                }
+            }
+        }
+
         private void drawButton_Click(object sender, EventArgs e)
+        {
+            DrawCustomWindow();
+            LastCommad = "D";
+        }
+
+        private void DrawCustomWindow()
         {
             if (insertComboBox.SelectedItem == null)
             {
@@ -78,10 +104,15 @@ namespace EDS.UserControls
             };
 
             window.CreateWindow(window);
-
         }
 
         private void selectButton_Click(object sender, EventArgs e)
+        {
+            SelectCustomWindow();
+            LastCommad = "S";
+        }
+
+        private void SelectCustomWindow()
         {
             EDSWindow window = new EDSWindow();
             EDSWindow result = window.SelectWindow();
@@ -103,6 +134,12 @@ namespace EDS.UserControls
         }
 
         private void updateButton_Click(object sender, EventArgs e)
+        {
+            UpdateCustomWindow();
+            LastCommad = "U";
+        }
+
+        private void UpdateCustomWindow()
         {
             if (insertComboBox.SelectedItem == null)
             {
@@ -145,6 +182,12 @@ namespace EDS.UserControls
         }
 
         private void matchButton_Click(object sender, EventArgs e)
+        {
+            MatchCustomWindow();
+            LastCommad = "M";
+        }
+
+        private static void MatchCustomWindow()
         {
             EDSWindow window = new EDSWindow();
             window.MatchWindow();

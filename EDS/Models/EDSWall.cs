@@ -568,80 +568,7 @@ namespace EDS.Models
 
                         UnHideWindows(db, true);
 
-                        if (rooms.Count > 0)
-                        {
-                            using (Transaction transaction = db.TransactionManager.StartTransaction())
-                            {
-                                ProjectInformationPalette.LoadProjectInformation();
-
-                                string dllPath = Assembly.GetExecutingAssembly().Location;
-                                string directoryName = System.IO.Path.GetDirectoryName(dllPath);
-
-                                string fileName = System.IO.Path.Combine(directoryName, "CAD Output Template.xlsx");
-
-                                var name = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Name;
-
-                                if (!System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx")))
-                                    System.IO.File.Copy(fileName, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx"));
-
-
-                                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                                var cadOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx");
-
-                                using (ExcelPackage package = new ExcelPackage(cadOutputFile))
-                                {
-                                    //get the first worksheet in the workbook
-                                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                                    worksheet.Cells[1, 4].Value = ProjectInformationPalette.projectInformation.ProjectName;
-                                    worksheet.Cells[2, 4].Value = ProjectInformationPalette.projectInformation.customLocation;
-                                    worksheet.Cells[3, 4].Value = ProjectInformationPalette.projectInformation.BuildingType;
-
-                                    int rowCount = 8;
-
-                                    foreach (var room in rooms)
-                                    {
-                                        for (int iNo = 0; iNo < room.walls.Count; iNo++)
-                                        {
-                                            worksheet.Cells[rowCount, 3].Value = room.walls[iNo].wall.wallHandleId;
-                                            worksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString() + "_" + room.walls[iNo].wall.wallHandleId;
-                                            Entity entity = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].wall.wallHandleId), OpenMode.ForRead) as Entity;
-                                            if (entity is Line)
-                                            {
-                                                Line line = entity as Line;
-                                                worksheet.Cells[rowCount, 6].Value = Math.Round(line.Length);
-                                                worksheet.Cells[rowCount, 7].Value = StringConstants.TopHeight;
-                                            }
-
-                                            double totalArea = 0.0;
-                                            if (room.walls[iNo].windows!=null)
-                                            {
-                                                if (room.walls[iNo].windows.Count > 0)
-                                                {
-
-                                                    for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
-                                                    {
-                                                        Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
-                                                        if (entity1 is Polyline)
-                                                        {
-                                                            Polyline line = entity1 as Polyline;
-                                                            totalArea = totalArea + line.Area;
-                                                        }
-
-                                                    }
-                                                } 
-                                            }
-
-                                            worksheet.Cells[rowCount, 9].Value = totalArea;
-                                            worksheet.Cells[rowCount, 11].Value = room.room.spaceType;
-
-                                            rowCount++;
-                                        }
-                                    }
-
-                                    package.Save();
-                                }
-                            }
-                        }
+                        AddExcelData(db);
                     }
                     else
                     {
@@ -651,6 +578,153 @@ namespace EDS.Models
                 }
                 tr.Commit();
             }
+        }
+
+        private void AddExcelData(Database db)
+        {
+            if (rooms.Count > 0)
+            {
+                using (Transaction transaction = db.TransactionManager.StartTransaction())
+                {
+                    ProjectInformationPalette.LoadProjectInformation();
+
+                    string dllPath = Assembly.GetExecutingAssembly().Location;
+                    string directoryName = System.IO.Path.GetDirectoryName(dllPath);
+
+                    string fileName = System.IO.Path.Combine(directoryName, "CAD Output Template.xlsx");
+
+                    var name = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Name;
+
+                    if (!System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx")))
+                        System.IO.File.Copy(fileName, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx"));
+
+
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                    var cadOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx");
+
+                    using (ExcelPackage package = new ExcelPackage(cadOutputFile))
+                    {
+                        //get the first worksheet in the workbook
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        worksheet.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
+                        worksheet.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
+                        worksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
+                        worksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingType;
+
+                        int rowCount = 8;
+
+                        foreach (var room in rooms)
+                        {
+                            for (int iNo = 0; iNo < room.walls.Count; iNo++)
+                            {
+                                worksheet.Cells[rowCount, 3].Value = room.walls[iNo].wall.wallHandleId;
+                                worksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString() + "_" + room.walls[iNo].wall.wallHandleId;
+                                Entity entity = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].wall.wallHandleId), OpenMode.ForRead) as Entity;
+                                if (entity is Line)
+                                {
+                                    Line line = entity as Line;
+
+                                    worksheet.Cells[rowCount, 5].Value = GetAzimuthAngle(line);
+
+                                    worksheet.Cells[rowCount, 6].Value = Math.Round(line.Length);
+                                    worksheet.Cells[rowCount, 7].Value = StringConstants.TopHeight;
+                                }
+
+                                double totalArea = 0.0;
+                                if (room.walls[iNo].windows != null)
+                                {
+                                    if (room.walls[iNo].windows.Count > 0)
+                                    {
+                                        for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
+                                        {
+                                            Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
+                                            if (entity1 is Polyline)
+                                            {
+                                                Polyline line = entity1 as Polyline;
+                                                totalArea = totalArea + (line.Area / 1_000_000);
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                                worksheet.Cells[rowCount, 9].Value = totalArea;
+                                worksheet.Cells[rowCount, 11].Value = room.room.spaceType;
+
+                                rowCount++;
+                            }
+                        }
+
+                        ExcelWorksheet excelWorksheet = package.Workbook.Worksheets[1];
+                        excelWorksheet.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
+                        excelWorksheet.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
+                        excelWorksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
+                        excelWorksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingType;
+
+                        rowCount = 8;
+
+                        foreach (var room in rooms)
+                        {
+                            for (int iNo = 0; iNo < room.walls.Count; iNo++)
+                            {
+                                excelWorksheet.Cells[rowCount, 3].Value = room.room.spaceType.ToString().Split('-')[1];
+                                excelWorksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString().Split('-')[0];
+                                excelWorksheet.Cells[rowCount, 5].Value = double.Parse(room.room.roomArea) / 1_000_000;
+                                double totalArea = 0.0;
+                                if (room.walls[iNo].windows != null)
+                                {
+                                    if (room.walls[iNo].windows.Count > 0)
+                                    {
+
+                                        for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
+                                        {
+                                            Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
+                                            if (entity1 is Polyline)
+                                            {
+                                                Polyline line = entity1 as Polyline;
+                                                totalArea = totalArea + (line.Area / 1_000_000);
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                                excelWorksheet.Cells[rowCount, 6].Value = totalArea;
+
+                                rowCount++;
+                            }
+                        }
+
+                        package.Save();
+                    }
+                }
+            }
+        }
+
+        private double GetAzimuthAngle(Line line)
+        {
+            Point3d startPt = line.StartPoint;
+            Point3d endPt = line.EndPoint;
+
+            // Calculate the angle in radians
+            double angleInRadians = Math.Atan2(endPt.Y - startPt.Y, endPt.X - startPt.X);
+
+            // Convert the angle to degrees
+            double angleInDegrees = Math.Round(angleInRadians * (180.0 / Math.PI), 2);
+
+            double B6 = angleInDegrees; // Replace with your actual value
+            double result = (B6 + 90) % 360;
+            if (result < 0)
+            {
+                result += 360; // Ensure the result is positive
+            }
+
+            double E5 = 90 - 0.0; ; // Replace with your actual value
+            double D6 = result; // Replace with your actual value
+
+            double azimuth = (E5 - D6) < 0 ? (E5 - D6) + 360 : (E5 - D6);
+
+            return azimuth;
         }
 
         private void HideWindows(Database db, PromptSelectionResult res, bool visible)

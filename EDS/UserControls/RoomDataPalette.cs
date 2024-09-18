@@ -14,6 +14,7 @@ namespace EDS.UserControls
 {
     public partial class RoomDataPalette : UserControl
     {
+        string LastCommad = string.Empty;
         const double SquareFootToSquareMeter = 10.7639;
         const double SquareMeterToSquareFoot = 1.0 / SquareFootToSquareMeter;
 
@@ -34,7 +35,7 @@ namespace EDS.UserControls
         public RoomDataPalette()
         {
             InitializeComponent();
-
+            this.KeyDown += new KeyEventHandler(Form_KeyDown);
             lpdValues = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "LPD");
             epdValues = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "EPD");
             occupValues = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Occupancy");
@@ -61,6 +62,24 @@ namespace EDS.UserControls
             //ceilFinishComboBox.SelectedIndex = 0;
             //freshAirComboBox.SelectedIndex = 0;
 
+        }
+
+        private void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                if (!string.IsNullOrEmpty(LastCommad))
+                {
+                    if (LastCommad == "D")
+                        DrawCustomRoom();
+                    else if (LastCommad == "U")
+                        UpdateCustomRoom();
+                    else if (LastCommad == "S")
+                        SelectCustomRoom();
+                    else if (LastCommad == "M")
+                        MatchCustomRoom();
+                }
+            }
         }
 
         private void RoomDataPalette_Load(object sender, EventArgs e)
@@ -129,12 +148,24 @@ namespace EDS.UserControls
 
         private void matchButton_Click(object sender, EventArgs e)
         {
+            MatchCustomRoom();
+            LastCommad = "M";
+        }
+
+        private void MatchCustomRoom()
+        {
             EDSRoomTag wallCreation = new EDSRoomTag();
             wallCreation.MatchRoom(lpdCheck.Checked, epdCheck.Checked, occuCheck.Checked, freshAirCheck.Checked, floorCheck.Checked, ceilCheck.Checked);
             RefreshUI();
         }
 
         private void updateButton_Click(object sender, EventArgs e)
+        {
+            UpdateCustomRoom();
+            LastCommad = "U";
+        }
+
+        private void UpdateCustomRoom()
         {
             if (spaceComboBox.SelectedItem == null)
             {
@@ -365,6 +396,12 @@ namespace EDS.UserControls
 
         private void selectButton_Click(object sender, EventArgs e)
         {
+            SelectCustomRoom();
+            LastCommad = "S";
+        }
+
+        private void SelectCustomRoom()
+        {
             EDSRoomTag wallCreation = new EDSRoomTag();
             var result = wallCreation.SelectRoom();
 
@@ -388,6 +425,12 @@ namespace EDS.UserControls
         }
 
         private void addButton_Click(object sender, EventArgs e)
+        {
+            DrawCustomRoom();
+            LastCommad = "D";
+        }
+
+        private void DrawCustomRoom()
         {
             if (spaceComboBox.SelectedItem == null)
             {

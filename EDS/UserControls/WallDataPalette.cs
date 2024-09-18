@@ -19,10 +19,13 @@ namespace EDS.UserControls
         List<string> internalWalls = new List<string>();
 
         List<string> finishTypes = new List<string>();
+
+        string LastCommad = string.Empty;
+
         public WallDataPalette()
         {
             InitializeComponent();
-            
+
             // Hook up the KeyDown event handler
             this.KeyDown += new KeyEventHandler(Form_KeyDown);
             externalWalls = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Ext Construction");
@@ -35,8 +38,17 @@ namespace EDS.UserControls
         {
             if (e.KeyCode == Keys.Space)
             {
-                // Handle space bar press to repeat the last command
-                //RepeatLastCommand();
+                if (!string.IsNullOrEmpty(LastCommad))
+                {
+                    if (LastCommad == "D")
+                        DrawLine();
+                    else if (LastCommad == "U")
+                        UpdateLine();
+                    else if (LastCommad == "S")
+                        SelectLine();
+                    else if (LastCommad == "M")
+                        MatchLine();
+                }
             }
         }
 
@@ -58,6 +70,12 @@ namespace EDS.UserControls
         }
 
         private void DrawButton_Click(object sender, EventArgs e)
+        {
+            DrawLine();
+            LastCommad = "D";
+        }
+
+        private void DrawLine()
         {
             double resultValue = 0.0;
             if (uValueCheck.Checked)
@@ -85,10 +103,15 @@ namespace EDS.UserControls
             wall.CreateWall(wall);
 
             RefreshUI();
-
         }
 
         private void UpdateAllButton_Click(object sender, EventArgs e)
+        {
+            UpdateLine();
+            LastCommad = "U";
+        }
+
+        private void UpdateLine()
         {
             EDSWall wall = new EDSWall()
             {
@@ -107,7 +130,6 @@ namespace EDS.UserControls
             wall.UpdateLine(wall);
 
             RefreshUI();
-
         }
 
         private void RefreshUI()
@@ -123,6 +145,12 @@ namespace EDS.UserControls
         }
 
         private void SelectButton_Click(object sender, EventArgs e)
+        {
+            SelectLine();
+            LastCommad = "S";
+        }
+
+        private void SelectLine()
         {
             EDSWall creation = new EDSWall();
             var edsValue = creation.GetWallLine();
@@ -145,6 +173,12 @@ namespace EDS.UserControls
         }
 
         private void MatchAllButton_Click(object sender, EventArgs e)
+        {
+            MatchLine();
+            LastCommad = "M";
+        }
+
+        private static void MatchLine()
         {
             EDSWall wallCreation = new EDSWall();
             wallCreation.MatchLine();
