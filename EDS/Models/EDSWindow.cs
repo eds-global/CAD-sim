@@ -33,6 +33,9 @@ namespace EDS.Models
         public string WWR { get; set; }
         public string SpecifyOnDrawing { get; set; }
         public string WindHandleId { set; get; }
+        public string UValue { set; get; }
+        public string VLT { set; get; }
+        public string SHGC { set; get; }
 
         public EDSWindow()
         {
@@ -223,6 +226,10 @@ namespace EDS.Models
             CADUtilities.SetXData(objectId, StringConstants.InteriorLightSelf, window.InteriorLightSelf.ToString());
             CADUtilities.SetXData(objectId, StringConstants.DayLightWindow, window.DayLightWindow.ToString());
             CADUtilities.SetXData(objectId, StringConstants.WindHandleId, objectId.Handle.ToString());
+            CADUtilities.SetXData(objectId, StringConstants.UValue, window.UValue.ToString());
+            CADUtilities.SetXData(objectId, StringConstants.VLT, window.VLT.ToString());
+            CADUtilities.SetXData(objectId, StringConstants.SHGC, window.SHGC.ToString());
+
         }
 
         public EDSWindow GetXDataForWindow(ObjectId objectId)
@@ -242,6 +249,9 @@ namespace EDS.Models
             window.Spacing = CADUtilities.GetXData(objectId, StringConstants.Spacing);
             window.WWR = CADUtilities.GetXData(objectId, StringConstants.WWR);
             window.WindHandleId = CADUtilities.GetXData(objectId, StringConstants.WindHandleId);
+            window.VLT = CADUtilities.GetXData(objectId, StringConstants.VLT);
+            window.SHGC = CADUtilities.GetXData(objectId, StringConstants.SHGC);
+            window.UValue = CADUtilities.GetXData(objectId, StringConstants.UValue);
             return window;
         }
 

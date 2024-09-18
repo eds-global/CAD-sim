@@ -98,6 +98,9 @@ namespace EDS.UserControls
                 SillHeight = sillHeight.Text.Trim(),
                 Spacing = spacing.Text.Trim(),
                 WWR = wwr.Text.Trim(),
+                UValue = UValue.Text.Trim(),
+                SHGC = SHGCValue.Text.Trim(),
+                VLT = VLTValue.Text.Trim(),
                 DayLightWindow = dayLightWindow.Checked.ToString(),
                 InteriorLightSelf = interiorLightSelf.Checked.ToString(),
                 SpecifyOnDrawing = specifyOnDrawing.Checked.ToString()
@@ -128,6 +131,9 @@ namespace EDS.UserControls
                 spacing.Text = result.Spacing;
                 sillHeight.Text = result.SillHeight;
                 wwr.Text = result.WWR;
+                UValue.Text = result.UValue;
+                SHGCValue.Text = result.SHGC;
+                VLTValue.Text = result.SHGC;
                 dayLightWindow.Checked = bool.Parse(result.DayLightWindow.ToString());
                 interiorLightSelf.Checked = bool.Parse(result.InteriorLightSelf.ToString());
             }
@@ -288,6 +294,9 @@ namespace EDS.UserControls
             sillHeight.Enabled = true;
             spacing.Enabled = true;
             wwr.Enabled = true;
+            UValue.Text = "";
+            SHGCValue.Text = "";
+            VLTValue.Text = "";
         }
 
         private void toggleSwitch1_CheckedChanged(object sender, EventArgs e)

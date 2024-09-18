@@ -67,7 +67,9 @@ namespace EDS
         public static string SpecifyOnDrawing = "SpecifyOnDrawing";
         public static double wallHeight = 250.0;
         public static string WindHandleId = "WindHandleId";
-
+        public static string UValue = "UValue";
+        public static string VLT = "VLT";
+        public static string SHGC = "SHGC";
         #endregion
     }
 }

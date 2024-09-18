@@ -609,7 +609,7 @@ namespace EDS.Models
                         worksheet.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
                         worksheet.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
                         worksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
-                        worksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingType;
+                        worksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingCategory;
 
                         int rowCount = 8;
 
@@ -624,7 +624,7 @@ namespace EDS.Models
                                 {
                                     Line line = entity as Line;
 
-                                    worksheet.Cells[rowCount, 5].Value = GetAzimuthAngle(line);
+                                    worksheet.Cells[rowCount, 5].Value = GetAzimuthAngle(line, double.Parse(ProjectInformationPalette.projectInformation.Direction));
 
                                     worksheet.Cells[rowCount, 6].Value = Math.Round(line.Length);
                                     worksheet.Cells[rowCount, 7].Value = StringConstants.TopHeight;
@@ -659,7 +659,7 @@ namespace EDS.Models
                         excelWorksheet.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
                         excelWorksheet.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
                         excelWorksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
-                        excelWorksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingType;
+                        excelWorksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingCategory;
 
                         rowCount = 8;
 
@@ -701,7 +701,7 @@ namespace EDS.Models
             }
         }
 
-        private double GetAzimuthAngle(Line line)
+        private double GetAzimuthAngle(Line line, double direction)
         {
             Point3d startPt = line.StartPoint;
             Point3d endPt = line.EndPoint;
@@ -719,7 +719,7 @@ namespace EDS.Models
                 result += 360; // Ensure the result is positive
             }
 
-            double E5 = 90 - 0.0; ; // Replace with your actual value
+            double E5 = 90 - direction; // Replace with your actual value
             double D6 = result; // Replace with your actual value
 
             double azimuth = (E5 - D6) < 0 ? (E5 - D6) + 360 : (E5 - D6);

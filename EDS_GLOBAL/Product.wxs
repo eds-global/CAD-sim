@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="*" Name="EDS_GLOBAL" Language="1033" Version="1.5.0.0" Manufacturer="HP" UpgradeCode="887472d4-fb1a-4137-82aa-bbe036b6f8f6">
+    <Product Id="*" Name="EDS_GLOBAL" Language="1033" Version="1.6.0.0" Manufacturer="HP" UpgradeCode="887472d4-fb1a-4137-82aa-bbe036b6f8f6">
         <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" />
         <WixVariable Id="WixUILicenseRtf" Value="EDS.rtf" />
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
         <Media Id="1" Cabinet="cab1.cab" EmbedCab="yes" />
 
-		<Binary Id="CustomAction12" SourceFile="E:\EDS_GLOBAL\CustomAction\bin\Debug\CustomAction.CA.dll" />
+		<Binary Id="CustomAction12" SourceFile="..\CustomAction\bin\Debug\CustomAction.CA.dll" />
 		
 		<CustomAction Id="CustomAction1" BinaryKey="CustomAction12" DllEntry="CustomAction1" Execute="immediate" Return="check" />
 
