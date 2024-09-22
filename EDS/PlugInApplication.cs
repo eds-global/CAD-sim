@@ -62,7 +62,8 @@ namespace EDS
             "1C:CE:51:28:33:F2",
             "B8:1E:A4:D9:DE:F5",
             "B8:1E:A4:A1:9B:F3",
-            "40:86:CB:20:6A:CE"
+            "40:86:CB:20:6A:CE",
+            "24:EE:9A:1D:E0:61"
         };
 
         public void Initialize()

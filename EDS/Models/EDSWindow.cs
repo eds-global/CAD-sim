@@ -592,7 +592,28 @@ namespace EDS.Models
                         Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
                         Point3d topRight = topLeft + width * wallDirection;
 
+                        // Function to check if a point lies on the line segment
+                        bool IsPointOnLineSegment(Point3d point, Point3d start, Point3d end)
+                        {
+                            Vector3d lineVector = end - start;
+                            Vector3d pointVector = point - start;
 
+                            // Project the point onto the line
+                            double projection = pointVector.DotProduct(lineVector.GetNormal());
+
+                            // Check if the projection lies between 0 and the line length
+                            return projection >= 0 && projection <= lineVector.Length;
+                        }
+
+                        // Check if all corners of the window lie within the line segment
+                        if (!IsPointOnLineSegment(bottomLeft, line.StartPoint, line.EndPoint) ||
+                            !IsPointOnLineSegment(bottomRight, line.StartPoint, line.EndPoint) ||
+                            !IsPointOnLineSegment(topLeft, line.StartPoint, line.EndPoint) ||
+                            !IsPointOnLineSegment(topRight, line.StartPoint, line.EndPoint))
+                        {
+                            // If any corner is outside the line segment, skip this window
+                            continue;
+                        }
 
                         // Create the polyline (rectangle) representing the window
                         Polyline polyWindow = new Polyline();
@@ -610,6 +631,8 @@ namespace EDS.Models
 
                         SetXDataForWindow(objectId1, window);
                     }
+
+
                 }
                 // Commit the transaction
                 tr.Commit();

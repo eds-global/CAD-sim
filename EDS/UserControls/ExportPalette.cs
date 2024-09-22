@@ -22,8 +22,8 @@ namespace EDS
         {
             treeView1.Nodes.Clear();
             progressBar1.Value = 25;
-            EDSWall creation = new EDSWall();
-            creation.FindClosedLoop(treeView1);
+            EDSScan scan = new EDSScan();
+            scan.FindClosedLoop(treeView1);
             progressBar1.Value = 100;
 
 
