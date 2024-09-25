@@ -301,5 +301,30 @@ namespace EDS.UserControls
                 unitLabel.Text = "Btu/(h.ft2.F)";
             }
         }
+
+        private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label16_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void unitLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sillHeight_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
