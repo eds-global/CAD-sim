@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
@@ -13,6 +14,7 @@ using ZwSoft.ZwCAD.ApplicationServices;
 using ZwSoft.ZwCAD.DatabaseServices;
 using ZwSoft.ZwCAD.EditorInput;
 using ZwSoft.ZwCAD.Geometry;
+using ZwSoft.ZwCAD.GraphicsInterface;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 using Line = ZwSoft.ZwCAD.DatabaseServices.Line;
 using Polyline = ZwSoft.ZwCAD.DatabaseServices.Polyline;
@@ -42,122 +44,134 @@ namespace EDS.Models
         List<LineSelectCount> segmentCount = new List<LineSelectCount>();
         public void FindClosedLoop(System.Windows.Forms.TreeView treeView)
         {
-            Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
-            doc.LockDocument();
-
-            PromptSelectionResult res;
-            if (ed.SelectImplied().Value == null)
+            try
             {
-                // Prompt for the selection
-                PromptSelectionOptions opts = new PromptSelectionOptions();
-                opts.MessageForAdding = "Select lines: ";
-                res = ed.GetSelection(opts);
-            }
-            else
-            {
-                res = ed.SelectImplied();
-            }
+                Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Database db = doc.Database;
+                Editor ed = doc.Editor;
+                doc.LockDocument();
 
-            HideWindows(db, res, false);
-
-            using (Transaction tr = db.TransactionManager.StartTransaction())
-            {
-                List<Line> wallLines = new List<Line>();
-                List<EDSRoomTag> edsRooms = new List<EDSRoomTag>();
-                if (res.Status == PromptStatus.OK)
+                PromptSelectionResult res;
+                if (ed.SelectImplied().Value == null)
                 {
-                    SelectionSet selectionSet = res.Value;
+                    // Prompt for the selection
+                    PromptSelectionOptions opts = new PromptSelectionOptions();
+                    opts.MessageForAdding = "Select lines: ";
+                    res = ed.GetSelection(opts);
+                }
+                else
+                {
+                    res = ed.SelectImplied();
+                }
 
-                    ExportValidation exportValidation = new ExportValidation();
+                HideWindows(db, res, false);
 
-                    foreach (SelectedObject so in selectionSet)
+                using (Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    List<Line> wallLines = new List<Line>();
+                    List<EDSRoomTag> edsRooms = new List<EDSRoomTag>();
+                    if (res.Status == PromptStatus.OK)
                     {
-                        ObjectId objId = so.ObjectId;
+                        SelectionSet selectionSet = res.Value;
 
-                        Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                        if (entity is Line)
-                        {
-                            if (entity.Layer == StringConstants.wallLayerName)
-                                wallLines.Add(entity as Line);
-                        }
-                    }
-                    Point3dCollection intersections = exportValidation.FindIntersections(wallLines, tr);
+                        ExportValidation exportValidation = new ExportValidation();
 
-                    if (intersections.Count == 0)
-                    {
-                        ed.WriteMessage("\nNo intersection points found.");
-                        return;
-                    }
-
-                    ed.WriteMessage($"\nIntersection point count: {intersections.Count}");
-
-                    // Break lines at each intersection point
-                    int i = 0;
-                    foreach (Point3d intersection in intersections)
-                    {
-                        exportValidation.BreakLinesAtPoint(wallLines, intersection, tr);
-                        i++;
-
-                        // Progress reporting
-                        double progress = (double)i / intersections.Count * 100;
-                        ed.WriteMessage($"\n{progress:0.00}% processed...");
-                    }
-
-                    exportValidation.IdentifyOpenLoopLinesWithCircles(db, selectionSet, treeView);
-
-
-                    if (treeView.Nodes.Count == 0)
-                    {
-
-                        // Collect all lines from the drawing
                         foreach (SelectedObject so in selectionSet)
                         {
                             ObjectId objId = so.ObjectId;
 
                             Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
-                            if (entity is DBText)
+                            if (entity is Line)
                             {
-                                if (entity.Layer == StringConstants.roomLayerName)
-                                {
-                                    EDSRoomTag tag = new EDSRoomTag();
-                                    edsRooms.Add(tag.GetXDataForRoom(entity.ObjectId));
-                                }
+                                if (entity.Layer == StringConstants.wallLayerName)
+                                    wallLines.Add(entity as Line);
                             }
                         }
+                        Point3dCollection intersections = exportValidation.FindIntersections(wallLines, tr);
 
-                        if (edsRooms.Count > 0)
+                        if (intersections.Count == 0)
                         {
-                            CreateTreeNodes(edsRooms, wallLines, windowLines, treeView);
+                            ed.WriteMessage("\nNo intersection points found.");
+                            return;
+                        }
 
+                        ed.WriteMessage($"\nIntersection point count: {intersections.Count}");
+
+                        // Break lines at each intersection point
+                        int i = 0;
+                        foreach (Point3d intersection in intersections)
+                        {
+                            exportValidation.BreakLinesAtPoint(wallLines, intersection, tr);
+                            i++;
+
+                            // Progress reporting
+                            double progress = (double)i / intersections.Count * 100;
+                            ed.WriteMessage($"\n{progress:0.00}% processed...");
+                        }
+
+                        exportValidation.IdentifyOpenLoopLinesWithCircles(db, selectionSet, treeView);
+
+
+                        if (treeView.Nodes.Count == 0)
+                        {
+
+                            // Collect all lines from the drawing
+                            foreach (SelectedObject so in selectionSet)
+                            {
+                                ObjectId objId = so.ObjectId;
+
+                                Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
+                                if (entity is DBText)
+                                {
+                                    if (entity.Layer == StringConstants.roomLayerName)
+                                    {
+                                        EDSRoomTag tag = new EDSRoomTag();
+                                        edsRooms.Add(tag.GetXDataForRoom(entity.ObjectId));
+                                    }
+                                }
+                            }
+
+                            if (edsRooms.Count > 0)
+                            {
+                                CreateTreeNodes(edsRooms, wallLines, windowLines, treeView);
+
+                            }
+                            else
+                            {
+                                System.Windows.MessageBox.Show("No rooms found");
+                            }
+
+                            UnHideWindows(db, true);
+                            Thread.Sleep(1000);
+                            if (!string.IsNullOrEmpty(ProjectInformationPalette.projectInformation.Direction))
+                            {
+
+                                AddExcelData(db);
+
+                                CreateXMLFile(db);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Not able to load process the project parameters\nPlease check the parameters for excel and xml data");
+                            }
                         }
                         else
                         {
-                            System.Windows.MessageBox.Show("No rooms found");
-                        }
-
-                        UnHideWindows(db, true);
-
-                        if (!string.IsNullOrEmpty(ProjectInformationPalette.projectInformation.Direction))
-                        {
-
-                            AddExcelData(db);
-
-                            CreateXMLFile(db);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Not able to load process the project parameters\nPlease check the parameters for excel and xml data");
+                            rooms = new List<EDSExcelRoom>();
+                            UnHideWindows(db, true);
                         }
                     }
-                    else
-                    {
-                        rooms = new List<EDSExcelRoom>();
-                        UnHideWindows(db, true);
-                    }
+                    tr.Commit();
                 }
-                tr.Commit();
+            }
+            catch (Exception ex)
+            {
+                Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Database db = doc.Database;
+                Editor ed = doc.Editor;
+                doc.LockDocument();
+                UnHideWindows(db, true);
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -179,16 +193,53 @@ namespace EDS.Models
 
                     var xmlOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), System.IO.Path.GetFileName(name).Split('.')[0] + ".xml");
                     XmlFileFormat format = new XmlFileFormat();
-                    format.WriteToFile(GetCampusData(rooms, database), xmlOutputFile);
+                    format.WriteToFile(GetXMLData(rooms, database), xmlOutputFile);
 
                 }
             }
         }
 
-        Campus GetCampusData(List<EDSExcelRoom> rooms, Database database)
+        GbXml GetXMLData(List<EDSExcelRoom> rooms, Database database)
         {
-            var allHeight = 3.0;
             var campus = new Campus();
+            GbXml gbxml = new GbXml
+            {
+                UseSIUnitsForResults = true,
+                LengthUnit = "Meters",
+                VolumeUnit = "CubicMeters",
+                Version = "6.01",
+                SurfaceReferenceLocation = "Centerline",
+                AreaUnit = "SquareMeters",
+                TemperatureUnit = "C",
+                Campus = campus,
+                DocumentHistory = new DocumentHistory
+                {
+                    CreatedBy = new CreatedBy
+                    {
+                        ProgramId = "openstudio",
+                        Date = DateTime.Now,
+                        PersonId = "unknown"
+                    },
+                    ProgramInfo = new ProgramInfo
+                    {
+                        Id = "openstudio",
+                        ProductName = "OpenStudio",
+                        Version = "2.8.0",
+                        Platform = "Windows",
+                        ProjectEntity = string.Empty // Adjust as needed
+                    },
+                    PersonInfo = new PersonInfo
+                    {
+                        Id = "unknown",
+                        FirstName = "Unknown",
+                        LastName = "Unknown"
+                    }
+                }
+            };
+
+            var allHeight = 3000.0;
+
+            campus.Id = "Facility";
             campus.Name = "Facility";
             Building building = new Building();
             building.Area = 2222;
@@ -219,7 +270,7 @@ namespace EDS.Models
                 surface.ConstructionIdRef = "ExtSlabCarpet_4in_ClimateZone_1-8";
                 surface.SurfaceType = "SlabOnGrade";
                 surface.Id = room.room.curveHandleId;
-                surface.AdjacentSpaceId = new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId };
+                surface.AdjacentSpaceId = new List<AdjacentSpaceId>() { new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId } };
                 using (Transaction transaction = database.TransactionManager.StartTransaction())
                 {
                     var polyline = transaction.GetObject(CADUtilities.HandleToObjectId(room.room.curveHandleId), OpenMode.ForRead) as Polyline;
@@ -228,13 +279,13 @@ namespace EDS.Models
                     rectangularGeometry.Azimuth = 90.0;
                     rectangularGeometry.CartesianPoint = new CartesianPoint();
                     rectangularGeometry.CartesianPoint.Coordinates = new List<double>();
-                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.X);
-                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.Y);
-                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.Z);
+                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.X / 1000.0);
+                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.Y / 1000.0);
+                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.Z / 1000.0);
 
                     rectangularGeometry.Tilt = 180;
-                    rectangularGeometry.Height = polyline.GeometricExtents.MaxPoint.Y - polyline.GeometricExtents.MinPoint.Y;
-                    rectangularGeometry.Width = polyline.GeometricExtents.MaxPoint.X - polyline.GeometricExtents.MinPoint.X;
+                    rectangularGeometry.Height = (polyline.GeometricExtents.MaxPoint.Y - polyline.GeometricExtents.MinPoint.Y) / 1000.0;
+                    rectangularGeometry.Width = (polyline.GeometricExtents.MaxPoint.X - polyline.GeometricExtents.MinPoint.X) / 1000.0;
 
                     surface.RectangularGeometry = rectangularGeometry;
 
@@ -246,15 +297,58 @@ namespace EDS.Models
                     {
                         Point3d vertex = polyline.GetPoint3dAt(i);
                         CartesianPoint point = new CartesianPoint();
-                        point.Coordinates = new List<double>() { vertex.X, vertex.Y, vertex.Z };
+                        point.Coordinates = new List<double>() { (vertex.X / 1000.0), (vertex.Y / 1000.0), (vertex.Z / 1000.0) };
                         planarGeometry.PolyLoop.CartesianPoints.Add(point);
                     }
-
+                    //planarGeometry.PolyLoop.CartesianPoints = SortPointsClockwise(planarGeometry.PolyLoop.CartesianPoints);
                     surface.PlanarGeometry = planarGeometry;
                 }
 
                 campus.Surfaces.Add(surface);
             }
+
+            foreach (EDSExcelRoom room in rooms)
+            {
+                Surface surface = new Surface();
+                surface.ConstructionIdRef = "SHRAE_189.1-2009_ExtRoof_IEAD_ClimateZone_2-5";
+                surface.SurfaceType = "Roof";
+                surface.Id = room.room.curveHandleId;
+                surface.AdjacentSpaceId = new List<AdjacentSpaceId>() { new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId } };
+                using (Transaction transaction = database.TransactionManager.StartTransaction())
+                {
+                    var polyline = transaction.GetObject(CADUtilities.HandleToObjectId(room.room.curveHandleId), OpenMode.ForRead) as Polyline;
+                    Point3d point3D = polyline.GetPoint3dAt(0);
+                    RectangularGeometry rectangularGeometry = new RectangularGeometry();
+                    rectangularGeometry.Azimuth = 90.0;
+                    rectangularGeometry.CartesianPoint = new CartesianPoint();
+                    rectangularGeometry.CartesianPoint.Coordinates = new List<double>();
+                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.X / 1000.0);
+                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.Y / 1000.0);
+                    rectangularGeometry.CartesianPoint.Coordinates.Add(point3D.Z + allHeight / 1000.0);
+
+                    rectangularGeometry.Tilt = 0;
+                    rectangularGeometry.Height = (polyline.GeometricExtents.MaxPoint.Y - polyline.GeometricExtents.MinPoint.Y) / 1000.0;
+                    rectangularGeometry.Width = (polyline.GeometricExtents.MaxPoint.X - polyline.GeometricExtents.MinPoint.X) / 1000.0;
+
+                    surface.RectangularGeometry = rectangularGeometry;
+
+                    PlanarGeometry planarGeometry = new PlanarGeometry();
+                    planarGeometry.PolyLoop = new PolyLoop();
+                    planarGeometry.PolyLoop.CartesianPoints = new List<CartesianPoint>();
+                    for (int i = 0; i < polyline.NumberOfVertices; i++)
+                    {
+                        Point3d vertex = polyline.GetPoint3dAt(i);
+                        CartesianPoint point = new CartesianPoint();
+                        point.Coordinates = new List<double>() { (vertex.X / 1000.0), (vertex.Y / 1000.0), (vertex.Z + allHeight / 1000.0) };
+                        planarGeometry.PolyLoop.CartesianPoints.Add(point);
+                    }
+                    //planarGeometry.PolyLoop.CartesianPoints = SortPointsAnticlockwise(planarGeometry.PolyLoop.CartesianPoints);
+                    surface.PlanarGeometry = planarGeometry;
+                }
+
+                campus.Surfaces.Add(surface);
+            }
+
 
             foreach (EDSExcelRoom room in rooms)
             {
@@ -269,24 +363,27 @@ namespace EDS.Models
                             surface.ConstructionIdRef = "ASHRAE_189.1-2009_ExtWall_Mass_ClimateZone_5";
                             surface.SurfaceType = "Exterior Wall";
                             surface.Id = line.Handle.ToString();
-                            surface.AdjacentSpaceId = new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId };
+                            surface.AdjacentSpaceId = new List<AdjacentSpaceId>() { new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId } };
 
                             RectangularGeometry rectangularGeometry = new RectangularGeometry();
-                            rectangularGeometry.Azimuth = 0;
-                            rectangularGeometry.CartesianPoint = new CartesianPoint() { Coordinates = new List<double> { line.StartPoint.X, line.StartPoint.Y, line.StartPoint.Z } };
+                            rectangularGeometry.Azimuth = 90;
+                            rectangularGeometry.CartesianPoint = new CartesianPoint() { Coordinates = new List<double> { (line.StartPoint.X / 1000.0), (line.StartPoint.Y / 1000.0), (line.StartPoint.Z / 1000.0) } };
                             rectangularGeometry.Tilt = 90;
-                            rectangularGeometry.Height = line.GeometricExtents.MaxPoint.Y - line.GeometricExtents.MinPoint.Y;
-                            rectangularGeometry.Width = line.GeometricExtents.MaxPoint.X - line.GeometricExtents.MinPoint.X;
+                            rectangularGeometry.Height = (line.GeometricExtents.MaxPoint.Y - line.GeometricExtents.MinPoint.Y) / 1000.0;
+                            rectangularGeometry.Width = /*(line.GeometricExtents.MaxPoint.X - line.GeometricExtents.MinPoint.X) / 1000.0 == 0 ? (line.GeometricExtents.MaxPoint.Y - line.GeometricExtents.MinPoint.Y) / 1000.0 :*/ (line.GeometricExtents.MaxPoint.X - line.GeometricExtents.MinPoint.X) / 1000.0;
                             surface.RectangularGeometry = rectangularGeometry;
 
                             PlanarGeometry planarGeometry = new PlanarGeometry();
                             planarGeometry.PolyLoop = new PolyLoop();
                             planarGeometry.PolyLoop.CartesianPoints = new List<CartesianPoint>();
 
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.StartPoint.X, line.StartPoint.Y, line.StartPoint.Z } });
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.StartPoint.X, line.StartPoint.Y, line.StartPoint.Z + allHeight } });
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.EndPoint.X, line.EndPoint.Y, line.EndPoint.Z + allHeight } });
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.EndPoint.X, line.EndPoint.Y, line.EndPoint.Z } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.StartPoint.X / 1000.0), (line.StartPoint.Y / 1000.0), (line.StartPoint.Z / 1000.0) } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.StartPoint.X / 1000.0), (line.StartPoint.Y / 1000.0), (line.StartPoint.Z + allHeight) / 1000.0 } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.EndPoint.X / 1000.0), (line.EndPoint.Y / 1000.0), (line.EndPoint.Z + allHeight) / 1000.0 } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.EndPoint.X / 1000.0), (line.EndPoint.Y / 1000.0), (line.EndPoint.Z / 1000.0) } });
+
+                            planarGeometry.PolyLoop.CartesianPoints = SortPointsClockwise(planarGeometry.PolyLoop.CartesianPoints);
+
                             surface.PlanarGeometry = planarGeometry;
 
                             if (excelWall.windows.Count > 0)
@@ -302,26 +399,87 @@ namespace EDS.Models
 
                                     RectangularGeometry rectangularGeometry1 = new RectangularGeometry();
                                     rectangularGeometry1.Azimuth = 180;
-                                    rectangularGeometry1.CartesianPoint = new CartesianPoint() { Coordinates = new List<double> { window.StartPoint.X, window.StartPoint.Y, window.StartPoint.Z } };
                                     rectangularGeometry1.Tilt = 90;
-                                    rectangularGeometry1.Height = window.GeometricExtents.MaxPoint.Y - window.GeometricExtents.MinPoint.Y;
-                                    rectangularGeometry1.Width = window.GeometricExtents.MaxPoint.X - window.GeometricExtents.MinPoint.X;
-
-                                    opening.RectangularGeometry = rectangularGeometry1;
+                                    rectangularGeometry1.Height = (window.GeometricExtents.MaxPoint.Y - window.GeometricExtents.MinPoint.Y) / 1000.0;
+                                    rectangularGeometry1.Width = (window.GeometricExtents.MaxPoint.X - window.GeometricExtents.MinPoint.X) / 1000.0;
 
                                     PlanarGeometry planarGeometry1 = new PlanarGeometry();
                                     planarGeometry1.PolyLoop = new PolyLoop();
                                     planarGeometry1.PolyLoop.CartesianPoints = new List<CartesianPoint>();
 
-                                    for (int i = 0; i < window.NumberOfVertices; i++)
+                                    for (int i = 0; i <= window.NumberOfVertices - 1; i++)
                                     {
-                                        Point3d vertex = window.GetPoint3dAt(i);
-                                        CartesianPoint point = new CartesianPoint();
-                                        point.Coordinates = new List<double>() { vertex.X, vertex.Y, vertex.Z };
-                                        planarGeometry1.PolyLoop.CartesianPoints.Add(point);
+                                        if (i == 3)
+                                        {
+                                            // Get start and end points of the segment
+                                            Point3d startPoint = window.GetPoint3dAt(i);
+                                            Point3d endPoint = window.GetPoint3dAt(0);
+
+                                            // Create a line segment for the polyline segment
+                                            Line segment = new Line(startPoint, endPoint);
+
+                                            // Check for intersection
+                                            Point3dCollection intersectionCollection = new Point3dCollection();
+                                            line.IntersectWith(segment, Intersect.OnBothOperands, intersectionCollection, IntPtr.Zero, IntPtr.Zero);
+                                            if (intersectionCollection.Count > 0)
+                                            {
+                                                foreach (Point3d pt in intersectionCollection)
+                                                {
+                                                    CartesianPoint point1 = new CartesianPoint();
+                                                    point1.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight)) + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? "0" : excelWindow.Height))) / 1000.0) };
+                                                    planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
+
+                                                    CartesianPoint point = new CartesianPoint();
+                                                    point.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight))) / 1000.0) };
+                                                    planarGeometry1.PolyLoop.CartesianPoints.Add(point);
+
+
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // Get start and end points of the segment
+                                            Point3d startPoint = window.GetPoint3dAt(i);
+                                            Point3d endPoint = window.GetPoint3dAt(i + 1);
+
+                                            // Create a line segment for the polyline segment
+                                            Line segment = new Line(startPoint, endPoint);
+
+                                            // Check for intersection
+                                            Point3dCollection intersectionCollection = new Point3dCollection();
+                                            line.IntersectWith(segment, Intersect.OnBothOperands, intersectionCollection, IntPtr.Zero, IntPtr.Zero);
+                                            if (intersectionCollection.Count > 0)
+                                            {
+                                                foreach (Point3d pt in intersectionCollection)
+                                                {
+                                                    CartesianPoint point = new CartesianPoint();
+                                                    point.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight))) / 1000.0) };
+                                                    planarGeometry1.PolyLoop.CartesianPoints.Add(point);
+
+                                                    CartesianPoint point1 = new CartesianPoint();
+                                                    point1.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight)) + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? "0" : excelWindow.Height))) / 1000.0) };
+                                                    planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
+                                                }
+                                            }
+                                        }
+
                                     }
 
+                                    //for (int i = 0; i < window.NumberOfVertices; i++)
+                                    //{
+                                    //    Point3d vertex = window.GetPoint3dAt(i);
+                                    //    CartesianPoint point = new CartesianPoint();
+                                    //    point.Coordinates = new List<double>() { (vertex.X / 1000.0), (vertex.Y / 1000.0), (vertex.Z / 1000.0) };
+                                    //    planarGeometry1.PolyLoop.CartesianPoints.Add(point);
+                                    //}
+
+                                    //planarGeometry1.PolyLoop.CartesianPoints = SortPointsWindowClockwise(planarGeometry1.PolyLoop.CartesianPoints);
+
                                     opening.PlanarGeometry = planarGeometry1;
+                                    rectangularGeometry1.CartesianPoint = planarGeometry1.PolyLoop.CartesianPoints[0];
+
+                                    opening.RectangularGeometry = rectangularGeometry1;
                                     surface.Openings.Add(opening);
                                 }
                             }
@@ -335,24 +493,35 @@ namespace EDS.Models
                             surface.ConstructionIdRef = "ASHRAE_189.1-2009_IntWall_Mass_ClimateZone_5";
                             surface.SurfaceType = "Interior Wall";
                             surface.Id = line.Handle.ToString();
-                            surface.AdjacentSpaceId = new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId };
+
+                            List<AdjacentSpaceId> adjacentSpaceIds = new List<AdjacentSpaceId>();
+                            foreach (var space in segmentCount.Find(x => (x.lineSegment.StartPoint.Equals(line.StartPoint) && x.lineSegment.EndPoint.Equals(line.EndPoint)) || (x.lineSegment.EndPoint.Equals(line.StartPoint) && x.lineSegment.StartPoint.Equals(line.EndPoint))).spaces.Distinct())
+                            {
+                                adjacentSpaceIds.Add(new AdjacentSpaceId() { SpaceIdRef = space });
+                            }
+
+                            surface.AdjacentSpaceId = adjacentSpaceIds;
+                            //surface.AdjacentSpaceId = new List<AdjacentSpaceId>() { new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId } };
 
                             RectangularGeometry rectangularGeometry = new RectangularGeometry();
-                            rectangularGeometry.Azimuth = 0;
-                            rectangularGeometry.CartesianPoint = new CartesianPoint() { Coordinates = new List<double> { line.StartPoint.X, line.StartPoint.Y, line.StartPoint.Z } };
+                            rectangularGeometry.Azimuth = 90;
+                            rectangularGeometry.CartesianPoint = new CartesianPoint() { Coordinates = new List<double> { (line.StartPoint.X / 1000.0), (line.StartPoint.Y / 1000.0), (line.StartPoint.Z / 1000.0) } };
                             rectangularGeometry.Tilt = 90;
-                            rectangularGeometry.Height = line.GeometricExtents.MaxPoint.Y - line.GeometricExtents.MinPoint.Y;
-                            rectangularGeometry.Width = line.GeometricExtents.MaxPoint.X - line.GeometricExtents.MinPoint.X;
+                            rectangularGeometry.Height = (line.GeometricExtents.MaxPoint.Y - line.GeometricExtents.MinPoint.Y) / 1000.0;
+                            rectangularGeometry.Width = /*(line.GeometricExtents.MaxPoint.X - line.GeometricExtents.MinPoint.X) / 1000.0 == 0 ? (line.GeometricExtents.MaxPoint.Y - line.GeometricExtents.MinPoint.Y) / 1000.0 :*/ (line.GeometricExtents.MaxPoint.X - line.GeometricExtents.MinPoint.X) / 1000.0;
                             surface.RectangularGeometry = rectangularGeometry;
 
                             PlanarGeometry planarGeometry = new PlanarGeometry();
                             planarGeometry.PolyLoop = new PolyLoop();
                             planarGeometry.PolyLoop.CartesianPoints = new List<CartesianPoint>();
 
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.StartPoint.X, line.StartPoint.Y, line.StartPoint.Z } });
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.StartPoint.X, line.StartPoint.Y, line.StartPoint.Z + allHeight } });
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.EndPoint.X, line.EndPoint.Y, line.EndPoint.Z + allHeight } });
-                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { line.EndPoint.X, line.EndPoint.Y, line.EndPoint.Z } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.StartPoint.X / 1000.0), (line.StartPoint.Y / 1000.0), (line.StartPoint.Z / 1000.0) } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.StartPoint.X / 1000.0), (line.StartPoint.Y / 1000.0), (line.StartPoint.Z + allHeight) / 1000.0 } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.EndPoint.X / 1000.0), (line.EndPoint.Y / 1000.0), (line.EndPoint.Z + allHeight) / 1000.0 } });
+                            planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.EndPoint.X / 1000.0), (line.EndPoint.Y / 1000.0), (line.EndPoint.Z / 1000.0) } });
+
+                            planarGeometry.PolyLoop.CartesianPoints = SortPointsClockwise(planarGeometry.PolyLoop.CartesianPoints);
+
                             surface.PlanarGeometry = planarGeometry;
 
                             campus.Surfaces.Add(surface);
@@ -363,7 +532,7 @@ namespace EDS.Models
                 }
             }
 
-            return campus;
+            return gbxml;
         }
 
         private void AddExcelData(Database db)
@@ -381,12 +550,16 @@ namespace EDS.Models
 
                     var name = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Name;
 
-                    if (!System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx")))
-                        System.IO.File.Copy(fileName, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx"));
+                    string moveFileName = System.IO.Path.GetFileNameWithoutExtension(name);
 
+
+                    if (System.IO.File.Exists(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), moveFileName + ".xlsx")))
+                        System.IO.File.Delete(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), moveFileName + ".xlsx"));
+
+                    System.IO.File.Copy(fileName, System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), moveFileName + ".xlsx"));
 
                     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                    var cadOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), "CAD Output Template.xlsx");
+                    var cadOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), moveFileName + ".xlsx");
 
                     using (ExcelPackage package = new ExcelPackage(cadOutputFile))
                     {
@@ -436,7 +609,7 @@ namespace EDS.Models
 
                                 worksheet.Cells[rowCount, 9].Value = totalArea;
                                 worksheet.Cells[rowCount, 11].Value = room.room.spaceType;
-
+                                worksheet.Cells[rowCount, 12].Value = room.walls[iNo].wall.extWallType;
                                 rowCount++;
                             }
                         }
@@ -451,12 +624,14 @@ namespace EDS.Models
 
                         foreach (var room in rooms)
                         {
+                            excelWorksheet.Cells[rowCount, 3].Value = room.room.spaceType.ToString().Split('-')[1];
+                            excelWorksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString().Split('-')[0];
+                            excelWorksheet.Cells[rowCount, 5].Value = double.Parse(room.room.roomArea) / 1_000_000;
+
+                            double totalArea = 0.0;
+                            double windowGlaze = 0.0;
                             for (int iNo = 0; iNo < room.walls.Count; iNo++)
                             {
-                                excelWorksheet.Cells[rowCount, 3].Value = room.room.spaceType.ToString().Split('-')[1];
-                                excelWorksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString().Split('-')[0];
-                                excelWorksheet.Cells[rowCount, 5].Value = double.Parse(room.room.roomArea) / 1_000_000;
-                                double totalArea = 0.0;
                                 if (room.walls[iNo].windows != null)
                                 {
                                     if (room.walls[iNo].windows.Count > 0)
@@ -469,22 +644,143 @@ namespace EDS.Models
                                             {
                                                 Polyline line = entity1 as Polyline;
                                                 totalArea = totalArea + (line.Area / 1_000_000);
+                                                windowGlaze = windowGlaze + (string.IsNullOrEmpty(room.walls[iNo].windows[iNo1].VLT) ? 0 : double.
+                                                    Parse(room.walls[iNo].windows[iNo1].VLT));
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+
+                            excelWorksheet.Cells[rowCount, 6].Value = totalArea;
+                            excelWorksheet.Cells[rowCount, 7].Value = windowGlaze;
+
+                            rowCount++;
+                        }
+
+                        ExcelWorksheet workSheetVentilation = package.Workbook.Worksheets[2];
+                        workSheetVentilation.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
+                        workSheetVentilation.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
+                        workSheetVentilation.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
+                        workSheetVentilation.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingCategory;
+
+                        rowCount = 8;
+
+                        foreach (var room in rooms)
+                        {
+                            workSheetVentilation.Cells[rowCount, 3].Value = room.room.spaceType.ToString().Split('-')[1];
+                            workSheetVentilation.Cells[rowCount, 4].Value = room.room.spaceType.ToString().Split('-')[0];
+                            workSheetVentilation.Cells[rowCount, 5].Value = double.Parse(room.room.roomArea) / 1_000_000;
+
+                            double totalArea = 0.0;
+                            double windowsArea = 0.0;
+                            for (int iNo = 0; iNo < room.walls.Count; iNo++)
+                            {
+                                double windowArea = 0.0;
+
+                                if (room.walls[iNo].windows != null)
+                                {
+                                    if (room.walls[iNo].windows.Count > 0)
+                                    {
+                                        for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
+                                        {
+                                            Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
+                                            if (entity1 is Polyline)
+                                            {
+                                                Polyline line = entity1 as Polyline;
+                                                windowArea = (line.Area / 1_000_000);
+
+                                                if (room.walls[iNo].windows[iNo1].WindowType.Equals("Openable"))
+                                                {
+                                                    windowsArea = windowsArea + (line.Area / 1_000_000);
+                                                    totalArea = totalArea + (windowArea * (double.Parse(room.walls[iNo].windows[iNo1].OpenAble) / 100.0));
+                                                }
                                             }
 
                                         }
                                     }
                                 }
 
-                                excelWorksheet.Cells[rowCount, 6].Value = totalArea;
-
-                                rowCount++;
                             }
+                            workSheetVentilation.Cells[rowCount, 6].Value = windowsArea;
+                            workSheetVentilation.Cells[rowCount, 7].Value = totalArea;
+                            rowCount++;
                         }
 
                         package.Save();
                     }
                 }
             }
+        }
+
+        public static List<CartesianPoint> SortPointsClockwise(List<CartesianPoint> points)
+        {
+            // Calculate the centroid or use the first point as reference
+            CartesianPoint referencePoint = CalculateCentroid(points);
+
+            points.Sort((a, b) =>
+            {
+                // Get the angle of point a and point b relative to the reference point
+                double angleA = Math.Atan2(a.Coordinates[1] - referencePoint.Coordinates[1], a.Coordinates[0] - referencePoint.Coordinates[0]);
+                double angleB = Math.Atan2(b.Coordinates[1] - referencePoint.Coordinates[1], b.Coordinates[0] - referencePoint.Coordinates[0]);
+
+                // Sort by angle (clockwise)
+                return angleA.CompareTo(angleB);
+            });
+
+            return points;
+        }
+
+        // Method to calculate the centroid (average of all points)
+        private static CartesianPoint CalculateCentroid(List<CartesianPoint> points)
+        {
+            double sumX = 0, sumY = 0;
+            int count = points.Count;
+
+            foreach (var point in points)
+            {
+                sumX += point.Coordinates[0];
+                sumY += point.Coordinates[1];
+            }
+
+            CartesianPoint centroid = new CartesianPoint
+            {
+                Coordinates = new List<double> { sumX / count, sumY / count, 0 }
+            };
+
+            return centroid;
+        }
+
+        private List<CartesianPoint> SortPointsAnticlockwise(List<CartesianPoint> points)
+        {
+            CartesianPoint centroid = CalculateCentroid(points);
+
+            points.Sort((a, b) =>
+            {
+                double angleA = Math.Atan2(a.Coordinates[1] - centroid.Coordinates[1], a.Coordinates[0] - centroid.Coordinates[0]);
+                double angleB = Math.Atan2(b.Coordinates[1] - centroid.Coordinates[1], b.Coordinates[0] - centroid.Coordinates[0]);
+
+                // Sort by angle, and if equal, sort by distance to centroid (to break ties)
+                int angleComparison = angleA.CompareTo(angleB);
+                if (angleComparison == 0)
+                {
+                    // Compare distances from centroid to break ties
+                    double distanceA = Distance(a, centroid);
+                    double distanceB = Distance(b, centroid);
+                    return distanceA.CompareTo(distanceB);
+                }
+                return angleComparison;
+            });
+
+            return points;
+        }
+
+        private static double Distance(CartesianPoint a, CartesianPoint b)
+        {
+            double dx = a.Coordinates[0] - b.Coordinates[0];
+            double dy = a.Coordinates[1] - b.Coordinates[1];
+            return Math.Sqrt(dx * dx + dy * dy);
         }
 
         private double GetAzimuthAngle(Line line, double direction)
@@ -605,12 +901,14 @@ namespace EDS.Models
                                         {
                                             line.iCount++;
                                         }
+
+                                        line.spaces.Add(room.textHandleId);
                                     }
                                 }
                                 else
                                 {
                                     // Otherwise, add it to the dictionary
-                                    segmentCount.Add(new LineSelectCount() { lineSegment = segment, iCount = 1 });
+                                    segmentCount.Add(new LineSelectCount() { lineSegment = segment, iCount = 1, spaces = new List<string>() { room.textHandleId } });
                                 }
 
                                 if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))

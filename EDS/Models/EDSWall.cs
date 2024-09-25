@@ -660,6 +660,7 @@ namespace EDS.Models
     {
         public LineSegment lineSegment;
         public int iCount = 0;
+        public List<string> spaces = new List<string>();
     }
 
     public class LineSegment

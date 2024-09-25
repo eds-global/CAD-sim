@@ -11,16 +11,16 @@ namespace EDS.Models
 {
     internal class XmlFileFormat
     {
-        public bool WriteToFile(Campus campus,string fileName)
+        public bool WriteToFile(GbXml gbXml,string fileName)
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(Campus));
+                XmlSerializer serializer = new XmlSerializer(typeof(GbXml));
 
                 // Serialize the object to an XML file
                 using (StreamWriter writer = new StreamWriter(fileName))
                 {
-                    serializer.Serialize(writer, campus);
+                    serializer.Serialize(writer, gbXml);
                 }
 
                 return true;

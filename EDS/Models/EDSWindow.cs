@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Media.Media3D;
 using ZwSoft.ZwCAD.ApplicationServices;
 using ZwSoft.ZwCAD.DatabaseServices;
@@ -103,7 +104,7 @@ namespace EDS.Models
 
                 if (targetResult.Status != PromptStatus.OK)
                 {
-                    MessageBox.Show("Please select the window for extract data");
+                    System.Windows.Forms.MessageBox.Show("Please select the window for extract data");
                     return null;
                 }
 
@@ -141,7 +142,7 @@ namespace EDS.Models
 
                 if (targetResult.Status != PromptStatus.OK)
                 {
-                    MessageBox.Show("Please select the window for extract data");
+                    System.Windows.Forms.MessageBox.Show("Please select the window for extract data");
                     return;
                 }
                 foreach (ObjectId objectId in targetResult.Value.GetObjectIds())
@@ -178,7 +179,7 @@ namespace EDS.Models
 
                 if (targetResult.Status != PromptStatus.OK)
                 {
-                    MessageBox.Show("Please select the source window for document:");
+                    System.Windows.Forms.MessageBox.Show("Please select the source window for document:");
                     return;
                 }
 
@@ -193,7 +194,7 @@ namespace EDS.Models
 
                     if (targetResult.Status != PromptStatus.OK)
                     {
-                        MessageBox.Show("Please select the window for match");
+                        System.Windows.Forms.MessageBox.Show("Please select the window for match");
                         return;
                     }
                     foreach (ObjectId objectId in promptSelectionResult.Value.GetObjectIds())
@@ -203,7 +204,7 @@ namespace EDS.Models
                 }
                 else
                 {
-                    MessageBox.Show("Select the window from the document");
+                    System.Windows.Forms.MessageBox.Show("Select the window from the document");
                     return;
                 }
 
@@ -554,24 +555,44 @@ namespace EDS.Models
                     double spacing = double.Parse(window.Spacing); // Spacing between rectangles
                     double halfWindowHeight = StringConstants.wallHeight / 2.0;
 
-                    double wallLength = line.Length;
+                    //double wallLength = line.Length;
 
-                    // Step 2: Calculate how many windows can fit on the wall
-                    int maxWindows = (int)(wallLength / (width + spacing));
+                    double reservedGap = 100;  // 100mm gap at both ends
 
-                    // Step 3: Check if an additional window can fit
-                    if (((width + spacing) * maxWindows - spacing) <= wallLength)
+                    // Determine the correct start and end points based on geometry
+                    Point3d realStartPoint, realEndPoint;
+                    if (line.StartPoint.X < line.EndPoint.X || (line.StartPoint.X == line.EndPoint.X && line.StartPoint.Y < line.EndPoint.Y))
                     {
-                        maxWindows++;
+                        // StartPoint is lower (or leftmost), so it's the correct starting point
+                        realStartPoint = line.StartPoint;
+                        realEndPoint = line.EndPoint;
+                    }
+                    else
+                    {
+                        // EndPoint is lower (or leftmost), so swap them
+                        realStartPoint = line.EndPoint;
+                        realEndPoint = line.StartPoint;
                     }
 
-                    // Step 4: Calculate total window placement width and the center offset
-                    double totalWidth = (width + spacing) * maxWindows - spacing;
-                    double offset = (wallLength - totalWidth) / 2;
+                    // Calculate the wall's direction as a unit vector from realStartPoint to realEndPoint
+                    Vector3d wallDirection = (realEndPoint - realStartPoint).GetNormal();
 
-                    // Step 5: Calculate the wall's direction as a unit vector
-                    Vector3d wallDirection = line.EndPoint - line.StartPoint;
-                    wallDirection = wallDirection.GetNormal();
+                    // Adjust the wall length to account for the reserved 100mm gap on both ends
+                    double wallLength = (realEndPoint - realStartPoint).Length;
+                    double adjustedWallLength = wallLength - 2 * reservedGap; // Ensure the 100mm gap is on both sides
+
+                    if (width >= wallLength)
+                    {
+                        System.Windows.Forms.MessageBox.Show("The width of the window cannot be greater than the wall length.", "Invalid Width", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Step 2: Calculate how many windows can fit on the adjusted wall length
+                    int maxWindows = (int)(adjustedWallLength / (width + spacing));
+
+                    // Step 3: Calculate total window placement width and the offset for the first window
+                    double totalWidth = (width + spacing) * maxWindows - spacing;
+                    double offset = reservedGap; // Start exactly 100mm from the start point
 
                     // Get the perpendicular direction (normal) to place the window height
                     Vector3d windowHeightDirection = wallDirection.RotateBy(Math.PI / 2, Vector3d.ZAxis);
@@ -580,11 +601,11 @@ namespace EDS.Models
                     BlockTable bt = tr.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
                     BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                    // Step 6: Draw the windows aligned to the wall
+                    // Step 6: Draw the windows aligned to the wall, keeping the 100mm gap
                     for (int i = 0; i < maxWindows; i++)
                     {
-                        // Calculate the starting point for each window along the wall
-                        Point3d windowBasePoint = line.StartPoint + (offset + i * (width + spacing)) * wallDirection;
+                        // Calculate the starting point for each window along the wall, after the 100mm gap
+                        Point3d windowBasePoint = realStartPoint + (offset + i * (width + spacing)) * wallDirection;
 
                         // Create the four corners of the window rectangle
                         Point3d bottomLeft = windowBasePoint - halfWindowHeight * windowHeightDirection;
@@ -592,46 +613,26 @@ namespace EDS.Models
                         Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
                         Point3d topRight = topLeft + width * wallDirection;
 
-                        // Function to check if a point lies on the line segment
-                        bool IsPointOnLineSegment(Point3d point, Point3d start, Point3d end)
+                        // Ensure that the window fits entirely within the line (both points within the line's start and end)
+                        if (bottomLeft.DistanceTo(realStartPoint) >= reservedGap && bottomRight.DistanceTo(realEndPoint) <= adjustedWallLength)
                         {
-                            Vector3d lineVector = end - start;
-                            Vector3d pointVector = point - start;
+                            // Create the polyline (rectangle) representing the window
+                            Polyline polyWindow = new Polyline();
+                            polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
+                            polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
+                            polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
+                            polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
+                            polyWindow.Closed = true;
 
-                            // Project the point onto the line
-                            double projection = pointVector.DotProduct(lineVector.GetNormal());
+                            polyWindow.Layer = StringConstants.windowLayerName;
 
-                            // Check if the projection lies between 0 and the line length
-                            return projection >= 0 && projection <= lineVector.Length;
+                            // Add the window to the drawing
+                            ObjectId objectId1 = btr.AppendEntity(polyWindow);
+                            tr.AddNewlyCreatedDBObject(polyWindow, true);
+
+                            SetXDataForWindow(objectId1, window);
                         }
-
-                        // Check if all corners of the window lie within the line segment
-                        if (!IsPointOnLineSegment(bottomLeft, line.StartPoint, line.EndPoint) ||
-                            !IsPointOnLineSegment(bottomRight, line.StartPoint, line.EndPoint) ||
-                            !IsPointOnLineSegment(topLeft, line.StartPoint, line.EndPoint) ||
-                            !IsPointOnLineSegment(topRight, line.StartPoint, line.EndPoint))
-                        {
-                            // If any corner is outside the line segment, skip this window
-                            continue;
-                        }
-
-                        // Create the polyline (rectangle) representing the window
-                        Polyline polyWindow = new Polyline();
-                        polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
-                        polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
-                        polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
-                        polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
-                        polyWindow.Closed = true;
-
-                        polyWindow.Layer = StringConstants.windowLayerName;
-
-                        // Add the window to the drawing
-                        ObjectId objectId1 = btr.AppendEntity(polyWindow);
-                        tr.AddNewlyCreatedDBObject(polyWindow, true);
-
-                        SetXDataForWindow(objectId1, window);
                     }
-
 
                 }
                 // Commit the transaction

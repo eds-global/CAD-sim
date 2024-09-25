@@ -7,9 +7,107 @@ using System.Xml.Serialization;
 
 namespace EDS.Models
 {
+    [XmlRoot(ElementName = "gbXML", Namespace = "http://www.gbxml.org/schema")]
+    public class GbXml
+    {
+        [XmlAttribute("useSIUnitsForResults")]
+        public bool UseSIUnitsForResults { get; set; }
+
+        [XmlAttribute("lengthUnit")]
+        public string LengthUnit { get; set; }
+
+        [XmlAttribute("volumeUnit")]
+        public string VolumeUnit { get; set; }
+
+        [XmlAttribute("version")]
+        public string Version { get; set; }
+
+        [XmlAttribute("SurfaceReferenceLocation")]
+        public string SurfaceReferenceLocation { get; set; }
+
+        [XmlAttribute("areaUnit")]
+        public string AreaUnit { get; set; }
+
+        [XmlAttribute("temperatureUnit")]
+        public string TemperatureUnit { get; set; }
+
+        [XmlElement("Campus")]
+        public Campus Campus { get; set; }
+
+
+        [XmlElement("DocumentHistory")]
+        public DocumentHistory DocumentHistory { get; set; }
+
+        public XmlSerializerNamespaces Xmlns { get; set; }
+
+        public GbXml()
+        {
+            Xmlns = new XmlSerializerNamespaces();
+            Xmlns.Add("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+            Xmlns.Add("xsd", "http://www.w3.org/2001/XMLSchema");
+            Xmlns.Add("xhtml", "http://www.w3.org/1999/xhtml");
+        }
+    }
+    [XmlRoot("DocumentHistory")]
+    public class DocumentHistory
+    {
+        [XmlElement("CreatedBy")]
+        public CreatedBy CreatedBy { get; set; }
+
+        [XmlElement("ProgramInfo")]
+        public ProgramInfo ProgramInfo { get; set; }
+
+        [XmlElement("PersonInfo")]
+        public PersonInfo PersonInfo { get; set; }
+    }
+
+    public class CreatedBy
+    {
+        [XmlAttribute("programId")]
+        public string ProgramId { get; set; }
+
+        [XmlAttribute("date")]
+        public DateTime Date { get; set; }
+
+        [XmlAttribute("personId")]
+        public string PersonId { get; set; }
+    }
+
+    public class ProgramInfo
+    {
+        [XmlAttribute("id")]
+        public string Id { get; set; }
+
+        [XmlElement("ProductName")]
+        public string ProductName { get; set; }
+
+        [XmlElement("Version")]
+        public string Version { get; set; }
+
+        [XmlElement("Platform")]
+        public string Platform { get; set; }
+
+        [XmlElement("ProjectEntity")]
+        public string ProjectEntity { get; set; } // Adjust type as needed
+    }
+
+    public class PersonInfo
+    {
+        [XmlAttribute("id")]
+        public string Id { get; set; }
+
+        [XmlElement("FirstName")]
+        public string FirstName { get; set; }
+
+        [XmlElement("LastName")]
+        public string LastName { get; set; }
+    }
+
     [XmlRoot("Campus")]
     public class Campus
     {
+        [XmlAttribute("id")]
+        public string Id { get; set; }
         [XmlElement("Name")]
         public string Name { get; set; }
 
@@ -119,7 +217,7 @@ namespace EDS.Models
         public string ConstructionIdRef { get; set; }
 
         [XmlElement("AdjacentSpaceId")]
-        public AdjacentSpaceId AdjacentSpaceId { get; set; }
+        public List<AdjacentSpaceId> AdjacentSpaceId { get; set; }
 
         [XmlElement("RectangularGeometry")]
         public RectangularGeometry RectangularGeometry { get; set; }
