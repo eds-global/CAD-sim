@@ -53,11 +53,11 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="ZwDatabaseMgd, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\ZWCAD 2024\ZwDatabaseMgd.dll</HintPath>
+      <HintPath>..\EDS\Depenedencies\ZwDatabaseMgd.dll</HintPath>
     </Reference>
     <Reference Include="ZwManaged, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\ZWCAD 2024\ZwManaged.dll</HintPath>
+      <HintPath>..\EDS\Depenedencies\ZwManaged.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

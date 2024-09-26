@@ -1,12 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ZwSoft.ZwCAD.ApplicationServices;
 using ZwSoft.ZwCAD.DatabaseServices;
@@ -118,7 +111,7 @@ namespace EDS.UserControls
 
             Point3d p2 = CADUtilities.GetPoint("Pick second point", p1);
 
-            string lineHandle = CADUtilities.CreateLine(p1, p2,"Windows", 2);
+            string lineHandle = CADUtilities.CreateLine(p1, p2, "Windows", 2);
             ObjectId lineId = CADUtilities.HandleToObjectId(lineHandle);
 
             Point2d A = new Point2d(0, 0);
@@ -128,15 +121,15 @@ namespace EDS.UserControls
 
             double width = Convert.ToDouble(txtWidth.Text);
 
-            DBObjectCollection offsetObj1 = CADUtilities.Offset(lineId, width);            
+            DBObjectCollection offsetObj1 = CADUtilities.Offset(lineId, width);
 
-            if(offsetObj1.Count > 0)
+            if (offsetObj1.Count > 0)
             {
                 DBObject dbObj = offsetObj1[0];
 
                 Line l = dbObj as Line;
 
-                if(l != null)
+                if (l != null)
                 {
                     A = new Point2d(l.StartPoint.X, l.StartPoint.Y);
                     B = new Point2d(l.EndPoint.X, l.EndPoint.Y);
@@ -162,7 +155,7 @@ namespace EDS.UserControls
 
             ObjectId recId = CADUtilities.CreateRectangle(A, B, C, D, "Window", 2);
 
-            SetWindowXData(recId);            
+            SetWindowXData(recId);
         }
     }
 }

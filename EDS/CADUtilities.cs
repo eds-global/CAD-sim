@@ -23,6 +23,7 @@ namespace EDS
         {          
             return ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Name;
         }
+
         public static Point3d GetPoint(string msg)
         {
             Document acDoc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;

@@ -31,33 +31,86 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=7.3.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.7.3.1\lib\net462\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.Interfaces, Version=6.1.1.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.Interfaces.6.1.1\lib\net462\EPPlus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.System.Drawing.6.1.1\lib\net462\EPPlus.System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.7.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.7.0\lib\net462\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.7.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.7.0\lib\net462\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.0\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
-    <Reference Include="ZwDatabaseMgd">
-      <HintPath>C:\Program Files\ZWCAD 2024\ZwDatabaseMgd.dll</HintPath>
+    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="ZwDatabaseMgd, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Depenedencies\ZwDatabaseMgd.dll</HintPath>
     </Reference>
-    <Reference Include="ZwManaged">
-      <HintPath>C:\Program Files\ZWCAD 2024\ZwManaged.dll</HintPath>
+    <Reference Include="ZwManaged, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Depenedencies\ZwManaged.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AEC\AEC Classes.cs" />
     <Compile Include="AEC\AECExportManager.cs" />
+    <Compile Include="AEC\EDSCreation.cs" />
     <Compile Include="CADUtilities.cs" />
+    <Compile Include="ExcelReader.cs" />
     <Compile Include="GenericModule.cs" />
+    <Compile Include="Models\EDSRoomTag.cs" />
+    <Compile Include="Models\EDSWall.cs" />
+    <Compile Include="Models\EDSWindow.cs" />
+    <Compile Include="Models\ExcelFormat.cs" />
+    <Compile Include="Models\ExportValidation.cs" />
+    <Compile Include="StringConstants.cs" />
     <Compile Include="UserControls\ExportPalette.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -69,6 +122,24 @@
     </Compile>
     <Compile Include="UserControls\LispCommands.Designer.cs">
       <DependentUpon>LispCommands.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\RoomDataPalette.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\RoomDataPalette.Designer.cs">
+      <DependentUpon>RoomDataPalette.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WallDataPalette.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\WallDataPalette.Designer.cs">
+      <DependentUpon>WallDataPalette.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WindowDataPalette.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\WindowDataPalette.Designer.cs">
+      <DependentUpon>WindowDataPalette.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\WindowsDataPalette.cs">
       <SubType>UserControl</SubType>
@@ -109,15 +180,29 @@
     <EmbeddedResource Include="UserControls\ProjectInformationPalette.resx">
       <DependentUpon>ProjectInformationPalette.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\RoomDataPalette.resx">
+      <DependentUpon>RoomDataPalette.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\WallDataPalette.resx">
+      <DependentUpon>WallDataPalette.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\WindowDataPalette.resx">
+      <DependentUpon>WindowDataPalette.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\WindowsDataPalette.resx">
       <DependentUpon>WindowsDataPalette.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <EmbeddedResource Include="CAD Output Template.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Resources\NorthArrow.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Refresh.bmp" />
     <Content Include="TextFile1.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +213,10 @@
     <ProjectReference Include="..\Zoom\Zoom.vbproj">
       <Project>{3fd6929b-968b-4cd2-a275-89cc6e708f02}</Project>
       <Name>Zoom</Name>
+    </ProjectReference>
+    <ProjectReference Include="ToggleSwitch\ToggleSwitch.csproj">
+      <Project>{49b88ffa-f02c-4709-ba65-9f8996444ecd}</Project>
+      <Name>ToggleSwitch</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
