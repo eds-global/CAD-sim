@@ -796,5 +796,35 @@ namespace EDS.UserControls
         {
             occuText1.Text = "";
         }
+
+        private void label14_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ceilFinishComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void unitLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void floorFinishComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

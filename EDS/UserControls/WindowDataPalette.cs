@@ -86,6 +86,46 @@ namespace EDS.UserControls
                 }
             }
 
+            if (double.TryParse(sillHeight.Text.Trim(), out _))
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("Sill Height should be an numeric value");
+                return;
+            }
+
+            if (double.TryParse(VLTValue.Text.Trim(), out _))
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("VLT should be an numeric value");
+                return;
+            }
+
+            if (double.TryParse(UValue.Text.Trim(), out _))
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("UValue should be an numeric value");
+                return;
+            }
+
+            if (double.TryParse(SHGCValue.Text.Trim(), out _))
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("SHGC should be an numeric value");
+                return;
+            }
+
             EDSWindow window = new EDSWindow()
             {
                 InsertionMode = insertComboBox.SelectedItem == null ? "" : insertComboBox.SelectedItem.ToString(),
@@ -254,6 +294,7 @@ namespace EDS.UserControls
 
                     if (specifyOnDrawing.Checked)
                         specifyOnDrawing.Checked = false;
+
                     specifyOnDrawing.Enabled = false;
                 }
             }

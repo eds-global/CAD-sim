@@ -20,6 +20,12 @@ namespace EDS
 
         private void btnScan_Click(object sender, EventArgs e)
         {
+            if (clckWiseRdBttn.Checked)
+                GenericModule.IsExtWllSrtBbyClkWs = true;
+            else
+                GenericModule.IsExtWllSrtBbyClkWs = false;
+
+
             treeView1.Nodes.Clear();
             progressBar1.Value = 25;
             EDSScan scan = new EDSScan();

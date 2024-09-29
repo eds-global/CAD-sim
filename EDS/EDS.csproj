@@ -105,6 +105,7 @@
     <Compile Include="CADUtilities.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="GenericModule.cs" />
+    <Compile Include="Models\EDSExport.cs" />
     <Compile Include="Models\EDSRoomTag.cs" />
     <Compile Include="Models\EDSWall.cs" />
     <Compile Include="Models\EDSWindow.cs" />

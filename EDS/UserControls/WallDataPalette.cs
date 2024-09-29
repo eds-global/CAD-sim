@@ -66,6 +66,8 @@ namespace EDS.UserControls
 
         private void WallDataPalette_Load(object sender, EventArgs e)
         {
+            
+            
             LoadListValues();
         }
 
@@ -287,6 +289,56 @@ namespace EDS.UserControls
         {
             EDSWall wallCreation = new EDSWall();
             wallCreation.MatchLine();
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label16_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void uValue_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void f1Type1CompText_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
