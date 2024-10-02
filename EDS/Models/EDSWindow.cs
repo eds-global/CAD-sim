@@ -378,6 +378,11 @@ namespace EDS.Models
                 {
                     width = double.Parse(window.Width);
 
+                    if (width > Math.Round(line.Length, 2))
+                    {
+                        System.Windows.Forms.MessageBox.Show($"\nError: Window width ({width}) is greater than the wall length ({Math.Round(line.Length, 2)}).", "Window Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
 
                     PromptPointOptions promptPointOptions = new PromptPointOptions("\nSpecify the insertion point on the wall: ");
                     promptPointOptions.AllowArbitraryInput = false;
@@ -555,6 +560,13 @@ namespace EDS.Models
                     double spacing = double.Parse(window.Spacing); // Spacing between rectangles
                     double halfWindowHeight = StringConstants.wallHeight / 2.0;
 
+                    if (width > Math.Round(line.Length, 2))
+                    {
+                        System.Windows.Forms.MessageBox.Show($"\nError: Window width ({width}) is greater than the wall length ({Math.Round(line.Length, 2)}).", "Window Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    }
+
+
                     //double wallLength = line.Length;
 
                     double reservedGap = 100;  // 100mm gap at both ends
@@ -597,36 +609,147 @@ namespace EDS.Models
                         BlockTable bt = tr.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
                         BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                        for (int i = 0; i < fullWindowCount; i++)
+                        if (fullWindowCount % 2 == 0)
                         {
-                            // Calculate the starting point for each window along the wall
-                            Point3d windowBasePoint = realStartPoint + (offset + i * (width + spacing)) * wallDirection;
+                            Point3d midPoint = realStartPoint + wallDirection * (wallLength / 2);
+                            Point3d windowBasePoint = midPoint - (((spacing / 2) + width) * wallDirection);
+                            var lastBasePoint = windowBasePoint;
 
-                            // Create the four corners of the window rectangle
-                            Point3d bottomLeft = windowBasePoint - halfWindowHeight * windowHeightDirection;
-                            Point3d bottomRight = bottomLeft + width * wallDirection;
-                            Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
-                            Point3d topRight = topLeft + width * wallDirection;
-
-                            // Ensure the window is within bounds of the line (start and end points)
-                            if (bottomLeft.DistanceTo(realStartPoint) >= reservedGap &&
-                                bottomRight.DistanceTo(realEndPoint) <= adjustedWallLength + reservedGap)
+                            while (lastBasePoint.DistanceTo(realStartPoint) >= (width + reservedGap))
                             {
-                                // Create the polyline (rectangle) representing the window
-                                Polyline polyWindow = new Polyline();
-                                polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
-                                polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
-                                polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
-                                polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
-                                polyWindow.Closed = true;
 
-                                polyWindow.Layer = StringConstants.windowLayerName;
+                                Point3d bottomLeft = windowBasePoint - halfWindowHeight * windowHeightDirection;
+                                Point3d bottomRight = bottomLeft + width * wallDirection;
+                                Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
+                                Point3d topRight = topLeft + width * wallDirection;
 
-                                // Add the window to the drawing
-                                ObjectId objectId1 = btr.AppendEntity(polyWindow);
-                                tr.AddNewlyCreatedDBObject(polyWindow, true);
+                                // Ensure that the window fits entirely within the line (both points within the line's start and end)
+                                if (bottomLeft.DistanceTo(realStartPoint) >= reservedGap && bottomRight.DistanceTo(realEndPoint) <= adjustedWallLength)
+                                {
+                                    // Create the polyline (rectangle) representing the window
+                                    Polyline polyWindow = new Polyline();
+                                    polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
+                                    polyWindow.Closed = true;
 
-                                SetXDataForWindow(objectId1, window);
+                                    polyWindow.Layer = StringConstants.windowLayerName;
+
+                                    // Add the window to the drawing
+                                    ObjectId objectId1 = btr.AppendEntity(polyWindow);
+                                    tr.AddNewlyCreatedDBObject(polyWindow, true);
+
+                                    SetXDataForWindow(objectId1, window);
+                                }
+                                lastBasePoint = windowBasePoint;
+                                windowBasePoint = windowBasePoint - ((spacing + width) * wallDirection);
+                            }
+
+                            windowBasePoint = midPoint + (((spacing / 2) + width) * wallDirection);
+                            lastBasePoint = windowBasePoint;
+                            while (lastBasePoint.DistanceTo(realEndPoint) >= (width + reservedGap))
+                            {
+
+                                Point3d bottomLeft = windowBasePoint - halfWindowHeight * windowHeightDirection;
+                                Point3d bottomRight = bottomLeft - width * wallDirection;
+                                Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
+                                Point3d topRight = topLeft - width * wallDirection;
+
+                                // Ensure that the window fits entirely within the line (both points within the line's start and end)
+                                if (bottomLeft.DistanceTo(realStartPoint) >= reservedGap && bottomRight.DistanceTo(realEndPoint) <= adjustedWallLength)
+                                {
+                                    // Create the polyline (rectangle) representing the window
+                                    Polyline polyWindow = new Polyline();
+                                    polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
+                                    polyWindow.Closed = true;
+
+                                    polyWindow.Layer = StringConstants.windowLayerName;
+
+                                    // Add the window to the drawing
+                                    ObjectId objectId1 = btr.AppendEntity(polyWindow);
+                                    tr.AddNewlyCreatedDBObject(polyWindow, true);
+
+                                    SetXDataForWindow(objectId1, window);
+                                }
+
+                                lastBasePoint = windowBasePoint;
+                                windowBasePoint = windowBasePoint + ((spacing + width) * wallDirection);
+                            }
+
+                        }
+                        else
+                        {
+                            Point3d midPoint = realStartPoint + wallDirection * (wallLength / 2);
+                            Point3d windowBasePoint = midPoint - (((width / 2) + 0) * wallDirection);
+                            var lastBasePoint = windowBasePoint;
+
+                            while (lastBasePoint.DistanceTo(realStartPoint) >= (width + reservedGap))
+                            {
+
+                                Point3d bottomLeft = windowBasePoint - halfWindowHeight * windowHeightDirection;
+                                Point3d bottomRight = bottomLeft + width * wallDirection;
+                                Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
+                                Point3d topRight = topLeft + width * wallDirection;
+
+                                // Ensure that the window fits entirely within the line (both points within the line's start and end)
+                                if (bottomLeft.DistanceTo(realStartPoint) >= reservedGap && bottomRight.DistanceTo(realEndPoint) <= adjustedWallLength)
+                                {
+                                    // Create the polyline (rectangle) representing the window
+                                    Polyline polyWindow = new Polyline();
+                                    polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
+                                    polyWindow.Closed = true;
+
+                                    polyWindow.Layer = StringConstants.windowLayerName;
+
+                                    // Add the window to the drawing
+                                    ObjectId objectId1 = btr.AppendEntity(polyWindow);
+                                    tr.AddNewlyCreatedDBObject(polyWindow, true);
+
+                                    SetXDataForWindow(objectId1, window);
+                                }
+                                lastBasePoint = windowBasePoint;
+                                windowBasePoint = windowBasePoint - ((spacing + width) * wallDirection);
+                            }
+
+                            windowBasePoint = midPoint + (((width / 2) + 0) * wallDirection);
+                            lastBasePoint = windowBasePoint;
+                            while (lastBasePoint.DistanceTo(realEndPoint) >= (width + reservedGap))
+                            {
+
+                                Point3d bottomLeft = windowBasePoint - halfWindowHeight * windowHeightDirection;
+                                Point3d bottomRight = bottomLeft - width * wallDirection;
+                                Point3d topLeft = windowBasePoint + halfWindowHeight * windowHeightDirection;
+                                Point3d topRight = topLeft - width * wallDirection;
+
+                                // Ensure that the window fits entirely within the line (both points within the line's start and end)
+                                if (bottomLeft.DistanceTo(realStartPoint) >= reservedGap && bottomRight.DistanceTo(realEndPoint) <= adjustedWallLength)
+                                {
+                                    // Create the polyline (rectangle) representing the window
+                                    Polyline polyWindow = new Polyline();
+                                    polyWindow.AddVertexAt(0, new Point2d(bottomLeft.X, bottomLeft.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(1, new Point2d(bottomRight.X, bottomRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(2, new Point2d(topRight.X, topRight.Y), 0, 0, 0);
+                                    polyWindow.AddVertexAt(3, new Point2d(topLeft.X, topLeft.Y), 0, 0, 0);
+                                    polyWindow.Closed = true;
+
+                                    polyWindow.Layer = StringConstants.windowLayerName;
+
+                                    // Add the window to the drawing
+                                    ObjectId objectId1 = btr.AppendEntity(polyWindow);
+                                    tr.AddNewlyCreatedDBObject(polyWindow, true);
+
+                                    SetXDataForWindow(objectId1, window);
+                                }
+
+                                lastBasePoint = windowBasePoint;
+                                windowBasePoint = windowBasePoint + ((spacing + width) * wallDirection);
                             }
                         }
                     }

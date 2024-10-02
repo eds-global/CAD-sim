@@ -16,6 +16,7 @@ using ZwSoft.ZwCAD.EditorInput;
 using ZwSoft.ZwCAD.Geometry;
 using ZwSoft.ZwCAD.GraphicsInterface;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
+using static System.Windows.Forms.LinkLabel;
 using Line = ZwSoft.ZwCAD.DatabaseServices.Line;
 using Polyline = ZwSoft.ZwCAD.DatabaseServices.Polyline;
 
@@ -111,7 +112,6 @@ namespace EDS.Models
 
                         exportValidation.IdentifyOpenLoopLinesWithCircles(db, selectionSet, treeView);
 
-
                         if (treeView.Nodes.Count == 0)
                         {
 
@@ -134,7 +134,6 @@ namespace EDS.Models
                             if (edsRooms.Count > 0)
                             {
                                 CreateTreeNodes(edsRooms, wallLines, windowLines, treeView);
-
                             }
                             else
                             {
@@ -142,13 +141,16 @@ namespace EDS.Models
                             }
 
                             UnHideWindows(db, true);
+
                             Thread.Sleep(1000);
+
                             if (!string.IsNullOrEmpty(ProjectInformationPalette.projectInformation.Direction))
                             {
 
                                 AddExcelData(db);
 
                                 CreateXMLFile(db);
+
                             }
                             else
                             {
@@ -365,7 +367,7 @@ namespace EDS.Models
                     foreach (EDSExcelWall excelWall in room.walls)
                     {
                         Line line = transaction.GetObject(CADUtilities.HandleToObjectId(excelWall.wall.wallHandleId), OpenMode.ForWrite) as Line;
-                        EDSExport eDSExport = new EDSExport();
+                        //EDSExport eDSExport = new EDSExport();
                         //eDSExport.mthdOfSortExternalWall(new List<Line>() { line });
                         if (segmentCount.Find(x => (x.lineSegment.StartPoint.Equals(line.StartPoint) && x.lineSegment.EndPoint.Equals(line.EndPoint)) || (x.lineSegment.EndPoint.Equals(line.StartPoint) && x.lineSegment.StartPoint.Equals(line.EndPoint))).iCount == 1)
                         {
@@ -376,7 +378,7 @@ namespace EDS.Models
                             surface.AdjacentSpaceId = new List<AdjacentSpaceId>() { new AdjacentSpaceId() { SpaceIdRef = room.room.textHandleId } };
 
                             RectangularGeometry rectangularGeometry = new RectangularGeometry();
-                            rectangularGeometry.Azimuth = 90;
+                            rectangularGeometry.Azimuth = GetAzimuthAngle(line, double.Parse(ProjectInformationPalette.projectInformation.Direction));
                             rectangularGeometry.CartesianPoint = new CartesianPoint() { Coordinates = new List<double> { (line.StartPoint.X / 1000.0), (line.StartPoint.Y / 1000.0), (line.StartPoint.Z / 1000.0) } };
                             rectangularGeometry.Tilt = 90;
                             rectangularGeometry.Height = (line.GeometricExtents.MaxPoint.Y - line.GeometricExtents.MinPoint.Y) / 1000.0;
@@ -392,8 +394,8 @@ namespace EDS.Models
                             planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.EndPoint.X / 1000.0), (line.EndPoint.Y / 1000.0), (line.EndPoint.Z + allHeight) / 1000.0 } });
                             planarGeometry.PolyLoop.CartesianPoints.Add(new CartesianPoint() { Coordinates = new List<double> { (line.EndPoint.X / 1000.0), (line.EndPoint.Y / 1000.0), (line.EndPoint.Z / 1000.0) } });
 
-                            if (!IsClockwise(planarGeometry.PolyLoop.CartesianPoints))
-                                planarGeometry.PolyLoop.CartesianPoints.Reverse();
+                            //if (!IsClockwise(planarGeometry.PolyLoop.CartesianPoints))
+                            //    planarGeometry.PolyLoop.CartesianPoints.Reverse();
 
                             //planarGeometry.PolyLoop.CartesianPoints = SortPointsClockwise(planarGeometry.PolyLoop.CartesianPoints);
 
@@ -439,9 +441,9 @@ namespace EDS.Models
                                             {
                                                 foreach (Point3d pt in intersectionCollection)
                                                 {
-                                                    CartesianPoint point1 = new CartesianPoint();
-                                                    point1.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight)) + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? allHeight.ToString() : excelWindow.Height))) / 1000.0) };
-                                                    planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
+                                                    //CartesianPoint point1 = new CartesianPoint();
+                                                    //point1.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight)) + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? allHeight.ToString() : excelWindow.Height))) / 1000.0) };
+                                                    //planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
 
                                                     CartesianPoint point = new CartesianPoint();
                                                     point.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight))) / 1000.0) };
@@ -471,24 +473,42 @@ namespace EDS.Models
                                                     point.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight))) / 1000.0) };
                                                     planarGeometry1.PolyLoop.CartesianPoints.Add(point);
 
-                                                    CartesianPoint point1 = new CartesianPoint();
-                                                    point1.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight)) + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? allHeight.ToString() : excelWindow.Height))) / 1000.0) };
-                                                    planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
+                                                    //CartesianPoint point1 = new CartesianPoint();
+                                                    //point1.Coordinates = new List<double>() { (pt.X / 1000.0), (pt.Y / 1000.0), ((pt.Z + (double.Parse(excelWindow.SillHeight)) + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? allHeight.ToString() : excelWindow.Height))) / 1000.0) };
+                                                    //planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
                                                 }
                                             }
                                         }
 
                                     }
 
-                                    //for (int i = 0; i < window.NumberOfVertices; i++)
-                                    //{
-                                    //    Point3d vertex = window.GetPoint3dAt(i);
-                                    //    CartesianPoint point = new CartesianPoint();
-                                    //    point.Coordinates = new List<double>() { (vertex.X / 1000.0), (vertex.Y / 1000.0), (vertex.Z / 1000.0) };
-                                    //    planarGeometry1.PolyLoop.CartesianPoints.Add(point);
-                                    //}
+                                    //if (IsClockwise(planarGeometry1.PolyLoop.CartesianPoints))
+                                    //    planarGeometry1.PolyLoop.CartesianPoints.Reverse();
 
-                                    //planarGeometry1.PolyLoop.CartesianPoints = SortPointsWindowClockwise(planarGeometry1.PolyLoop.CartesianPoints);
+                                    var points = SortPointsAlongLine(new CartesianPoint(line.StartPoint.X, line.StartPoint.Y, line.StartPoint.Z), new CartesianPoint(line.EndPoint.X, line.EndPoint.Y, line.EndPoint.Z), planarGeometry1.PolyLoop.CartesianPoints);
+                                    planarGeometry1.PolyLoop.CartesianPoints = new List<CartesianPoint>();
+                                    for (int iNo = 0; iNo < points.Count; iNo++)
+                                    {
+                                        if (iNo == 0)
+                                        {
+                                            CartesianPoint point = points[iNo];
+                                            planarGeometry1.PolyLoop.CartesianPoints.Add(point);
+
+                                            CartesianPoint point1 = new CartesianPoint();
+                                            point1.Coordinates = new List<double>() { points[iNo].Coordinates[0], points[iNo].Coordinates[1], points[iNo].Coordinates[2] + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? allHeight.ToString() : excelWindow.Height) / 1000.0) };
+                                            planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
+                                        }
+                                        else
+                                        {
+                                            CartesianPoint point1 = new CartesianPoint();
+                                            point1.Coordinates = new List<double>() { points[iNo].Coordinates[0], points[iNo].Coordinates[1], points[iNo].Coordinates[2] + (double.Parse(string.IsNullOrEmpty(excelWindow.Height) ? allHeight.ToString() : excelWindow.Height) / 1000.0) };
+                                            planarGeometry1.PolyLoop.CartesianPoints.Add(point1);
+
+                                            CartesianPoint point = points[iNo];
+                                            planarGeometry1.PolyLoop.CartesianPoints.Add(point);
+                                        }
+                                    }
+
 
                                     opening.PlanarGeometry = planarGeometry1;
                                     rectangularGeometry1.CartesianPoint = planarGeometry1.PolyLoop.CartesianPoints[0];
@@ -648,7 +668,7 @@ namespace EDS.Models
                         ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                         worksheet.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
                         worksheet.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
-                        worksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
+                        worksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.State;
                         worksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingCategory;
 
                         int rowCount = 8;
@@ -688,7 +708,7 @@ namespace EDS.Models
                                     }
                                 }
 
-                                worksheet.Cells[rowCount, 9].Value = totalArea;
+                                worksheet.Cells[rowCount, 9].Value = Math.Round(totalArea, 2);
                                 worksheet.Cells[rowCount, 11].Value = room.room.spaceType;
                                 worksheet.Cells[rowCount, 12].Value = room.walls[iNo].wall.extWallType;
                                 rowCount++;
@@ -698,14 +718,14 @@ namespace EDS.Models
                         ExcelWorksheet excelWorksheet = package.Workbook.Worksheets[1];
                         excelWorksheet.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
                         excelWorksheet.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
-                        excelWorksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
+                        excelWorksheet.Cells["D2"].Value = ProjectInformationPalette.projectInformation.State;
                         excelWorksheet.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingCategory;
 
                         rowCount = 8;
 
                         foreach (var room in rooms)
                         {
-                            excelWorksheet.Cells[rowCount, 3].Value = room.room.spaceType.ToString().Split('-')[1];
+                            excelWorksheet.Cells[rowCount, 3].Value = room.room.spaceType.ToString();
                             excelWorksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString().Split('-')[0];
                             excelWorksheet.Cells[rowCount, 5].Value = double.Parse(room.room.roomArea) / 1_000_000;
 
@@ -734,7 +754,7 @@ namespace EDS.Models
                                 }
                             }
 
-                            excelWorksheet.Cells[rowCount, 6].Value = totalArea;
+                            excelWorksheet.Cells[rowCount, 6].Value = Math.Round(totalArea, 2);
                             excelWorksheet.Cells[rowCount, 7].Value = windowGlaze;
 
                             rowCount++;
@@ -743,14 +763,14 @@ namespace EDS.Models
                         ExcelWorksheet workSheetVentilation = package.Workbook.Worksheets[2];
                         workSheetVentilation.Cells["F2"].Value = ProjectInformationPalette.projectInformation.City;
                         workSheetVentilation.Cells["D1"].Value = ProjectInformationPalette.projectInformation.ProjectName;
-                        workSheetVentilation.Cells["D2"].Value = ProjectInformationPalette.projectInformation.customLocation;
+                        workSheetVentilation.Cells["D2"].Value = ProjectInformationPalette.projectInformation.State;
                         workSheetVentilation.Cells["D3"].Value = ProjectInformationPalette.projectInformation.BuildingCategory;
 
                         rowCount = 8;
 
                         foreach (var room in rooms)
                         {
-                            workSheetVentilation.Cells[rowCount, 3].Value = room.room.spaceType.ToString().Split('-')[1];
+                            workSheetVentilation.Cells[rowCount, 3].Value = room.room.spaceType.ToString();
                             workSheetVentilation.Cells[rowCount, 4].Value = room.room.spaceType.ToString().Split('-')[0];
                             workSheetVentilation.Cells[rowCount, 5].Value = double.Parse(room.room.roomArea) / 1_000_000;
 
@@ -784,8 +804,8 @@ namespace EDS.Models
                                 }
 
                             }
-                            workSheetVentilation.Cells[rowCount, 6].Value = windowsArea;
-                            workSheetVentilation.Cells[rowCount, 7].Value = totalArea;
+                            workSheetVentilation.Cells[rowCount, 6].Value = Math.Round(windowsArea, 2);
+                            workSheetVentilation.Cells[rowCount, 7].Value = Math.Round(totalArea, 2);
                             rowCount++;
                         }
 
@@ -795,6 +815,21 @@ namespace EDS.Models
             }
         }
 
+        public List<CartesianPoint> SortPointsAlongLine(CartesianPoint lineStart, CartesianPoint lineEnd, List<CartesianPoint> points)
+        {
+            // Calculate the direction vector of the line and normalize it
+            CartesianPoint lineDirection = lineEnd.Subtract(lineStart).Normalize();
+
+            // Sort points by their projection onto the line
+            var sortedPoints = points.OrderBy(point =>
+            {
+                CartesianPoint vecToPoint = point.Subtract(lineStart);
+                double projectionLength = vecToPoint.DotProduct(lineDirection);
+                return projectionLength;
+            }).ToList();
+
+            return sortedPoints;
+        }
         static bool IsClockwise(List<CartesianPoint> points)
         {
             double sum = 0.0;
@@ -978,7 +1013,7 @@ namespace EDS.Models
                     {
                         foreach (var rmLine in roomLines)
                         {
-                            var matchLines = wallLines.FindAll(x => x.Length.Equals(rmLine.Length));
+                            var matchLines = wallLines.FindAll(x => Math.Round(x.Length, 4).Equals(Math.Round(rmLine.Length, 4)));
 
                             var macLine = matchLines.Find(x => (x.StartPoint.Equals(rmLine.StartPoint) && x.EndPoint.Equals(rmLine.EndPoint)) || (x.EndPoint.Equals(rmLine.StartPoint) && x.StartPoint.Equals(rmLine.EndPoint)));
 
@@ -1044,8 +1079,11 @@ namespace EDS.Models
                         room.allWindows = wallWindows;
                     }
                 }
-            }
 
+                EDSExport eDSExport = new EDSExport();
+                eDSExport.mthdOfSortExternalWall(room.allWalls);
+
+            }
 
             TreeNode roomNodes = new TreeNode("Rooms");
             treeView.Nodes.Clear();

@@ -9,11 +9,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using EDS.Models;
+using ZwSoft.ZwCAD.ApplicationServices;
+using ZwSoft.ZwCAD.EditorInput;
+using Application = ZwSoft.ZwCAD.ApplicationServices.Application;
 
 namespace EDS.UserControls
 {
     public partial class RoomDataPalette : UserControl
     {
+        public static bool DrawRoom = false;
+        public static string roomTag = string.Empty;
+
         string LastCommad = string.Empty;
         const double SquareFootToSquareMeter = 10.7639;
         const double SquareMeterToSquareFoot = 1.0 / SquareFootToSquareMeter;
@@ -34,6 +40,7 @@ namespace EDS.UserControls
 
         public RoomDataPalette()
         {
+            DrawRoom = false;
             InitializeComponent();
             this.KeyDown += new KeyEventHandler(Form_KeyDown);
             lpdValues = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "LPD");
@@ -157,6 +164,7 @@ namespace EDS.UserControls
             EDSRoomTag wallCreation = new EDSRoomTag();
             wallCreation.MatchRoom(lpdCheck.Checked, epdCheck.Checked, occuCheck.Checked, freshAirCheck.Checked, floorCheck.Checked, ceilCheck.Checked);
             RefreshUI();
+            DrawRoom = false;
         }
 
         private void updateButton_Click(object sender, EventArgs e)
@@ -392,6 +400,7 @@ namespace EDS.UserControls
             };
             wallCreation.UpdateRoom(roomTag, lpdCheck.Checked, epdCheck.Checked, occuCheck.Checked, freshAirCheck.Checked, floorCheck.Checked, ceilCheck.Checked);
             RefreshUI();
+            DrawRoom = false;
         }
 
         private void selectButton_Click(object sender, EventArgs e)
@@ -422,6 +431,8 @@ namespace EDS.UserControls
                 occuText2.Text = result.occupancyText2;
                 //levelComboBox.SelectedItem = result.roomLevel;
             }
+
+            DrawRoom = false;
         }
 
         private void addButton_Click(object sender, EventArgs e)
@@ -663,7 +674,8 @@ namespace EDS.UserControls
             };
 
             wallCreation.CreateRoom(roomTag);
-            RefreshUI();
+            DrawRoom = false;
+            //RefreshUI();
         }
 
         private void epdComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -825,6 +837,23 @@ namespace EDS.UserControls
         private void floorFinishComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void spaceComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            roomTag = (sender as ComboBox).SelectedItem.ToString();
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+
+            if (doc != null)
+            {
+                Editor ed = doc.Editor;
+
+                // Use SendStringToExecute to cancel the command line (equivalent to ESC or Cancel command)
+                doc.SendStringToExecute("\x1B", true, false, false); // "\x1B" represents the ESC key
+
+                if (DrawRoom)
+                    System.Windows.Forms.MessageBox.Show("Room Tag Selection Changed.\nPlease click on Add to place rooms.", "Room Placement", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

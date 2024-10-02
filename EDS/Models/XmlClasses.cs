@@ -269,6 +269,47 @@ namespace EDS.Models
     {
         [XmlElement("Coordinate")]
         public List<double> Coordinates { get; set; }
+
+        public CartesianPoint()
+        {
+
+        }
+
+        public CartesianPoint(double x, double y, double z)
+        {
+            Coordinates = new List<double> { x, y, z };
+        }
+        public CartesianPoint Subtract(CartesianPoint other)
+        {
+            return new CartesianPoint(
+                this.Coordinates[0] - other.Coordinates[0],
+                this.Coordinates[1] - other.Coordinates[1],
+                this.Coordinates[2] - other.Coordinates[2]
+            );
+        }
+
+        // Calculate the dot product between this point (treated as a vector) and another CartesianPoint (treated as a vector)
+        public double DotProduct(CartesianPoint other)
+        {
+            return (this.Coordinates[0] * other.Coordinates[0]) +
+                   (this.Coordinates[1] * other.Coordinates[1]) +
+                   (this.Coordinates[2] * other.Coordinates[2]);
+        }
+
+        // Normalize this CartesianPoint (vector) to get a unit vector
+        public CartesianPoint Normalize()
+        {
+            double length = Math.Sqrt(
+                Coordinates[0] * Coordinates[0] +
+                Coordinates[1] * Coordinates[1] +
+                Coordinates[2] * Coordinates[2]
+            );
+            return new CartesianPoint(
+                Coordinates[0] / length,
+                Coordinates[1] / length,
+                Coordinates[2] / length
+            );
+        }
     }
 
     public class Opening

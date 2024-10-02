@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ZwSoft.ZwCAD.ApplicationServices;
@@ -106,6 +107,7 @@ namespace EDS.Models
 
         public void CreateRoom(EDSRoomTag roomTag)
         {
+            RoomDataPalette.DrawRoom = true;
             EDSCreation.CreateLayer(StringConstants.roomLayerName, 2);
 
             Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -114,67 +116,67 @@ namespace EDS.Models
 
             doc.LockDocument();
 
-            var roomId = GetRoomList(roomTag.levelId, roomTag.spaceType);
-            roomId += 1;
+            //PromptPointOptions promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type" + (RoomDataPalette.roomTag.Contains("-") == true ? RoomDataPalette.roomTag.Split('-')[0] : RoomDataPalette.roomTag) + " " + roomId.ToString() + " or [Exit]: ");
+            PromptPointResult promptPointResult = null;
 
-            PromptPointOptions promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type" + (roomTag.spaceType.Contains("-") == true ? roomTag.spaceType.Split('-')[0] : roomTag.spaceType) + " " + roomId.ToString() + " or [Exit]: ");
-            PromptPointResult promptPointResult = doc.Editor.GetPoint(promptPointOptions);
-
-            while (promptPointResult.Status == PromptStatus.OK)
+            do
             {
-                using (Transaction addTransaction = db.TransactionManager.StartTransaction())
+                var roomId = GetRoomList(roomTag.levelId, RoomDataPalette.roomTag);
+                roomId += 1;
+
+                PromptPointOptions promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type " + RoomDataPalette.roomTag.Split('-')[0] + " " + roomId.ToString() + " or [Exit]: ");
+                promptPointResult = doc.Editor.GetPoint(promptPointOptions);
+
+                if (promptPointResult.Status == PromptStatus.OK)
                 {
-                    BlockTable blockTable = addTransaction.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                    BlockTableRecord blockTableRecord = addTransaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
-
-
-                    EDSCreation.CreateLayer(StringConstants.roomLayerName, 2);
-
-                    DBObjectCollection objectCollection = editor.TraceBoundary(promptPointResult.Value, false);
-
-                    if (false)
+                    using (Transaction addTransaction = db.TransactionManager.StartTransaction())
                     {
-                        string msg = "Selected walls are not close properly. Kindly review it and run the tool again.";
+                        BlockTable blockTable = addTransaction.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                        BlockTableRecord blockTableRecord = addTransaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                        System.Windows.Forms.MessageBox.Show(msg, "EDS Global", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        //BlockTable blockTable = (BlockTable)transaction.GetObject(db.BlockTableId, OpenMode.ForRead);
-                        BlockTableRecord modelSpace = (BlockTableRecord)addTransaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
 
-                        DBText dbText = new DBText
+                        EDSCreation.CreateLayer(StringConstants.roomLayerName, 2);
+
+                        DBObjectCollection objectCollection = editor.TraceBoundary(promptPointResult.Value, false);
+
+                        if (false)
                         {
-                            Position = promptPointResult.Value,
-                            Height = 100.0,
-                            TextString = (roomTag.spaceType.Contains("-") == true ? roomTag.spaceType.Split('-')[0] : roomTag.spaceType) + "-" + roomId.ToString(),
-                        };
+                            string msg = "Selected walls are not close properly. Kindly review it and run the tool again.";
 
-                        ObjectId objectId = new ObjectId();
-
-                        string areaValue = "";
-
-                        foreach (DBObject objectt in objectCollection)
-                        {
-                            if (objectt is ZwSoft.ZwCAD.DatabaseServices.Polyline polyline)
-                            {
-                                areaValue = polyline.Area.ToString();
-                                dbText.Layer = StringConstants.roomLayerName;
-                                objectId = modelSpace.AppendEntity(dbText);
-                                addTransaction.AddNewlyCreatedDBObject(dbText, true);
-                            }
+                            System.Windows.Forms.MessageBox.Show(msg, "EDS Global", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
-                        roomTag.spaceType = (roomTag.spaceType.Contains("-") == true ? roomTag.spaceType.Split('-')[0] : roomTag.spaceType) + "-" + roomId.ToString();
-                        SetXDataForRoom(roomTag, objectId, areaValue);
-                        //EDSCreation.UpdateSpaceData(roomTag.spaceType);
-                    }
-                    roomId += 1;
-                    addTransaction.Commit();
-                    promptPointOptions = new PromptPointOptions("\nSpecify location of Space Type" + roomTag.spaceType.Split('-')[0] + " " + roomId.ToString() + " or [Exit]: ");
-                    promptPointResult = doc.Editor.GetPoint(promptPointOptions);
+                        else
+                        {
+                            //BlockTable blockTable = (BlockTable)transaction.GetObject(db.BlockTableId, OpenMode.ForRead);
+                            BlockTableRecord modelSpace = (BlockTableRecord)addTransaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
 
+                            DBText dbText = new DBText
+                            {
+                                Position = promptPointResult.Value,
+                                Height = 100.0,
+                                TextString = (RoomDataPalette.roomTag.Contains("-") == true ? RoomDataPalette.roomTag.Split('-')[0] : RoomDataPalette.roomTag) + "-" + roomId.ToString(),
+                            };
+
+                            ObjectId objectId = new ObjectId();
+
+                            string areaValue = "";
+                            dbText.Layer = StringConstants.roomLayerName;
+                            objectId = modelSpace.AppendEntity(dbText);
+                            addTransaction.AddNewlyCreatedDBObject(dbText, true);
+                            RoomDataPalette.roomTag = (RoomDataPalette.roomTag.Contains("-") == true ? RoomDataPalette.roomTag.Split('-')[0] : RoomDataPalette.roomTag) + "-" + roomId.ToString();
+                            SetXDataForRoom(roomTag, objectId, areaValue);
+                            roomId += 1;
+
+                            //EDSCreation.UpdateSpaceData(RoomDataPalette.roomTag);
+                        }
+
+                        addTransaction.Commit();
+                        //Thread.Sleep(500);
+
+
+                    }
                 }
-            }
+            } while (promptPointResult.Status == PromptStatus.OK);
         }
 
         public EDSRoomTag SelectRoom()
@@ -409,7 +411,7 @@ namespace EDS.Models
             {
                 if (EDSRoomTag.storedRooms.Any(x => x.RoomId.ToString().StartsWith(levelPrefix.ToString())) && EDSRoomTag.storedRooms.Any(x => x.RoomName.Contains(spaceType)))
                 {
-                    var allRooms = EDSRoomTag.storedRooms.FindAll(x => x.RoomId.ToString().StartsWith(levelPrefix.ToString()));
+                    var allRooms = EDSRoomTag.storedRooms.FindAll(x => x.RoomId.ToString().StartsWith(levelPrefix.ToString()) && x.RoomName.Contains(spaceType));
                     return allRooms.Max(x => x.RoomId);
                 }
                 else
