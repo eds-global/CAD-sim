@@ -70,7 +70,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
-            levelPreFix = new System.Windows.Forms.TextBox();
+            this.levelPreFix = new System.Windows.Forms.TextBox();
             this.refreshButton = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
@@ -104,7 +104,7 @@
             this.spaceComboBox.Location = new System.Drawing.Point(92, 48);
             this.spaceComboBox.Name = "spaceComboBox";
             this.spaceComboBox.Size = new System.Drawing.Size(113, 21);
-            this.spaceComboBox.TabIndex = 0;
+            this.spaceComboBox.TabIndex = 1;
             this.spaceComboBox.SelectedIndexChanged += new System.EventHandler(this.spaceComboBox_SelectedIndexChanged);
             // 
             // label2
@@ -134,7 +134,7 @@
             this.lpdComboBox.Location = new System.Drawing.Point(92, 93);
             this.lpdComboBox.Name = "lpdComboBox";
             this.lpdComboBox.Size = new System.Drawing.Size(113, 21);
-            this.lpdComboBox.TabIndex = 2;
+            this.lpdComboBox.TabIndex = 3;
             this.lpdComboBox.SelectedIndexChanged += new System.EventHandler(this.lpdComboBox_SelectedIndexChanged);
             // 
             // label4
@@ -196,7 +196,7 @@
             this.occupComboBox.Location = new System.Drawing.Point(92, 247);
             this.occupComboBox.Name = "occupComboBox";
             this.occupComboBox.Size = new System.Drawing.Size(113, 21);
-            this.occupComboBox.TabIndex = 4;
+            this.occupComboBox.TabIndex = 11;
             this.occupComboBox.SelectedIndexChanged += new System.EventHandler(this.occupComboBox_SelectedIndexChanged);
             // 
             // label8
@@ -248,7 +248,7 @@
             this.lpdText1.Location = new System.Drawing.Point(92, 132);
             this.lpdText1.Name = "lpdText1";
             this.lpdText1.Size = new System.Drawing.Size(65, 20);
-            this.lpdText1.TabIndex = 40;
+            this.lpdText1.TabIndex = 4;
             this.lpdText1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.lpdText1_KeyPress);
             // 
             // lpdText2
@@ -257,7 +257,7 @@
             this.lpdText2.Location = new System.Drawing.Point(162, 132);
             this.lpdText2.Name = "lpdText2";
             this.lpdText2.Size = new System.Drawing.Size(42, 20);
-            this.lpdText2.TabIndex = 41;
+            this.lpdText2.TabIndex = 5;
             this.lpdText2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.lpdText2_KeyPress);
             // 
             // epdText2
@@ -266,7 +266,7 @@
             this.epdText2.Location = new System.Drawing.Point(162, 202);
             this.epdText2.Name = "epdText2";
             this.epdText2.Size = new System.Drawing.Size(40, 20);
-            this.epdText2.TabIndex = 43;
+            this.epdText2.TabIndex = 9;
             this.epdText2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.epdText2_KeyPress);
             // 
             // epdText1
@@ -275,7 +275,7 @@
             this.epdText1.Location = new System.Drawing.Point(92, 202);
             this.epdText1.Name = "epdText1";
             this.epdText1.Size = new System.Drawing.Size(66, 20);
-            this.epdText1.TabIndex = 42;
+            this.epdText1.TabIndex = 8;
             this.epdText1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.epdText1_KeyPress);
             // 
             // occuText2
@@ -284,7 +284,7 @@
             this.occuText2.Location = new System.Drawing.Point(150, 290);
             this.occuText2.Name = "occuText2";
             this.occuText2.Size = new System.Drawing.Size(54, 20);
-            this.occuText2.TabIndex = 45;
+            this.occuText2.TabIndex = 13;
             this.occuText2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.occuText2_KeyPress);
             // 
             // occuText1
@@ -293,7 +293,7 @@
             this.occuText1.Location = new System.Drawing.Point(92, 290);
             this.occuText1.Name = "occuText1";
             this.occuText1.Size = new System.Drawing.Size(53, 20);
-            this.occuText1.TabIndex = 44;
+            this.occuText1.TabIndex = 12;
             this.occuText1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.occuText1_KeyPress);
             // 
             // lpdCheck
@@ -303,7 +303,7 @@
             this.lpdCheck.Location = new System.Drawing.Point(218, 132);
             this.lpdCheck.Name = "lpdCheck";
             this.lpdCheck.Size = new System.Drawing.Size(15, 14);
-            this.lpdCheck.TabIndex = 46;
+            this.lpdCheck.TabIndex = 6;
             this.lpdCheck.UseVisualStyleBackColor = true;
             // 
             // epdCheck
@@ -313,7 +313,7 @@
             this.epdCheck.Location = new System.Drawing.Point(218, 202);
             this.epdCheck.Name = "epdCheck";
             this.epdCheck.Size = new System.Drawing.Size(15, 14);
-            this.epdCheck.TabIndex = 47;
+            this.epdCheck.TabIndex = 10;
             this.epdCheck.UseVisualStyleBackColor = true;
             // 
             // occuCheck
@@ -323,7 +323,7 @@
             this.occuCheck.Location = new System.Drawing.Point(221, 294);
             this.occuCheck.Name = "occuCheck";
             this.occuCheck.Size = new System.Drawing.Size(15, 14);
-            this.occuCheck.TabIndex = 48;
+            this.occuCheck.TabIndex = 14;
             this.occuCheck.UseVisualStyleBackColor = true;
             // 
             // freshAirCheck
@@ -333,7 +333,7 @@
             this.freshAirCheck.Location = new System.Drawing.Point(221, 321);
             this.freshAirCheck.Name = "freshAirCheck";
             this.freshAirCheck.Size = new System.Drawing.Size(15, 14);
-            this.freshAirCheck.TabIndex = 49;
+            this.freshAirCheck.TabIndex = 16;
             this.freshAirCheck.UseVisualStyleBackColor = true;
             // 
             // ceilCheck
@@ -343,7 +343,7 @@
             this.ceilCheck.Location = new System.Drawing.Point(221, 401);
             this.ceilCheck.Name = "ceilCheck";
             this.ceilCheck.Size = new System.Drawing.Size(15, 14);
-            this.ceilCheck.TabIndex = 51;
+            this.ceilCheck.TabIndex = 20;
             this.ceilCheck.UseVisualStyleBackColor = true;
             // 
             // floorCheck
@@ -353,7 +353,7 @@
             this.floorCheck.Location = new System.Drawing.Point(221, 367);
             this.floorCheck.Name = "floorCheck";
             this.floorCheck.Size = new System.Drawing.Size(15, 14);
-            this.floorCheck.TabIndex = 50;
+            this.floorCheck.TabIndex = 18;
             this.floorCheck.UseVisualStyleBackColor = true;
             // 
             // matchButton
@@ -364,7 +364,7 @@
             this.matchButton.Location = new System.Drawing.Point(40, 487);
             this.matchButton.Name = "matchButton";
             this.matchButton.Size = new System.Drawing.Size(60, 32);
-            this.matchButton.TabIndex = 11;
+            this.matchButton.TabIndex = 24;
             this.matchButton.Text = "Match";
             this.matchButton.UseVisualStyleBackColor = false;
             this.matchButton.Click += new System.EventHandler(this.matchButton_Click);
@@ -377,7 +377,7 @@
             this.updateButton.Location = new System.Drawing.Point(143, 448);
             this.updateButton.Name = "updateButton";
             this.updateButton.Size = new System.Drawing.Size(60, 32);
-            this.updateButton.TabIndex = 10;
+            this.updateButton.TabIndex = 23;
             this.updateButton.Text = "Update";
             this.updateButton.UseVisualStyleBackColor = false;
             this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
@@ -390,7 +390,7 @@
             this.selectButton.Location = new System.Drawing.Point(77, 448);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(60, 32);
-            this.selectButton.TabIndex = 9;
+            this.selectButton.TabIndex = 22;
             this.selectButton.Text = "Select";
             this.selectButton.UseVisualStyleBackColor = false;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
@@ -403,7 +403,7 @@
             this.addButton.Location = new System.Drawing.Point(4, 448);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(60, 32);
-            this.addButton.TabIndex = 8;
+            this.addButton.TabIndex = 21;
             this.addButton.Text = "Add";
             this.addButton.UseVisualStyleBackColor = false;
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
@@ -508,11 +508,11 @@
             // 
             // levelPreFix
             // 
-            levelPreFix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            levelPreFix.Location = new System.Drawing.Point(92, 71);
-            levelPreFix.Name = "levelPreFix";
-            levelPreFix.Size = new System.Drawing.Size(66, 20);
-            levelPreFix.TabIndex = 1;
+            this.levelPreFix.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.levelPreFix.Location = new System.Drawing.Point(92, 71);
+            this.levelPreFix.Name = "levelPreFix";
+            this.levelPreFix.Size = new System.Drawing.Size(66, 20);
+            this.levelPreFix.TabIndex = 2;
             // 
             // refreshButton
             // 
@@ -522,7 +522,7 @@
             this.refreshButton.Location = new System.Drawing.Point(114, 487);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(60, 32);
-            this.refreshButton.TabIndex = 12;
+            this.refreshButton.TabIndex = 25;
             this.refreshButton.Text = "Refresh";
             this.refreshButton.UseVisualStyleBackColor = false;
             this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
@@ -571,7 +571,7 @@
             this.Controls.Add(this.label20);
             this.Controls.Add(this.label19);
             this.Controls.Add(this.refreshButton);
-            this.Controls.Add(levelPreFix);
+            this.Controls.Add(this.levelPreFix);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label16);
@@ -668,9 +668,9 @@
         private System.Windows.Forms.CheckBox ceilCheck;
         private System.Windows.Forms.CheckBox floorCheck;
         private System.Windows.Forms.Label label18;
-        public static System.Windows.Forms.TextBox levelPreFix;
         private System.Windows.Forms.Button refreshButton;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label20;
+        public System.Windows.Forms.TextBox levelPreFix;
     }
 }

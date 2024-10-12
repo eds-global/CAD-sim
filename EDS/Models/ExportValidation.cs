@@ -51,15 +51,15 @@ namespace EDS.Models
                 foreach (var line in lines)
                 {
                     // Increment connection count for start and end points
-                    if (pointConnections.ContainsKey(RoundPoint(line.StartPoint, 5)))
-                        pointConnections[RoundPoint(line.StartPoint, 5)]++;
+                    if (pointConnections.ContainsKey(RoundPoint(line.StartPoint, 4)))
+                        pointConnections[RoundPoint(line.StartPoint, 4)]++;
                     else
-                        pointConnections[RoundPoint(line.StartPoint, 5)] = 1;
+                        pointConnections[RoundPoint(line.StartPoint, 4)] = 1;
 
-                    if (pointConnections.ContainsKey(RoundPoint(line.EndPoint, 5)))
-                        pointConnections[RoundPoint(line.EndPoint, 5)]++;
+                    if (pointConnections.ContainsKey(RoundPoint(line.EndPoint, 4)))
+                        pointConnections[RoundPoint(line.EndPoint, 4)]++;
                     else
-                        pointConnections[RoundPoint(line.EndPoint, 5)] = 1;
+                        pointConnections[RoundPoint(line.EndPoint, 4)] = 1;
                 }
 
 

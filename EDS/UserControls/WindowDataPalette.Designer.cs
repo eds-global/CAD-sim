@@ -120,7 +120,7 @@
             this.insertComboBox.Location = new System.Drawing.Point(107, 45);
             this.insertComboBox.Name = "insertComboBox";
             this.insertComboBox.Size = new System.Drawing.Size(97, 21);
-            this.insertComboBox.TabIndex = 0;
+            this.insertComboBox.TabIndex = 1;
             this.insertComboBox.SelectedIndexChanged += new System.EventHandler(this.insertComboBox_SelectedIndexChanged);
             // 
             // label3
@@ -141,7 +141,7 @@
             this.windowComboBox.Location = new System.Drawing.Point(107, 72);
             this.windowComboBox.Name = "windowComboBox";
             this.windowComboBox.Size = new System.Drawing.Size(97, 21);
-            this.windowComboBox.TabIndex = 1;
+            this.windowComboBox.TabIndex = 2;
             this.windowComboBox.SelectedIndexChanged += new System.EventHandler(this.windowComboBox_SelectedIndexChanged);
             // 
             // openAble
@@ -150,7 +150,7 @@
             this.openAble.Location = new System.Drawing.Point(107, 99);
             this.openAble.Name = "openAble";
             this.openAble.Size = new System.Drawing.Size(97, 20);
-            this.openAble.TabIndex = 2;
+            this.openAble.TabIndex = 3;
             // 
             // label18
             // 
@@ -167,7 +167,7 @@
             this.overhangPF.Location = new System.Drawing.Point(107, 125);
             this.overhangPF.Name = "overhangPF";
             this.overhangPF.Size = new System.Drawing.Size(97, 20);
-            this.overhangPF.TabIndex = 3;
+            this.overhangPF.TabIndex = 4;
             // 
             // label4
             // 
@@ -184,7 +184,7 @@
             this.verticalPF.Location = new System.Drawing.Point(107, 151);
             this.verticalPF.Name = "verticalPF";
             this.verticalPF.Size = new System.Drawing.Size(97, 20);
-            this.verticalPF.TabIndex = 4;
+            this.verticalPF.TabIndex = 5;
             // 
             // label5
             // 
@@ -202,7 +202,7 @@
             this.dayLightWindow.Location = new System.Drawing.Point(9, 196);
             this.dayLightWindow.Name = "dayLightWindow";
             this.dayLightWindow.Size = new System.Drawing.Size(15, 14);
-            this.dayLightWindow.TabIndex = 5;
+            this.dayLightWindow.TabIndex = 6;
             this.dayLightWindow.UseVisualStyleBackColor = true;
             // 
             // label7
@@ -222,7 +222,7 @@
             this.interiorLightSelf.Location = new System.Drawing.Point(9, 221);
             this.interiorLightSelf.Name = "interiorLightSelf";
             this.interiorLightSelf.Size = new System.Drawing.Size(15, 14);
-            this.interiorLightSelf.TabIndex = 6;
+            this.interiorLightSelf.TabIndex = 7;
             this.interiorLightSelf.UseVisualStyleBackColor = true;
             // 
             // label8
@@ -249,7 +249,7 @@
             this.height.Location = new System.Drawing.Point(106, 265);
             this.height.Name = "height";
             this.height.Size = new System.Drawing.Size(97, 20);
-            this.height.TabIndex = 7;
+            this.height.TabIndex = 8;
             // 
             // label9
             // 
@@ -266,7 +266,7 @@
             this.width.Location = new System.Drawing.Point(106, 289);
             this.width.Name = "width";
             this.width.Size = new System.Drawing.Size(97, 20);
-            this.width.TabIndex = 8;
+            this.width.TabIndex = 9;
             // 
             // label11
             // 
@@ -283,7 +283,7 @@
             this.sillHeight.Location = new System.Drawing.Point(107, 346);
             this.sillHeight.Name = "sillHeight";
             this.sillHeight.Size = new System.Drawing.Size(97, 20);
-            this.sillHeight.TabIndex = 9;
+            this.sillHeight.TabIndex = 11;
             // 
             // label12
             // 
@@ -300,7 +300,7 @@
             this.spacing.Location = new System.Drawing.Point(106, 370);
             this.spacing.Name = "spacing";
             this.spacing.Size = new System.Drawing.Size(97, 20);
-            this.spacing.TabIndex = 10;
+            this.spacing.TabIndex = 12;
             // 
             // label13
             // 
@@ -317,7 +317,7 @@
             this.wwr.Location = new System.Drawing.Point(107, 395);
             this.wwr.Name = "wwr";
             this.wwr.Size = new System.Drawing.Size(97, 20);
-            this.wwr.TabIndex = 11;
+            this.wwr.TabIndex = 13;
             // 
             // label14
             // 
@@ -336,7 +336,7 @@
             this.refreshButton.Location = new System.Drawing.Point(110, 549);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(68, 34);
-            this.refreshButton.TabIndex = 16;
+            this.refreshButton.TabIndex = 21;
             this.refreshButton.Text = "Refresh";
             this.refreshButton.UseVisualStyleBackColor = false;
             this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
@@ -357,7 +357,7 @@
             this.matchButton.Location = new System.Drawing.Point(27, 549);
             this.matchButton.Name = "matchButton";
             this.matchButton.Size = new System.Drawing.Size(77, 34);
-            this.matchButton.TabIndex = 15;
+            this.matchButton.TabIndex = 20;
             this.matchButton.Text = "Match All";
             this.matchButton.UseVisualStyleBackColor = false;
             this.matchButton.Click += new System.EventHandler(this.matchButton_Click);
@@ -370,7 +370,7 @@
             this.updateButton.Location = new System.Drawing.Point(134, 509);
             this.updateButton.Name = "updateButton";
             this.updateButton.Size = new System.Drawing.Size(70, 34);
-            this.updateButton.TabIndex = 14;
+            this.updateButton.TabIndex = 19;
             this.updateButton.Text = "Update All";
             this.updateButton.UseVisualStyleBackColor = false;
             this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
@@ -383,7 +383,7 @@
             this.selectButton.Location = new System.Drawing.Point(69, 509);
             this.selectButton.Name = "selectButton";
             this.selectButton.Size = new System.Drawing.Size(61, 34);
-            this.selectButton.TabIndex = 13;
+            this.selectButton.TabIndex = 18;
             this.selectButton.Text = "Select";
             this.selectButton.UseVisualStyleBackColor = false;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
@@ -396,7 +396,7 @@
             this.drawButton.Location = new System.Drawing.Point(6, 509);
             this.drawButton.Name = "drawButton";
             this.drawButton.Size = new System.Drawing.Size(57, 34);
-            this.drawButton.TabIndex = 12;
+            this.drawButton.TabIndex = 17;
             this.drawButton.Text = "Draw";
             this.drawButton.UseVisualStyleBackColor = false;
             this.drawButton.Click += new System.EventHandler(this.drawButton_Click);
@@ -408,7 +408,7 @@
             this.specifyOnDrawing.Location = new System.Drawing.Point(6, 321);
             this.specifyOnDrawing.Name = "specifyOnDrawing";
             this.specifyOnDrawing.Size = new System.Drawing.Size(15, 14);
-            this.specifyOnDrawing.TabIndex = 97;
+            this.specifyOnDrawing.TabIndex = 10;
             this.specifyOnDrawing.UseVisualStyleBackColor = true;
             // 
             // label16
@@ -435,7 +435,7 @@
             // 
             this.toggleSwitch1.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.toggleSwitch1.Location = new System.Drawing.Point(170, 13);
-            this.toggleSwitch1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.toggleSwitch1.Margin = new System.Windows.Forms.Padding(2);
             this.toggleSwitch1.Name = "toggleSwitch1";
             this.toggleSwitch1.OffFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.toggleSwitch1.OffText = "SI";
@@ -450,10 +450,10 @@
             // 
             this.UValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.UValue.Location = new System.Drawing.Point(105, 419);
-            this.UValue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.UValue.Margin = new System.Windows.Forms.Padding(2);
             this.UValue.Name = "UValue";
             this.UValue.Size = new System.Drawing.Size(97, 20);
-            this.UValue.TabIndex = 99;
+            this.UValue.TabIndex = 14;
             // 
             // label19
             // 
@@ -469,10 +469,10 @@
             // 
             this.SHGCValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.SHGCValue.Location = new System.Drawing.Point(105, 443);
-            this.SHGCValue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.SHGCValue.Margin = new System.Windows.Forms.Padding(2);
             this.SHGCValue.Name = "SHGCValue";
             this.SHGCValue.Size = new System.Drawing.Size(98, 20);
-            this.SHGCValue.TabIndex = 101;
+            this.SHGCValue.TabIndex = 15;
             // 
             // label20
             // 
@@ -488,10 +488,10 @@
             // 
             this.VLTValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.VLTValue.Location = new System.Drawing.Point(105, 467);
-            this.VLTValue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.VLTValue.Margin = new System.Windows.Forms.Padding(2);
             this.VLTValue.Name = "VLTValue";
             this.VLTValue.Size = new System.Drawing.Size(97, 20);
-            this.VLTValue.TabIndex = 103;
+            this.VLTValue.TabIndex = 16;
             // 
             // label21
             // 

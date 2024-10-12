@@ -165,6 +165,62 @@ namespace EDS.Models
             }
         }
 
+        public List<Line> mthdOfSortExternalWallAnti(List<Line> listOfLineData)
+        {
+            if (listOfLineData.Count == 0)
+            {
+                return new List<Line>(); // Return an empty list if there are no lines
+            }
+
+            DirectionData drctionData = GetDirectionData(listOfLineData);
+            return sortPointAsPerDrctnPntsAntiClockwise(drctionData, listOfLineData);
+        }
+
+        private List<Line> sortPointAsPerDrctnPntsAntiClockwise(DirectionData drctionData, List<Line> listOfLineData)
+        {
+            Point3d startPnt_Dirctn = drctionData.StartPoint;
+            Point3d endPnt_Dirctn = drctionData.EndPoint;
+
+            bool flagOfPointExist = true;
+            int counter = 1;
+
+            List<int> listOfIndexStored = new List<int>();
+            List<Line> newLineList = new List<Line>(); // List to store new lines
+
+            while (flagOfPointExist)
+            {
+                bool _isSameDirctn = false;
+                int indx_byDrctn = -1;
+                Line existLineData = new Line(); // To hold the existing line data
+
+                flagOfPointExist = GetIndexOfPointsExist(counter, listOfLineData, ref listOfIndexStored, startPnt_Dirctn, endPnt_Dirctn, ref _isSameDirctn, ref indx_byDrctn, ref existLineData);
+
+                if (indx_byDrctn != -1)
+                {
+                    listOfIndexStored.Add(indx_byDrctn);
+
+                    if (_isSameDirctn)
+                    {
+                        startPnt_Dirctn = existLineData.StartPoint;
+                        endPnt_Dirctn = existLineData.EndPoint;
+                    }
+                    else
+                    {
+                        startPnt_Dirctn = existLineData.EndPoint;
+                        endPnt_Dirctn = existLineData.StartPoint;
+                    }
+
+                    // Create a new line with the current start and end points
+                    Line newLine = new Line(startPnt_Dirctn, endPnt_Dirctn);
+                    newLineList.Add(newLine); // Add the new line to the list
+
+                    counter++;
+                }
+            }
+
+            return newLineList; // Return the list of new lines
+        }
+
         private bool GetIndexOfPointsExist(int counter, List<Line> listOfLineData, ref List<int> listOfIndexStored, Point3d startPnt_Dirctn, Point3d endPnt_Dirctn, ref bool _isSameDirctn, ref int indx_byDrctn, ref Line existLineData)
         {
             double tolerance = 1;

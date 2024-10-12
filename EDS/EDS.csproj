@@ -111,6 +111,7 @@
     <Compile Include="Models\EDSWindow.cs" />
     <Compile Include="Models\ExcelFormat.cs" />
     <Compile Include="Models\ExportValidation.cs" />
+    <Compile Include="Models\LineSort.cs" />
     <Compile Include="Models\XmlClasses.cs" />
     <Compile Include="Models\XmlFileFormat.cs" />
     <Compile Include="StringConstants.cs" />
