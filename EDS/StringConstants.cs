@@ -23,6 +23,7 @@ namespace EDS
         #endregion 
 
         #region RoomStaticParameter
+        public static string buildingType = "BuildingType";
         public static string spaceType = "SpaceType";
         public static string lpdType = "LPDType";
         public static string epdType = "EPDType";

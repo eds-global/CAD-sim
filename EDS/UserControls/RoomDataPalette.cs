@@ -12,6 +12,8 @@ using EDS.Models;
 using ZwSoft.ZwCAD.ApplicationServices;
 using ZwSoft.ZwCAD.EditorInput;
 using Application = ZwSoft.ZwCAD.ApplicationServices.Application;
+using OfficeOpenXml;
+using System.IO;
 
 namespace EDS.UserControls
 {
@@ -38,6 +40,8 @@ namespace EDS.UserControls
 
         List<string> spaceTypes = new List<string>();
 
+        List<string> buildingTypes = new List<string>();
+
         public RoomDataPalette()
         {
             DrawRoom = false;
@@ -49,7 +53,8 @@ namespace EDS.UserControls
             airValues = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "FreshAir");
             ceilValues = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Ceiling Finish");
             floorValues = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Floor Finish");
-            spaceTypes = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Space Type");
+            //spaceTypes = ExcelReader.GetValuesFromExcel("Material Database.xlsx", "Space Type");
+            buildingTypes = GetBuildingTypeData("Material Database.xlsx");
             //allLayers = roomTag.GetAllLayers();
 
             lpdText1.Enabled = false;
@@ -69,6 +74,17 @@ namespace EDS.UserControls
             //ceilFinishComboBox.SelectedIndex = 0;
             //freshAirComboBox.SelectedIndex = 0;
 
+        }
+
+        private List<string> GetBuildingTypeData(string fileName)
+        {
+            string folderPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            var filePath = Path.Combine(folderPath, "EDS_Database", fileName);
+
+            List<BuildingTypeData> buildingDataList = LoadBuildingDataFromExcel(filePath);
+
+            return buildingDataList.Select(x => x.BuildingType).Distinct().ToList();
         }
 
         private void Form_KeyDown(object sender, KeyEventArgs e)
@@ -130,8 +146,12 @@ namespace EDS.UserControls
             {
                 spaceComboBox.Items.Add(value);
             }
+            foreach (var value in buildingTypes)
+            {
+                buildingType.Items.Add(value);
+            }
 
-
+            buildingType.SelectedIndex = 0;
             spaceComboBox.SelectedIndex = 0;
             epdComboBox.SelectedIndex = 0;
             lpdComboBox.SelectedIndex = 0;
@@ -416,6 +436,7 @@ namespace EDS.UserControls
 
             if (result != null)
             {
+                buildingType.SelectedItem = result.buildingType;
                 spaceComboBox.SelectedItem = result.spaceType.Split('-')[0];
                 epdComboBox.SelectedItem = result.epdType;
                 lpdComboBox.SelectedItem = result.lpdType;
@@ -656,6 +677,7 @@ namespace EDS.UserControls
 
             EDSRoomTag roomTag = new EDSRoomTag()
             {
+                buildingType = buildingType.SelectedItem.ToString(),
                 //roomLevel = levelComboBox.SelectedItem == null ? "" : levelComboBox.SelectedItem.ToString(),
                 spaceType = spaceComboBox.SelectedItem == null ? "" : spaceComboBox.SelectedItem.ToString(),
                 epdType = epdComboBox.SelectedItem == null ? "" : epdComboBox.SelectedItem.ToString(),
@@ -739,6 +761,7 @@ namespace EDS.UserControls
 
         private void RefreshUI()
         {
+            buildingType.SelectedIndex = 0;
             spaceComboBox.SelectedIndex = 0;
             epdComboBox.SelectedIndex = 0;
             lpdComboBox.SelectedIndex = 0;
@@ -855,5 +878,84 @@ namespace EDS.UserControls
                     System.Windows.Forms.MessageBox.Show("Room Tag Selection Changed.\nPlease click on Add to place rooms.", "Room Placement", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        private void buildingType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (buildingType.SelectedItem != null)
+            {
+                spaceTypes.Clear(); spaceComboBox.Items.Clear();
+                var buildType = buildingType.SelectedItem.ToString();
+
+                string folderPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+                var filePath = Path.Combine(folderPath, "EDS_Database", "Material Database.xlsx");
+
+                List<BuildingTypeData> buildingDataList = LoadBuildingDataFromExcel(filePath);
+
+                spaceTypes = buildingDataList.FindAll(x => x.BuildingType.Equals(buildType)).Select(x => x.SpaceType).Distinct().ToList();
+
+                foreach (var spaceType in spaceTypes)
+                {
+                    spaceComboBox.Items.Add(spaceType);
+                }
+
+                spaceComboBox.SelectedIndex = 0;
+            }
+        }
+
+        List<BuildingTypeData> LoadBuildingDataFromExcel(string filePath)
+        {
+            List<BuildingTypeData> data = new List<BuildingTypeData>();
+
+            // Load Excel file using EPPlus
+            FileInfo fileInfo = new FileInfo(filePath);
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial; // EPPlus needs this for the free license
+
+            using (ExcelPackage package = new ExcelPackage(fileInfo))
+            {
+                // Get the first worksheet
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[9]; // Assuming the data is in the first sheet
+
+                // Iterate through the rows, starting from row 2 to skip headers
+                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                {
+                    var buildingData = new BuildingTypeData
+                    {
+                        SerialNo = int.Parse(worksheet.Cells[row, 1].Text),
+                        BuildingType = worksheet.Cells[row, 2].Text,
+                        Code = worksheet.Cells[row, 3].Text,
+                        SpaceType = worksheet.Cells[row, 4].Text,
+                        Code2 = worksheet.Cells[row, 5].Text,
+                        ActivityDescription = worksheet.Cells[row, 6].Text,
+                        LightingPowerDensity = string.IsNullOrEmpty(worksheet.Cells[row, 7].Text) ? (double?)null : double.Parse(worksheet.Cells[row, 7].Text),
+                        EquipmentPowerDensity = string.IsNullOrEmpty(worksheet.Cells[row, 8].Text) ? (double?)null : double.Parse(worksheet.Cells[row, 8].Text),
+                        Occupancy = string.IsNullOrEmpty(worksheet.Cells[row, 9].Text) ? (double?)null : double.Parse(worksheet.Cells[row, 9].Text),
+                        FreshAirPerPerson = string.IsNullOrEmpty(worksheet.Cells[row, 10].Text) ? (double?)null : double.Parse(worksheet.Cells[row, 10].Text),
+                        FreshAirPerArea = string.IsNullOrEmpty(worksheet.Cells[row, 11].Text) ? (double?)null : double.Parse(worksheet.Cells[row, 11].Text),
+                        FreshAirACH = string.IsNullOrEmpty(worksheet.Cells[row, 12].Text) ? (double?)null : double.Parse(worksheet.Cells[row, 12].Text)
+                    };
+
+                    data.Add(buildingData);
+                }
+            }
+
+            return data;
+        }
+    }
+
+    public class BuildingTypeData
+    {
+        public int SerialNo { get; set; }
+        public string BuildingType { get; set; }
+        public string Code { get; set; }
+        public string SpaceType { get; set; }
+        public string Code2 { get; set; }
+        public string ActivityDescription { get; set; }
+        public double? LightingPowerDensity { get; set; }
+        public double? EquipmentPowerDensity { get; set; }
+        public double? Occupancy { get; set; }
+        public double? FreshAirPerPerson { get; set; }
+        public double? FreshAirPerArea { get; set; }
+        public double? FreshAirACH { get; set; }
     }
 }

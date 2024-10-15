@@ -18,6 +18,7 @@ namespace EDS.Models
     {
         public static List<EDSRoom> storedRooms = new List<EDSRoom>();
 
+        public string buildingType { get; set; }
         public string spaceType { get; set; }
         public string lpdType { get; set; }
         public string epdType { get; set; }
@@ -62,6 +63,7 @@ namespace EDS.Models
 
         private void SetXDataForRoom(EDSRoomTag roomTag, ObjectId objectId, string areaValue)
         {
+            CADUtilities.SetXData(objectId, StringConstants.buildingType, roomTag.buildingType);
             CADUtilities.SetXData(objectId, StringConstants.spaceType, roomTag.spaceType);
             CADUtilities.SetXData(objectId, StringConstants.lpdType, roomTag.lpdType);
             CADUtilities.SetXData(objectId, StringConstants.lpdText1, roomTag.lpdText1);
@@ -85,6 +87,7 @@ namespace EDS.Models
         {
             EDSRoomTag roomTag = new EDSRoomTag();
 
+            roomTag.buildingType = CADUtilities.GetXData(objectId,StringConstants.buildingType);
             roomTag.spaceType = CADUtilities.GetXData(objectId, StringConstants.spaceType);
             roomTag.lpdType = CADUtilities.GetXData(objectId, StringConstants.lpdType);
             roomTag.lpdText1 = CADUtilities.GetXData(objectId, StringConstants.lpdText1);

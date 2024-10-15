@@ -91,7 +91,7 @@ namespace EDS.Models
 
     public class EDSeQuestExteriorWall
     {
-        public string Name { get; set; }  // EL1 South Wall (G.S1.E1)
+        public string Name { get; set; }  // EL1  Wall (G.S1.E1)
         public string Type { get; set; }  // EXTERIOR-WALL
         public string Construction { get; set; }  // EL1 EWall Construction
         public string Location { get; set; }  // SPACE-V1
@@ -133,7 +133,7 @@ namespace EDS.Models
 
     public class EDSQuestWindow
     {
-        public string Name { get; set; }  // "EL1 South Win (G.S1.E1.W1)"
+        public string Name { get; set; }  // "EL1  Win (G.S1.E1.W1)"
         public string GlassType { get; set; }  // "EL1 Window Type #2 GT"
         public double FrameWidth { get; set; }  // 0.108333
         public double X { get; set; }  // 1.28851
@@ -518,7 +518,7 @@ namespace EDS.Models
                     {
                         var newList = new List<Point3d>();
                         fPoints = CheckMakeZeroFirst(fPoints, floorPoints, ref newList);
-                        floorPoints= newList;
+                        floorPoints = newList;
                     }
 
                     WritePointsToInpFile(fPoints.ToList(), "EL1 Space Polygon " + (iNo + 1), eQuestFile);
@@ -605,7 +605,7 @@ namespace EDS.Models
                         {
                             EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
                             {
-                                Name = $"EL1 South Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
+                                Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
                                 Type = "EXTERIOR-WALL",
                                 Construction = "EL1 EWall Construction",
                                 Location = $"SPACE-V{i + 1}",
@@ -649,7 +649,7 @@ namespace EDS.Models
                         {
                             EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
                             {
-                                Name = $"EL1 South Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
+                                Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
                                 Type = "EXTERIOR-WALL",
                                 Construction = "EL1 EWall Construction",
                                 Location = $"SPACE-V{i + 1}",
@@ -744,7 +744,7 @@ namespace EDS.Models
             }
         }
 
-        private List<Point3d> CheckMakeZeroFirst(List<Point3d> roomPoints,List<Point3d> floorPoints, ref List<Point3d> nfPoints)
+        private List<Point3d> CheckMakeZeroFirst(List<Point3d> roomPoints, List<Point3d> floorPoints, ref List<Point3d> nfPoints)
         {
             List<Point3d> newRoomPoints = new List<Point3d>();
             var index = roomPoints.FindIndex(x => x.X == 0.0 && x.Y == 0.0);
@@ -754,7 +754,7 @@ namespace EDS.Models
                 nfPoints.Add(floorPoints[index]);
 
                 for (int iNo = 0; iNo < roomPoints.Count - 1; iNo++)
-                { 
+                {
                     newRoomPoints.Add(roomPoints[iNo]);
                     nfPoints.Add(floorPoints[iNo]);
                 }
@@ -815,7 +815,7 @@ namespace EDS.Models
             eDSeQuestRoom.roomName = "EL1 Space Polygon " + (iNo + 1);
             eDSeQuestRoom.roomPoints = nRoomPoints;
             eDSeQuestRoom.BelongSpace = "Space " + (iNo + 1) + " ";
-            eDSeQuestRoom.SpaceName = $"EL2 South Perim Spc (G.S{iNo + 1})";
+            eDSeQuestRoom.SpaceName = $"EL2  Perim Spc (G.S{iNo + 1})";
             eDSeQuestRoom.Shape = "POLYGON";
             eDSeQuestRoom.ZoneType = "CONDITIONED";
             eDSeQuestRoom.PeopleSchedule = "EL1 Bldg Occup Sch";
@@ -1342,7 +1342,7 @@ $ ---------------------------------------------------------
                                         eDSQuestWindow.Width = double.Parse(eDSWindow.Width) / 304.8;
                                         eDSQuestWindow.Height = double.Parse(eDSWindow.Height) / 304.8;
                                         eDSQuestWindow.FrameWidth = 0.108333;
-                                        eDSQuestWindow.Name = $"EL1 South Win Space {(iNo + 1)} (G.S{(iNo + 1)}.E1.W{iWin})";
+                                        eDSQuestWindow.Name = $"EL1  Win Space {(iNo + 1)} (G.S{(iNo + 1)}.E1.W{iWin})";
                                         eDSQuestWindow.GlassType = "EL1 Window Type #2 GT";
                                         eDSQuestWindow.FrameConduct = 2.781;
 
@@ -2105,41 +2105,46 @@ $ ---------------------------------------------------------
                         {
                             for (int iNo = 0; iNo < room.walls.Count; iNo++)
                             {
-                                worksheet.Cells[rowCount, 3].Value = room.walls[iNo].wall.wallHandleId;
-                                worksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString() + "_" + room.walls[iNo].wall.wallHandleId;
                                 Entity entity = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].wall.wallHandleId), OpenMode.ForRead) as Entity;
-                                if (entity is Line)
+                                Line line1 = entity as Line;
+
+                                if (segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, line1.StartPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, line1.EndPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, line1.StartPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, line1.EndPoint))).iCount == 1)
                                 {
-                                    Line line = entity as Line;
-
-                                    worksheet.Cells[rowCount, 5].Value = GetAzimuthAngle(line, double.Parse(ProjectInformationPalette.projectInformation.Direction));
-
-                                    worksheet.Cells[rowCount, 6].Value = Math.Round(line.Length);
-                                    worksheet.Cells[rowCount, 7].Value = StringConstants.TopHeight;
-                                }
-
-                                double totalArea = 0.0;
-                                if (room.walls[iNo].windows != null)
-                                {
-                                    if (room.walls[iNo].windows.Count > 0)
+                                    worksheet.Cells[rowCount, 3].Value = room.walls[iNo].wall.wallHandleId;
+                                    worksheet.Cells[rowCount, 4].Value = room.room.spaceType.ToString() + "_" + room.walls[iNo].wall.wallHandleId;
+                                    if (entity is Line)
                                     {
-                                        for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
-                                        {
-                                            Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
-                                            if (entity1 is Polyline)
-                                            {
-                                                Polyline line = entity1 as Polyline;
-                                                totalArea = totalArea + (line.Area / 1_000_000);
-                                            }
+                                        Line line = entity as Line;
 
+                                        worksheet.Cells[rowCount, 5].Value = GetAzimuthAngle(line, double.Parse(ProjectInformationPalette.projectInformation.Direction));
+
+                                        worksheet.Cells[rowCount, 6].Value = Math.Round(line.Length);
+                                        worksheet.Cells[rowCount, 7].Value = StringConstants.TopHeight;
+                                    }
+
+                                    double totalArea = 0.0;
+                                    if (room.walls[iNo].windows != null)
+                                    {
+                                        if (room.walls[iNo].windows.Count > 0)
+                                        {
+                                            for (int iNo1 = 0; iNo1 < room.walls[iNo].windows.Count(); iNo1++)
+                                            {
+                                                Entity entity1 = transaction.GetObject(CADUtilities.HandleToObjectId(room.walls[iNo].windows[iNo1].WindHandleId), OpenMode.ForRead) as Entity;
+                                                if (entity1 is Polyline)
+                                                {
+                                                    Polyline line = entity1 as Polyline;
+                                                    totalArea = totalArea + (line.Area / 1_000_000);
+                                                }
+
+                                            }
                                         }
                                     }
-                                }
 
-                                worksheet.Cells[rowCount, 9].Value = Math.Round(totalArea, 2);
-                                worksheet.Cells[rowCount, 11].Value = room.room.spaceType;
-                                worksheet.Cells[rowCount, 12].Value = room.walls[iNo].wall.extWallType;
-                                rowCount++;
+                                    worksheet.Cells[rowCount, 9].Value = Math.Round(totalArea, 2);
+                                    worksheet.Cells[rowCount, 11].Value = room.room.spaceType;
+                                    worksheet.Cells[rowCount, 12].Value = room.walls[iNo].wall.extWallType;
+                                    rowCount++;
+                                }
                             }
                         }
 
