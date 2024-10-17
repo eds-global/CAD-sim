@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -188,6 +189,91 @@ namespace EDS.Models
         }
     }
 
+    public class EDSQuestZone
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public double FlowArea { get; set; }
+        public double OAFlowPer { get; set; }
+        public int DesignHeatTemp { get; set; }
+        public string HeatTempSchedule { get; set; }
+        public int DesignCoolTemp { get; set; }
+        public string CoolTempSchedule { get; set; }
+        public string SizingOption { get; set; }
+        public string Space { get; set; }
+
+        public override string ToString()
+        {
+            return $"\"{Name}\" = ZONE\n" +
+                   $"   TYPE             = {Type}\n" +
+                   $"   FLOW/AREA        = {FlowArea}\n" +
+                   $"   OA-FLOW/PER      = {OAFlowPer}\n" +
+                   $"   DESIGN-HEAT-T    = {DesignHeatTemp}\n" +
+                   $"   HEAT-TEMP-SCH    = \"{HeatTempSchedule}\"\n" +
+                   $"   DESIGN-COOL-T    = {DesignCoolTemp}\n" +
+                   $"   COOL-TEMP-SCH    = \"{CoolTempSchedule}\"\n" +
+                   $"   SIZING-OPTION    = {SizingOption}\n" +
+                   $"   SPACE            = \"{Space}\"\n" +
+                   "   ..";
+        }
+    }
+
+    public class EDSQuestSystemData
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string HeatSource { get; set; }
+        public string ZoneHeatSource { get; set; }
+        public string BaseboardSource { get; set; }
+        public double SizingRatio { get; set; }
+        public string HumidifierType { get; set; }
+        public int MaxSupplyTemp { get; set; }
+        public int MinSupplyTemp { get; set; }
+        public int MaxHumidity { get; set; }
+        public int MinHumidity { get; set; }
+        public int EconoLimitTemp { get; set; }
+        public int EnthalpyLimit { get; set; }
+        public string EconoLockout { get; set; }
+        public string OAControl { get; set; }
+        public string FanSchedule { get; set; }
+        public double SupplyStatic { get; set; }
+        public double SupplyEff { get; set; }
+        public double ReturnEff { get; set; }
+        public double CoolingEIR { get; set; }
+        public int FurnaceAux { get; set; }
+        public double FurnaceHIR { get; set; }
+        public string HumidifierLoc { get; set; }
+        public string ControlZone { get; set; }
+
+        public override string ToString()
+        {
+            return $"\"{Name}\" = SYSTEM\n" +
+                   $"   TYPE             = {Type}\n" +
+                   $"   HEAT-SOURCE      = {HeatSource}\n" +
+                   $"   ZONE-HEAT-SOURCE = {ZoneHeatSource}\n" +
+                   $"   BASEBOARD-SOURCE = {BaseboardSource}\n" +
+                   $"   SIZING-RATIO     = {SizingRatio}\n" +
+                   $"   HUMIDIFIER-TYPE  = {HumidifierType}\n" +
+                   $"   MAX-SUPPLY-T     = {MaxSupplyTemp}\n" +
+                   $"   MIN-SUPPLY-T     = {MinSupplyTemp}\n" +
+                   $"   MAX-HUMIDITY     = {MaxHumidity}\n" +
+                   $"   MIN-HUMIDITY     = {MinHumidity}\n" +
+                   $"   ECONO-LIMIT-T    = {EconoLimitTemp}\n" +
+                   $"   ENTHALPY-LIMIT   = {EnthalpyLimit}\n" +
+                   $"   ECONO-LOCKOUT    = {EconoLockout}\n" +
+                   $"   OA-CONTROL       = {OAControl}\n" +
+                   $"   FAN-SCHEDULE     = \"{FanSchedule}\"\n" +
+                   $"   SUPPLY-STATIC    = {SupplyStatic}\n" +
+                   $"   SUPPLY-EFF       = {SupplyEff}\n" +
+                   $"   RETURN-EFF       = {ReturnEff}\n" +
+                   $"   COOLING-EIR      = {CoolingEIR}\n" +
+                   $"   FURNACE-AUX      = {FurnaceAux}\n" +
+                   $"   FURNACE-HIR      = {FurnaceHIR}\n" +
+                   $"   HUMIDIFIER-LOC   = {HumidifierLoc}\n" +
+                   $"   CONTROL-ZONE     = \"{ControlZone}\"\n" +
+                   "   ..";
+        }
+    }
 
     public class EDSScan
     {
@@ -294,6 +380,8 @@ namespace EDS.Models
                                 System.Windows.MessageBox.Show("No rooms found");
                             }
 
+                            WriteLineSegmentsToFile(segmentCount.Select(x => x.lineSegment).ToList(), "E:\\text.txt");
+
                             CreateQuestFile(rooms);
 
                             UnHideWindows(db, true);
@@ -329,6 +417,14 @@ namespace EDS.Models
                 doc.LockDocument();
                 UnHideWindows(db, true);
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        public void WriteLineSegmentsToFile(List<LineSegment> lineSegments, string filePath)
+        {
+            foreach (var lineSegment in lineSegments)
+            {
+                lineSegment.WriteToFile(filePath);
             }
         }
 
@@ -384,6 +480,8 @@ namespace EDS.Models
             }
             return false;
         }
+
+
 
         private void CreateQuestFile(List<EDSExcelRoom> rooms)
         {
@@ -501,10 +599,18 @@ namespace EDS.Models
             {
                 EDSeQuestRoom eDSeQuestRoom = new EDSeQuestRoom();
                 EDSExport eDSExport = new EDSExport();
-                var lines = eDSExport.mthdOfSortExternalWallAnti(roomLines[iNo]);
-                var points = lines.Select(x => x.EndPoint).ToList();
+                // lines = eDSExport.mthdOfSortExternalWallAnti(roomLines[iNo]);
+                //var points = lines.Select(x => x.EndPoint).ToList();
 
                 floorPoints = lineSort.SortAntiPoints(roomLines[iNo]);
+
+                List<Point3d> point3Ds = new List<Point3d>();
+                var indexes = FindSequence(floorPoints, roomLines[iNo]);
+
+                foreach (var ind in indexes)
+                    point3Ds.Add(floorPoints[ind]);
+
+                floorPoints = point3Ds;
 
                 var lowerLeftMostPoint = FindLowermostLeft(floorPoints);
 
@@ -519,6 +625,14 @@ namespace EDS.Models
                         var newList = new List<Point3d>();
                         fPoints = CheckMakeZeroFirst(fPoints, floorPoints, ref newList);
                         floorPoints = newList;
+
+                        point3Ds = new List<Point3d>();
+                        indexes = FindSequence(floorPoints, roomLines[iNo]);
+
+                        foreach (var ind in indexes)
+                            point3Ds.Add(floorPoints[ind]);
+
+                        floorPoints = point3Ds;
                     }
 
                     WritePointsToInpFile(fPoints.ToList(), "EL1 Space Polygon " + (iNo + 1), eQuestFile);
@@ -536,8 +650,16 @@ namespace EDS.Models
                         var newList = new List<Point3d>();
                         fPoints = CheckMakeZeroFirst(fPoints, floorPoints, ref newList);
                         floorPoints = newList;
-                    }
 
+                        point3Ds = new List<Point3d>();
+                        indexes = FindSequence(floorPoints, roomLines[iNo]);
+
+                        foreach (var ind in indexes)
+                            point3Ds.Add(floorPoints[ind]);
+
+                        floorPoints = point3Ds;
+
+                    }
                     WritePointsToInpFile(fPoints.ToList(), "EL1 Space Polygon " + (iNo + 1), eQuestFile);
 
                     GetEDSQuestRoom(iNo, eDSeQuestRoom, lowerLeftMostPoint, nRoomPoints, floorPoints);
@@ -601,68 +723,24 @@ namespace EDS.Models
                         var nextPoint = room.oRoomPoints[0];
 
                         var lineSegment = segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, nextPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, nextPoint)));
-                        if (lineSegment.iCount == 1)
+                        if (lineSegment != null)
                         {
-                            EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
+                            if (lineSegment.iCount == 1)
                             {
-                                Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
-                                Type = "EXTERIOR-WALL",
-                                Construction = "EL1 EWall Construction",
-                                Location = $"SPACE-V{i + 1}",
-                                ShadingSurface = true
-                            };
-                            WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
-                            WriteContentToINPFile("   ..", eQuestFile);
-                        }
-                        else
-                        {
-                            var index = rooms.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
-                            if (ContainsInversePair(visitedRooms, room.SpaceName, seQuestFloor.rooms[index].SpaceName))
-                            {
-
+                                EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
+                                {
+                                    Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
+                                    Type = "EXTERIOR-WALL",
+                                    Construction = "EL1 EWall Construction",
+                                    Location = $"SPACE-V{i + 1}",
+                                    ShadingSurface = true
+                                };
+                                WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
+                                WriteContentToINPFile("   ..", eQuestFile);
                             }
                             else
                             {
-                                EDSeQuestInteriorWall eDSeQuestInteriorWall = new EDSeQuestInteriorWall()
-                                {
-                                    Name = $"EL1 NE Wall (G.S{(iNo + 1)}.I{iInt})",
-                                    NextTo = seQuestFloor.rooms[index].SpaceName,
-                                    Construction = "EL1 IWall Construction",
-                                    Location = $"SPACE-V{i + 1}",
-                                };
-
-                                eDSeQuestInteriorWall.PrintFormattedData(eQuestFile);
-                                visitedRooms.Add(new DuplicateWall() { type1 = room.SpaceName, type2 = seQuestFloor.rooms[index].SpaceName });
-                                iInt++;
-                            }
-
-                        }
-                        var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, rooms[iNo], iNo, eQuestFile);
-                    }
-                    else
-                    {
-                        var currPoint = room.oRoomPoints[i];
-                        var nextPoint = room.oRoomPoints[i + 1];
-
-                        var lineSegment = segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, nextPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, nextPoint)));
-                        if (lineSegment.iCount == 1)
-                        {
-                            EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
-                            {
-                                Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
-                                Type = "EXTERIOR-WALL",
-                                Construction = "EL1 EWall Construction",
-                                Location = $"SPACE-V{i + 1}",
-                                ShadingSurface = true
-                            };
-                            WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
-                            WriteContentToINPFile("   ..", eQuestFile);
-                        }
-                        else
-                        {
-                            var index = rooms.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
-                            if (room.SpaceName != seQuestFloor.rooms[index].SpaceName)
-                            {
+                                var index = rooms.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
                                 if (ContainsInversePair(visitedRooms, room.SpaceName, seQuestFloor.rooms[index].SpaceName))
                                 {
 
@@ -681,10 +759,62 @@ namespace EDS.Models
                                     visitedRooms.Add(new DuplicateWall() { type1 = room.SpaceName, type2 = seQuestFloor.rooms[index].SpaceName });
                                     iInt++;
                                 }
-                            }
 
+                            }
                         }
                         var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, rooms[iNo], iNo, eQuestFile);
+                    }
+                    else
+                    {
+                        var currPoint = room.oRoomPoints[i];
+                        var nextPoint = room.oRoomPoints[i + 1];
+
+                        var lineSegment = segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, nextPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, nextPoint)));
+                        //var ty = segmentCount.FindAll(x => Math.Round(x.lineSegment.EndPoint.Y, 4).Equals(currPoint.Y) || Math.Round(x.lineSegment.StartPoint.Y, 4).Equals(currPoint.Y));
+                        if (lineSegment != null)
+                        {
+                            if (lineSegment.iCount == 1)
+                            {
+                                EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
+                                {
+                                    Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
+                                    Type = "EXTERIOR-WALL",
+                                    Construction = "EL1 EWall Construction",
+                                    Location = $"SPACE-V{i + 1}",
+                                    ShadingSurface = true
+                                };
+                                WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
+                                WriteContentToINPFile("   ..", eQuestFile);
+                            }
+                            else
+                            {
+                                var index = rooms.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
+                                if (room.SpaceName != seQuestFloor.rooms[index].SpaceName)
+                                {
+                                    if (ContainsInversePair(visitedRooms, room.SpaceName, seQuestFloor.rooms[index].SpaceName))
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        EDSeQuestInteriorWall eDSeQuestInteriorWall = new EDSeQuestInteriorWall()
+                                        {
+                                            Name = $"EL1 NE Wall (G.S{(iNo + 1)}.I{iInt})",
+                                            NextTo = seQuestFloor.rooms[index].SpaceName,
+                                            Construction = "EL1 IWall Construction",
+                                            Location = $"SPACE-V{i + 1}",
+                                        };
+
+                                        eDSeQuestInteriorWall.PrintFormattedData(eQuestFile);
+                                        visitedRooms.Add(new DuplicateWall() { type1 = room.SpaceName, type2 = seQuestFloor.rooms[index].SpaceName });
+                                        iInt++;
+                                    }
+                                }
+
+                            }
+                        }
+                        var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, rooms[iNo], iNo, eQuestFile);
+                        //WriteLineSegmentsToFile(segmentCount.Select(x => x.lineSegment).ToList(), "E:\\text.txt");
                     }
 
 
@@ -728,7 +858,345 @@ namespace EDS.Models
                 iNo++;
             }
 
+            var eContent = GetFormattedElectricalData();
+
+            WriteContentToINPFile(eContent, eQuestFile);
+
+            iNo = 0;
+            foreach (var room in seQuestFloor.rooms)
+            {
+                EDSQuestZone zone = new EDSQuestZone
+                {
+                    Name = $"EL1 South Perim Zn (G.S{iNo + 1})",
+                    Type = "CONDITIONED",
+                    FlowArea = 0.5,
+                    OAFlowPer = 20,
+                    DesignHeatTemp = 72,
+                    HeatTempSchedule = "S1 Sys1 (PSZ) Heat Sch",
+                    DesignCoolTemp = 75,
+                    CoolTempSchedule = "S1 Sys1 (PSZ) Cool Sch",
+                    SizingOption = "ADJUST-LOADS",
+                    Space = room.SpaceName
+                };
+
+                EDSQuestSystemData system = new EDSQuestSystemData
+                {
+                    Name = $"EL1 Sys1 (PSZ) (G.S{iNo + 1})",
+                    Type = "PSZ",
+                    HeatSource = "FURNACE",
+                    ZoneHeatSource = "NONE",
+                    BaseboardSource = "NONE",
+                    SizingRatio = 1.15,
+                    HumidifierType = "NONE",
+                    MaxSupplyTemp = 120,
+                    MinSupplyTemp = 55,
+                    MaxHumidity = 100,
+                    MinHumidity = 0,
+                    EconoLimitTemp = 70,
+                    EnthalpyLimit = 30,
+                    EconoLockout = "NO",
+                    OAControl = "OA-TEMP",
+                    FanSchedule = "S1 Sys1 (PSZ) Fan Sch",
+                    SupplyStatic = 1.25,
+                    SupplyEff = 0.53,
+                    ReturnEff = 0.53,
+                    CoolingEIR = 0.263548,
+                    FurnaceAux = 0,
+                    FurnaceHIR = 1.25,
+                    HumidifierLoc = "IN-AIR-HANDLER",
+                    ControlZone = zone.Name
+                };
+
+                WriteContentToINPFile(system.ToString(), eQuestFile);
+                WriteContentToINPFile(zone.ToString(), eQuestFile);
+
+                iNo++;
+            }
+
+            var endContent = GetFormattedEndData();
+
+            WriteContentToINPFile(endContent, eQuestFile);
+
         }
+
+        string GetFormattedEndData()
+        {
+            string data = @"
+$ *********************************************************
+$ **                                                     **
+$ **                Metering & Misc HVAC                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Equipment Controls
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Load Management
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                    Utility Rates                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Ratchets
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Block Charges
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Utility Rates
+$ ---------------------------------------------------------
+
+'SCE GS-2 Elec Rate TOU-Opt' = UTILITY-RATE    
+   LIBRARY-ENTRY 'SCE GS-2 Elec Rate TOU-Opt'
+   ..
+'SoCalGas GN-10 Gas Rate' = UTILITY-RATE    
+   LIBRARY-ENTRY 'SoCalGas GN-10 Gas Rate'
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **                 Output Reporting                    **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Loads Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+LOADS-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Systems Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+SYSTEMS-REPORT  
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Plant Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+PLANT-REPORT    
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Economics Non-Hourly Reporting
+$ ---------------------------------------------------------
+
+ECONOMICS-REPORT
+   VERIFICATION     = ( ALL-VERIFICATION )
+   SUMMARY          = ( ALL-SUMMARY )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Hourly Reporting
+$ ---------------------------------------------------------
+
+
+'Hourly Report' = HOURLY-REPORT   
+   LIBRARY-ENTRY 'Hourly Report'
+   ..
+
+
+$ ---------------------------------------------------------
+$              THE END
+$ ---------------------------------------------------------
+
+END ..
+COMPUTE ..
+STOP ..";
+            return data;
+        }
+        string GetFormattedElectricalData()
+        {
+            string data = @"
+$ *********************************************************
+$ **                                                     **
+$ **              Electric & Fuel Meters                 **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Electric Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Fuel Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Master Meters
+$ ---------------------------------------------------------
+
+'MASTER-METERS 1' = MASTER-METERS   
+   MSTR-ELEC-METER  = 'EM1'
+   MSTR-FUEL-METER  = 'FM1'
+   ..
+
+
+$ *********************************************************
+$ **                                                     **
+$ **      HVAC Circulation Loops / Plant Equipment       **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Pumps
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Circulation Loops
+$ ---------------------------------------------------------
+
+'DHW Plant 1 Loop (1)' = CIRCULATION-LOOP
+   TYPE             = DHW
+   DESIGN-HEAT-T    = 135
+   PROCESS-FLOW     = ( 0.479338 )
+   PROCESS-SCH      = ( 'DHW Eqp NRes Sch' )
+   PROCESS-T        = ( 135 )
+   ..
+
+
+$ ---------------------------------------------------------
+$              Chillers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Boilers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Domestic Water Heaters
+$ ---------------------------------------------------------
+
+'DHW Plant 1 Wtr Htr (1)' = DW-HEATER       
+   TYPE             = GAS
+   TANK-VOLUME      = 130.198
+   CAPACITY         = 0.173528
+   HIR-FPLR         = 'DW-Gas-Pilotless-HIR-fPLR'
+   TANK-UA          = 5.42491
+   LOCATION         = ZONE
+   ZONE-NAME        = 'EL1 Core Zn (G.C5)'
+   DHW-LOOP         = 'DHW Plant 1 Loop (1)'
+   C-RECOV-EFF      = 0.8
+   C-STBY-LOSS-FRAC = 2.02966
+   C-TANK-EXT-RVAL  = 12
+   ..
+
+
+$ ---------------------------------------------------------
+$              Heat Rejection
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Tower Free Cooling
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Photovoltaic Modules
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Electric Generators
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Thermal Storage
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Ground Loop Heat Exchangers
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Compliance DHW (residential dwelling units)
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **            Steam & Chilled Water Meters             **
+$ **                                                     **
+$ *********************************************************
+
+$ ---------------------------------------------------------
+$              Steam Meters
+$ ---------------------------------------------------------
+
+
+
+$ ---------------------------------------------------------
+$              Chilled Water Meters
+$ ---------------------------------------------------------
+
+
+
+$ *********************************************************
+$ **                                                     **
+$ **               HVAC Systems / Zones                  **
+$ **                                                     **
+$ *********************************************************
+";
+            return data;
+        }
+
         bool ContainsInversePair(List<DuplicateWall> duplicateWalls, string type1, string type2)
         {
             if (duplicateWalls.Count > 0)
@@ -761,7 +1229,7 @@ namespace EDS.Models
             }
             else
             {
-                for (int iNo = index; iNo < roomPoints.Count - 1; iNo++)
+                for (int iNo = index; iNo < roomPoints.Count; iNo++)
                 {
                     newRoomPoints.Add(roomPoints[iNo]);
                     nfPoints.Add(floorPoints[iNo]);

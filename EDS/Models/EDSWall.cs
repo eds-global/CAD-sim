@@ -19,6 +19,7 @@ using System.IO;
 using OfficeOpenXml;
 using static System.Windows.Forms.LinkLabel;
 using Application = ZwSoft.ZwCAD.ApplicationServices.Application;
+using System.Globalization;
 
 namespace EDS.Models
 {
@@ -695,6 +696,22 @@ namespace EDS.Models
         public override int GetHashCode()
         {
             return StartPoint.GetHashCode() ^ EndPoint.GetHashCode();
+        }
+
+        public void WriteToFile(string filePath)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                string startPointStr = FormatPoint(StartPoint);
+                string endPointStr = FormatPoint(EndPoint);
+
+                writer.WriteLine($"StartPoint: {startPointStr}, EndPoint: {endPointStr}");
+            }
+        }
+
+        private string FormatPoint(Point3d point)
+        {
+            return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2})", point.X, point.Y, point.Z);
         }
     }
 }
