@@ -47,7 +47,7 @@ namespace EDS.Models
         public List<EDSWindow> windows { get; set; }
     }
 
-    public class EDSeQuestFloor
+    public class EDSQuestSpace
     {
         public string spaceName { get; set; }
         public List<Point3d> spacePoints { get; set; }
@@ -57,10 +57,10 @@ namespace EDS.Models
         public int floorHeight { get; set; }
         public int spaceHeight { get; set; }
         public string diagramData { get; set; }
-        public List<EDSeQuestRoom> rooms { get; set; }
+        public List<EDSQuestRoom> rooms { get; set; }
     }
 
-    public class EDSeQuestRoom
+    public class EDSQuestRoom
     {
         public double X { get; set; }
         public double Y { get; set; }
@@ -282,7 +282,9 @@ namespace EDS.Models
         List<LineSelectCount> segmentCount = new List<LineSelectCount>();
         public static int iWin = 0;
         public static int iInt = 0;
-        public void FindClosedLoop(System.Windows.Forms.TreeView treeView)
+        public ObjectId rectObjectId;
+
+        public void FindClosedLoop(System.Windows.Forms.TreeView treeView, Point3d startPoint, Point3d endPoint, List<EDSFloorTag> edsFloorTag, PromptSelectionResult selectionResult)
         {
             try
             {
@@ -291,6 +293,7 @@ namespace EDS.Models
                 Editor ed = doc.Editor;
                 doc.LockDocument();
 
+                /* //OldCode
                 PromptSelectionResult res;
                 if (ed.SelectImplied().Value == null)
                 {
@@ -305,14 +308,15 @@ namespace EDS.Models
                 }
 
                 HideWindows(db, res, false);
+                */
 
                 using (Transaction tr = db.TransactionManager.StartTransaction())
                 {
                     List<Line> wallLines = new List<Line>();
                     List<EDSRoomTag> edsRooms = new List<EDSRoomTag>();
-                    if (res.Status == PromptStatus.OK)
+                    if (selectionResult.Status == PromptStatus.OK)
                     {
-                        SelectionSet selectionSet = res.Value;
+                        SelectionSet selectionSet = selectionResult.Value;
 
                         ExportValidation exportValidation = new ExportValidation();
 
@@ -327,6 +331,7 @@ namespace EDS.Models
                                     wallLines.Add(entity as Line);
                             }
                         }
+
                         Point3dCollection intersections = exportValidation.FindIntersections(wallLines, tr);
 
                         if (intersections.Count == 0)
@@ -380,9 +385,9 @@ namespace EDS.Models
                                 System.Windows.MessageBox.Show("No rooms found");
                             }
 
-                            WriteLineSegmentsToFile(segmentCount.Select(x => x.lineSegment).ToList(), "E:\\text.txt");
+                            //WriteLineSegmentsToFile(segmentCount.Select(x => x.lineSegment).ToList(), "E:\\text.txt");
 
-                            CreateQuestFile(rooms);
+                            CreateQuestFile(rooms, edsFloorTag);
 
                             UnHideWindows(db, true);
 
@@ -392,7 +397,7 @@ namespace EDS.Models
                             {
                                 AddExcelData(db);
 
-                                CreateXMLFile(db);
+                                CreateXMLFile(db, edsFloorTag);
 
                             }
                             else
@@ -415,9 +420,254 @@ namespace EDS.Models
                 Database db = doc.Database;
                 Editor ed = doc.Editor;
                 doc.LockDocument();
-                UnHideWindows(db, true);
+                //UnHideWindows(db, true);
                 MessageBox.Show(ex.Message);
             }
+        }
+
+
+
+        public void TraceBoundaryInRectangle(TreeView treeView)
+        {
+            Polyline rectPolyLine;
+            List<EDSFloorTag> eDSFloorTags = new List<EDSFloorTag>();
+            // Get the current document and editor
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+            doc.LockDocument();
+
+            // Prompt user for the first corner point
+            PromptPointOptions ppo1 = new PromptPointOptions("\nSpecify first corner of rectangle:");
+            PromptPointResult ppr1 = ed.GetPoint(ppo1);
+
+            if (ppr1.Status != PromptStatus.OK)
+                return;
+
+            // Prompt user for the second corner point
+            PromptPointOptions ppo2 = new PromptPointOptions("\nSpecify opposite corner of rectangle:");
+            ppo2.BasePoint = ppr1.Value;
+            ppo2.UseBasePoint = true;
+            PromptPointResult ppr2 = ed.GetPoint(ppo2);
+
+            if (ppr2.Status != PromptStatus.OK)
+                return;
+
+            // Define the rectangle boundary using the two points
+            Point3d pt1 = ppr1.Value;
+            Point3d pt2 = ppr2.Value;
+
+            PromptSelectionResult psr;
+
+            GetSelectionResult(pt1, pt2, out ed, out psr);
+
+            HideWindows(doc.Database, psr, false);
+
+            // Create a rectangle as a polyline
+            using (Transaction tr = doc.TransactionManager.StartTransaction())
+            {
+                BlockTable bt = (BlockTable)tr.GetObject(doc.Database.BlockTableId, OpenMode.ForRead);
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite);
+
+                Polyline rect = new Polyline(4);
+                rect.AddVertexAt(0, new Point2d(pt1.X, pt1.Y), 0, 0, 0);
+                rect.AddVertexAt(1, new Point2d(pt2.X, pt1.Y), 0, 0, 0);
+                rect.AddVertexAt(2, new Point2d(pt2.X, pt2.Y), 0, 0, 0);
+                rect.AddVertexAt(3, new Point2d(pt1.X, pt2.Y), 0, 0, 0);
+                rect.Closed = true;
+                //rect.Visible = false;
+                btr.AppendEntity(rect);
+                tr.AddNewlyCreatedDBObject(rect, true);
+
+                rectObjectId = rect.ObjectId;
+                // Commit the transaction
+                tr.Commit();
+                rectPolyLine = rect;
+            }
+
+            using (Transaction transaction = doc.TransactionManager.StartTransaction())
+            {
+                var seedPoint = new Point3d(pt1.X + 1000, pt1.Y - 1000, 0);
+                DBObjectCollection dBObjectCollection = ed.TraceBoundary(seedPoint, true);
+                if (dBObjectCollection.Count > 0)
+                {
+                    foreach (DBObject obj in dBObjectCollection)
+                    {
+                        if (obj is Polyline)
+                        {
+                            if (ArePolylinesEqual(rectPolyLine, (obj as Polyline)))
+                                continue;
+
+                            BlockTableRecord currentSpace = transaction.GetObject(doc.Database.CurrentSpaceId, OpenMode.ForWrite) as BlockTableRecord;
+                            var id = currentSpace.AppendEntity(obj as Entity);
+                            transaction.AddNewlyCreatedDBObject(obj as Polyline, false);
+
+                            Polyline poly = (Polyline)obj;
+
+                            //poly.Visible = false;
+
+                            EDSFloorTag floorTag = new EDSFloorTag();
+                            floorTag.floorObjectId = id;
+                            floorTag.floorPolyLine = poly;
+
+                            eDSFloorTags.Add(floorTag);
+                        }
+                    }
+                }
+
+                transaction.Commit();
+            }
+
+            var list = PolylineContainmentChecker.GetContainedPolylines(eDSFloorTags.Select(x => x.floorPolyLine).ToList());
+
+            if (list.Count > 0)
+            {
+                var innerList = list.Select(x => x.Inner).ToList();
+                foreach (var polyline in innerList)
+                {
+
+                    var index = eDSFloorTags.FindIndex(x => x.floorPolyLine.Id.Equals(polyline.Id));
+                    if (index >= 0)
+                    {
+                        eDSFloorTags.RemoveAt(index);
+                    }
+                }
+            }
+
+            var filteredLayers = LayerFilter.GetFilteredLayer();
+
+            GetAllRoomsInFloor(pt1, pt2, eDSFloorTags,filteredLayers);
+
+            HideWindows(doc.Database, psr, false);
+
+            FindClosedLoop(treeView, pt1, pt2, eDSFloorTags, psr);
+        }
+
+        public bool ArePolylinesEqual(Polyline polyline1, Polyline polyline2, double tolerance = 1e-6)
+        {
+            // Step 1: Check basic properties
+            if (polyline1.NumberOfVertices != polyline2.NumberOfVertices)
+                return false;
+
+            if (polyline1.Closed != polyline2.Closed)
+                return false;
+
+            // Optionally, check other properties (like elevation)
+            if (!polyline1.Elevation.Equals(polyline2.Elevation))
+                return false;
+
+            bool AnySame = false;
+            Point2d vertex1 = polyline1.GetPoint2dAt(0);
+            // Step 2: Compare each vertex position
+            for (int i = 0; i < polyline1.NumberOfVertices; i++)
+            {
+
+                Point2d vertex2 = polyline2.GetPoint2dAt(i);
+
+                if (vertex1.IsEqualTo(vertex2, new Tolerance(tolerance, tolerance)))
+                {
+                    AnySame = true;
+                }
+            }
+
+            if (AnySame)
+                return true;
+            else
+                return false;
+            // If all checks pass, the polylines are considered equal
+            return true;
+        }
+
+        public bool IsPointInsidePolyline(Polyline polyline, Point3d testPoint)
+        {
+            if (!polyline.Closed)
+            {
+                throw new ArgumentException("The polyline must be closed.");
+            }
+
+            int intersectionCount = 0;
+            Point2d pt1, pt2;
+
+            // Loop through each segment of the polyline
+            for (int i = 0; i < polyline.NumberOfVertices; i++)
+            {
+                pt1 = polyline.GetPoint2dAt(i);
+                pt2 = polyline.GetPoint2dAt((i + 1) % polyline.NumberOfVertices);
+
+                // Check if the testPoint lies on a horizontal ray from testPoint
+                if (((pt1.Y > testPoint.Y) != (pt2.Y > testPoint.Y)) &&
+                    (testPoint.X < (pt2.X - pt1.X) * (testPoint.Y - pt1.Y) / (pt2.Y - pt1.Y) + pt1.X))
+                {
+                    intersectionCount++;
+                }
+            }
+
+            for (int i = 0; i < polyline.NumberOfVertices; i++)
+                pt1 = polyline.GetPoint2dAt(i);
+            // If intersection count is odd, the point is inside
+            return (intersectionCount % 2) != 0;
+        }
+
+        public SelectionSet GetAllObjectsInsidePoint(Point3d pt1, Point3d pt2)
+        {
+            Editor ed;
+            PromptSelectionResult psr;
+
+            GetSelectionResult(pt1, pt2, out ed, out psr);
+
+            if (psr.Status == PromptStatus.OK)
+            {
+                return psr.Value;
+            }
+            else
+            {
+                ed.WriteMessage("\nNo entities found inside the rectangle.");
+                return null;
+            }
+        }
+
+        private static void GetSelectionResult(Point3d pt1, Point3d pt2, out Editor ed, out PromptSelectionResult psr)
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            ed = doc.Editor;
+            doc.LockDocument();
+
+            psr = ed.SelectCrossingWindow(pt1, pt2);
+        }
+
+        public void GetAllRoomsInFloor(Point3d pt1, Point3d pt2, List<EDSFloorTag> eDSFloorTags,List<string> filteredLayers)
+        {
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+            doc.LockDocument();
+
+            var selectionSet = GetAllObjectsInsidePoint(pt1, pt2);
+            using (Transaction tr = doc.TransactionManager.StartTransaction())
+            {
+                foreach (SelectedObject so in selectionSet)
+                {
+                    ObjectId objId = so.ObjectId;
+
+                    Entity entity = tr.GetObject(objId, OpenMode.ForRead) as Entity;
+                    if (entity is DBText)
+                    {
+                        var point = (entity as DBText).Position;
+                        
+                        foreach (var floor in eDSFloorTags)
+                        {
+                            if (IsPointInsidePolyline(floor.floorPolyLine, point))
+                            {
+                                EDSExcelRoom eDSExcelRoom = new EDSExcelRoom();
+                                EDSRoomTag roomTag = new EDSRoomTag();
+                                eDSExcelRoom.room = roomTag.GetXDataForRoom(entity.Id);
+
+                                floor.roomTags.Add(eDSExcelRoom);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //return eDSRoomTags;
         }
 
         public void WriteLineSegmentsToFile(List<LineSegment> lineSegments, string filePath)
@@ -482,9 +732,59 @@ namespace EDS.Models
         }
 
 
-
-        private void CreateQuestFile(List<EDSExcelRoom> rooms)
+        private void GetFloorPointAndLines(List<EDSFloorTag> floorTags, List<EDSExcelRoom> rooms)
         {
+            Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            doc.LockDocument();
+            foreach (var floor in floorTags)
+            {
+                foreach (var rm in floor.roomTags)
+                {
+                    var room = rooms.Find(x => x.room.textHandleId.Equals(rm.room.textHandleId));
+                    rm.walls = room.walls;
+                    int iNo = 0;
+                    foreach (var wall in room.walls)
+                    {
+                        rm.walls[iNo].windows = wall.windows;
+                        iNo++;
+                    }
+                }
+            }
+
+            foreach (var tag in floorTags)
+            {
+                using (Transaction transaction = db.TransactionManager.StartTransaction())
+                {
+                    foreach (EDSExcelRoom room in tag.roomTags)
+                    {
+                        List<Line> tempRoomLines = new List<Line>();
+                        if (room == null) continue;
+                        foreach (var wall in room.walls)
+                        {
+                            if (wall == null) continue;
+
+                            Line line = transaction.GetObject(CADUtilities.HandleToObjectId(wall.wall.wallHandleId), OpenMode.ForRead) as Line;
+
+                            if (segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, line.StartPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, line.EndPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, line.StartPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, line.EndPoint))).iCount == 1)
+                            {
+                                tag.floorLines.Add(line);
+                            }
+
+                            tempRoomLines.Add(line);
+                        }
+
+                        tag.roomLines.Add(tempRoomLines);
+                    }
+                }
+            }
+        }
+
+
+        private void CreateQuestFile(List<EDSExcelRoom> rooms, List<EDSFloorTag> floorTags)
+        {
+            GetFloorPointAndLines(floorTags, rooms);
+
             List<DuplicateWall> visitedRooms = new List<DuplicateWall>();
 
             Document doc = ZwSoft.ZwCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -510,288 +810,233 @@ namespace EDS.Models
             WriteContentToINPFile(content, eQuestFile);
 
             doc.LockDocument();
-            var floorLines = new List<Line>();
-            var roomLines = new List<List<Line>>();
 
-            using (Transaction transaction = db.TransactionManager.StartTransaction())
+            int iNo1 = 1;
+
+            List<EDSQuestSpace> eDSQuestSpaces = new List<EDSQuestSpace>();
+
+            foreach (var floor in floorTags)
             {
-                foreach (EDSExcelRoom room in rooms)
-                {
-                    List<Line> tempRoomLines = new List<Line>();
-                    if (room == null) continue;
-                    foreach (var wall in room.walls)
-                    {
-                        if (wall == null) continue;
+                EDSQuestSpace seQuestFloor = new EDSQuestSpace();
+                seQuestFloor.rooms = new List<EDSQuestRoom>();
 
-                        Line line = transaction.GetObject(CADUtilities.HandleToObjectId(wall.wall.wallHandleId), OpenMode.ForRead) as Line;
+                LineSort lineSort = new LineSort();
+                var floorPoints = lineSort.SortAntiPoints(floor.floorLines);
 
-                        if (segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, line.StartPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, line.EndPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, line.StartPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, line.EndPoint))).iCount == 1)
-                        {
-                            floorLines.Add(line);
-                        }
-
-                        tempRoomLines.Add(line);
-                    }
-
-                    roomLines.Add(tempRoomLines);
-                }
-            }
-
-            EDSeQuestFloor seQuestFloor = new EDSeQuestFloor();
-            seQuestFloor.rooms = new List<EDSeQuestRoom>();
-
-            LineSort lineSort = new LineSort();
-            var floorPoints = lineSort.SortAntiPoints(floorLines);
-
-            Point3d lowermostLeft = FindLowermostLeft(floorPoints.ToList());
-
-            if (GenericModule.IsExtWllSrtBbyClkWs)
-            {
-                //List<Point3d> finalPoints = GetAllTranslatedPoints(floorLines, floorPoints);
-
-                var indexes = FindSequence(floorPoints, floorLines);
-
-                List<Point3d> finalPoints = new List<Point3d>();
-                for (int i = 0; i < indexes.Count; i++)
-                    finalPoints.Add(floorPoints[indexes[i]]);
-
-                finalPoints = ConvertPointsToFeet(finalPoints);
-
-                WritePointsToInpFile(finalPoints.ToList(), "EL1 Floor Polygon", eQuestFile);
-
-                seQuestFloor.spaceName = "EL1 Floor Polygon";
-                seQuestFloor.spacePoints = finalPoints;
-
-            }
-            else
-            {
-                //List<Point3d> finalPoints = GetAllTranslatedPoints(floorLines, floorPoints);
-
-                var indexes = FindSequence(floorPoints, floorLines);
-
-                List<Point3d> finalPoints = new List<Point3d>();
-                for (int i = 0; i < indexes.Count; i++)
-                    finalPoints.Add(floorPoints[indexes[i]]);
-
-                finalPoints = ConvertPointsToFeet(floorPoints);
-
-                WritePointsToInpFile(finalPoints.ToList(), "EL1 Floor Polygon", eQuestFile);
-
-                seQuestFloor.spaceName = "EL1 Floor Polygon";
-                seQuestFloor.spacePoints = finalPoints;
-
-                /* Old Code
-                //next index
-                var nFloorPoints = new List<Point3d>();
-                ForAntiClockWisePoints(floorPoints, lowermostLeft, nFloorPoints);
-
-                WritePointsToInpFile(nFloorPoints.ToList(), "EL1 Floor Polygon", eQuestFile);
-
-                */
-
-            }
-
-            WriteContentToINPFile("   ..", eQuestFile);
-
-            int iNo = 0;
-
-            foreach (EDSExcelRoom room in rooms)
-            {
-                EDSeQuestRoom eDSeQuestRoom = new EDSeQuestRoom();
-                EDSExport eDSExport = new EDSExport();
-                // lines = eDSExport.mthdOfSortExternalWallAnti(roomLines[iNo]);
-                //var points = lines.Select(x => x.EndPoint).ToList();
-
-                floorPoints = lineSort.SortAntiPoints(roomLines[iNo]);
-
-                List<Point3d> point3Ds = new List<Point3d>();
-                var indexes = FindSequence(floorPoints, roomLines[iNo]);
-
-                foreach (var ind in indexes)
-                    point3Ds.Add(floorPoints[ind]);
-
-                floorPoints = point3Ds;
-
-                var lowerLeftMostPoint = FindLowermostLeft(floorPoints);
+                Point3d lowermostLeft = FindLowermostLeft(floorPoints.ToList());
 
                 if (GenericModule.IsExtWllSrtBbyClkWs)
                 {
-                    List<Point3d> nRoomPoints = GetAllTranslatedPoints(roomLines[iNo], floorPoints, lowerLeftMostPoint);
+                    var indexes = FindSequence(floorPoints, floor.floorLines);
 
-                    var fPoints = ConvertPointsToFeet(nRoomPoints);
+                    List<Point3d> finalPoints = new List<Point3d>();
+                    for (int i = 0; i < indexes.Count; i++)
+                        finalPoints.Add(floorPoints[indexes[i]]);
 
-                    if (!(fPoints[0].X == 0.0 && fPoints[0].Y == 0.0))
-                    {
-                        var newList = new List<Point3d>();
-                        fPoints = CheckMakeZeroFirst(fPoints, floorPoints, ref newList);
-                        floorPoints = newList;
+                    finalPoints = ConvertPointsToFeet(finalPoints);
 
-                        point3Ds = new List<Point3d>();
-                        indexes = FindSequence(floorPoints, roomLines[iNo]);
+                    WritePointsToInpFile(finalPoints.ToList(), $"EL1 Floor Polygon {iNo1}", eQuestFile);
 
-                        foreach (var ind in indexes)
-                            point3Ds.Add(floorPoints[ind]);
+                    seQuestFloor.spaceName = $"EL1 Floor Polygon {iNo1}";
+                    seQuestFloor.spacePoints = finalPoints;
 
-                        floorPoints = point3Ds;
-                    }
-
-                    WritePointsToInpFile(fPoints.ToList(), "EL1 Space Polygon " + (iNo + 1), eQuestFile);
-
-                    GetEDSQuestRoom(iNo, eDSeQuestRoom, lowerLeftMostPoint, nRoomPoints, floorPoints);
                 }
                 else
                 {
-                    List<Point3d> nRoomPoints = GetAllTranslatedPoints(roomLines[iNo], floorPoints, lowerLeftMostPoint);
+                    var indexes = FindSequence(floorPoints, floor.floorLines);
 
-                    var fPoints = ConvertPointsToFeet(nRoomPoints);
+                    List<Point3d> finalPoints = new List<Point3d>();
+                    for (int i = 0; i < indexes.Count; i++)
+                        finalPoints.Add(floorPoints[indexes[i]]);
 
-                    if (!(fPoints[0].X == 0.0 && fPoints[0].Y == 0.0))
-                    {
-                        var newList = new List<Point3d>();
-                        fPoints = CheckMakeZeroFirst(fPoints, floorPoints, ref newList);
-                        floorPoints = newList;
+                    finalPoints = ConvertPointsToFeet(floorPoints);
 
-                        point3Ds = new List<Point3d>();
-                        indexes = FindSequence(floorPoints, roomLines[iNo]);
+                    WritePointsToInpFile(finalPoints.ToList(), $"EL1 Floor Polygon {iNo1}", eQuestFile);
 
-                        foreach (var ind in indexes)
-                            point3Ds.Add(floorPoints[ind]);
+                    seQuestFloor.spaceName = $"EL1 Floor Polygon {iNo1}";
+                    seQuestFloor.spacePoints = finalPoints;
 
-                        floorPoints = point3Ds;
-
-                    }
-                    WritePointsToInpFile(fPoints.ToList(), "EL1 Space Polygon " + (iNo + 1), eQuestFile);
-
-                    GetEDSQuestRoom(iNo, eDSeQuestRoom, lowerLeftMostPoint, nRoomPoints, floorPoints);
                 }
 
-                iNo++;
                 WriteContentToINPFile("   ..", eQuestFile);
-                seQuestFloor.rooms.Add(eDSeQuestRoom);
+
+
+                seQuestFloor.floorName = $"EL{iNo1} Ground Flr";
+                seQuestFloor.azimuth = 360;
+                seQuestFloor.shape = "POLYGON";
+                seQuestFloor.floorHeight = 12;
+                seQuestFloor.spaceHeight = 12;
+                seQuestFloor.diagramData = "*Bldg Envelope & Loads 1 Diag Data*";
+                eDSQuestSpaces.Add(seQuestFloor);
+                iNo1++;
             }
 
-            iNo = 0;
-            foreach (var room in seQuestFloor.rooms)
+            iNo1 = 0;
+            int iNo = 0;
+            int iNo2 = 0;
+            foreach (var tag in floorTags)
             {
-                if (!(room.roomPoints[0].X == 0.0 && room.roomPoints[0].Y == 0.0))
+                iNo = 0;
+                LineSort lineSort = new LineSort();
+                var floorPoints = new List<Point3d>();
+
+                foreach (EDSExcelRoom room in tag.roomTags)
                 {
-                    room.roomPoints = CheckMakeZeroFirstMirror(room.roomPoints);
+                    EDSQuestRoom eDSeQuestRoom = new EDSQuestRoom();
+                    EDSExport eDSExport = new EDSExport();
+                    // lines = eDSExport.mthdOfSortExternalWallAnti(roomLines[iNo]);
+                    //var points = lines.Select(x => x.EndPoint).ToList();
+
+                    floorPoints = lineSort.SortAntiPoints(tag.roomLines[iNo]);
+
+                    List<Point3d> point3Ds = new List<Point3d>();
+                    var indexes = FindSequence(floorPoints, tag.roomLines[iNo]);
+
+                    foreach (var ind in indexes)
+                        point3Ds.Add(floorPoints[ind]);
+
+                    floorPoints = point3Ds;
+
+                    var lowerLeftMostPoint = FindLowermostLeft(floorPoints);
+
+                    if (GenericModule.IsExtWllSrtBbyClkWs)
+                    {
+                        List<Point3d> nRoomPoints = GetAllTranslatedPoints(tag.roomLines[iNo], floorPoints, lowerLeftMostPoint);
+
+                        var fPoints = ConvertPointsToFeet(nRoomPoints);
+
+                        if (!(fPoints[0].X == 0.0 && fPoints[0].Y == 0.0))
+                        {
+                            var newList = new List<Point3d>();
+                            fPoints = CheckMakeZeroFirst(fPoints, floorPoints, ref newList);
+                            floorPoints = newList;
+
+                            point3Ds = new List<Point3d>();
+                            indexes = FindSequence(floorPoints, tag.roomLines[iNo]);
+
+                            foreach (var ind in indexes)
+                                point3Ds.Add(floorPoints[ind]);
+
+                            floorPoints = point3Ds;
+                        }
+
+                        WritePointsToInpFile(fPoints.ToList(), "EL1 Space Polygon " + (iNo2 + 1), eQuestFile);
+
+                        GetEDSQuestRoom(iNo2, eDSeQuestRoom, lowerLeftMostPoint, nRoomPoints, floorPoints);
+                    }
+                    else
+                    {
+                        List<Point3d> nRoomPoints = GetAllTranslatedPoints(tag.roomLines[iNo], floorPoints, lowerLeftMostPoint);
+
+                        var fPoints = ConvertPointsToFeet(nRoomPoints);
+
+                        if (!(fPoints[0].X == 0.0 && fPoints[0].Y == 0.0))
+                        {
+                            var newList = new List<Point3d>();
+                            fPoints = CheckMakeZeroFirst(fPoints, floorPoints, ref newList);
+                            floorPoints = newList;
+
+                            point3Ds = new List<Point3d>();
+                            indexes = FindSequence(floorPoints, tag.roomLines[iNo]);
+
+                            foreach (var ind in indexes)
+                                point3Ds.Add(floorPoints[ind]);
+
+                            floorPoints = point3Ds;
+
+                        }
+                        WritePointsToInpFile(fPoints.ToList(), "EL1 Space Polygon " + (iNo2 + 1), eQuestFile);
+
+                        GetEDSQuestRoom(iNo2, eDSeQuestRoom, lowerLeftMostPoint, nRoomPoints, floorPoints);
+                    }
+
+                    iNo++;
+                    iNo2++;
+                    WriteContentToINPFile("   ..", eQuestFile);
+                    eDSQuestSpaces[iNo1].rooms.Add(eDSeQuestRoom);
                 }
 
-                var nPoints = new List<Point3d>() { room.roomPoints[0] };
-                var tPoints = new List<Point3d>();
+                iNo1++;
+            }
 
-                for (var i = 1; i < room.roomPoints.Count; i++)
-                    tPoints.Add(new Point3d((room.roomPoints[i].Y / 304.8), (room.roomPoints[i].X / 304.8), 0));
+            iNo1 = 0;
+            iNo = 0;
+            iNo2 = 0;
+            foreach (var tag in floorTags)
+            {
+                iNo = 0;
+                foreach (var room in eDSQuestSpaces[iNo1].rooms)
+                {
+                    if (!(room.roomPoints[0].X == 0.0 && room.roomPoints[0].Y == 0.0))
+                    {
+                        room.roomPoints = CheckMakeZeroFirstMirror(room.roomPoints);
+                    }
 
-                tPoints.Reverse();
-                nPoints.AddRange(tPoints);
+                    var nPoints = new List<Point3d>() { room.roomPoints[0] };
+                    var tPoints = new List<Point3d>();
 
-                WritePointsToInpFile(nPoints.ToList(), "EL1 Space Polygon " + (iNo + 1) + " - SMirro", eQuestFile);
-                WriteContentToINPFile("   ..", eQuestFile);
-                iNo++;
+                    for (var i = 1; i < room.roomPoints.Count; i++)
+                        tPoints.Add(new Point3d((room.roomPoints[i].Y / 304.8), (room.roomPoints[i].X / 304.8), 0));
+
+                    tPoints.Reverse();
+                    nPoints.AddRange(tPoints);
+
+                    WritePointsToInpFile(nPoints.ToList(), "EL1 Space Polygon " + (iNo2 + 1) + " - SMirro", eQuestFile);
+                    WriteContentToINPFile("   ..", eQuestFile);
+                    iNo++;
+                    iNo2++;
+                }
+                iNo1++;
             }
 
             content = GetFormattedFloorText();
 
             WriteContentToINPFile(content, eQuestFile);
 
-            seQuestFloor.floorName = "EL1 Ground Flr";
-            seQuestFloor.azimuth = 360;
-            seQuestFloor.shape = "POLYGON";
-            seQuestFloor.floorHeight = 12;
-            seQuestFloor.spaceHeight = 12;
-            seQuestFloor.diagramData = "*Bldg Envelope & Loads 1 Diag Data*";
-
-            WriteContentToINPFile(GetFloorINP(seQuestFloor), eQuestFile);
-            WriteContentToINPFile("   ..", eQuestFile);
-
-            iNo = 0;
-
-            foreach (var room in seQuestFloor.rooms)
+            iNo1 = 0;
+            iNo2 = 0;
+            foreach (var tag in floorTags)
             {
-                iWin = 1;
-                iInt = 1;
-                WriteContentToINPFile(GetFormattedDataForSpace(room), eQuestFile);
+                WriteContentToINPFile(GetFloorINP(eDSQuestSpaces[iNo1]), eQuestFile);
                 WriteContentToINPFile("   ..", eQuestFile);
 
-                for (int i = 0; i < room.roomPoints.Count; i++)
+
+                iNo = 0;
+
+                foreach (var room in eDSQuestSpaces[iNo1].rooms)
                 {
-                    if (i == room.oRoomPoints.Count - 1)
+                    iWin = 1;
+                    iInt = 1;
+                    WriteContentToINPFile(GetFormattedDataForSpace(room), eQuestFile);
+                    WriteContentToINPFile("   ..", eQuestFile);
+
+                    for (int i = 0; i < room.roomPoints.Count; i++)
                     {
-                        var currPoint = room.oRoomPoints[i];
-                        var nextPoint = room.oRoomPoints[0];
-
-                        var lineSegment = segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, nextPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, nextPoint)));
-                        if (lineSegment != null)
+                        if (i == room.oRoomPoints.Count - 1)
                         {
-                            if (lineSegment.iCount == 1)
-                            {
-                                EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
-                                {
-                                    Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
-                                    Type = "EXTERIOR-WALL",
-                                    Construction = "EL1 EWall Construction",
-                                    Location = $"SPACE-V{i + 1}",
-                                    ShadingSurface = true
-                                };
-                                WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
-                                WriteContentToINPFile("   ..", eQuestFile);
-                            }
-                            else
-                            {
-                                var index = rooms.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
-                                if (ContainsInversePair(visitedRooms, room.SpaceName, seQuestFloor.rooms[index].SpaceName))
-                                {
+                            var currPoint = room.oRoomPoints[i];
+                            var nextPoint = room.oRoomPoints[0];
 
+                            var lineSegment = segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, nextPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, nextPoint)));
+                            if (lineSegment != null)
+                            {
+                                if (lineSegment.iCount == 1)
+                                {
+                                    EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
+                                    {
+                                        Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo2 + 1)}.E{(i + 1)})",
+                                        Type = "EXTERIOR-WALL",
+                                        Construction = "EL1 EWall Construction",
+                                        Location = $"SPACE-V{i + 1}",
+                                        ShadingSurface = true
+                                    };
+                                    WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
+                                    WriteContentToINPFile("   ..", eQuestFile);
                                 }
                                 else
                                 {
-                                    EDSeQuestInteriorWall eDSeQuestInteriorWall = new EDSeQuestInteriorWall()
-                                    {
-                                        Name = $"EL1 NE Wall (G.S{(iNo + 1)}.I{iInt})",
-                                        NextTo = seQuestFloor.rooms[index].SpaceName,
-                                        Construction = "EL1 IWall Construction",
-                                        Location = $"SPACE-V{i + 1}",
-                                    };
-
-                                    eDSeQuestInteriorWall.PrintFormattedData(eQuestFile);
-                                    visitedRooms.Add(new DuplicateWall() { type1 = room.SpaceName, type2 = seQuestFloor.rooms[index].SpaceName });
-                                    iInt++;
-                                }
-
-                            }
-                        }
-                        var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, rooms[iNo], iNo, eQuestFile);
-                    }
-                    else
-                    {
-                        var currPoint = room.oRoomPoints[i];
-                        var nextPoint = room.oRoomPoints[i + 1];
-
-                        var lineSegment = segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, nextPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, nextPoint)));
-                        //var ty = segmentCount.FindAll(x => Math.Round(x.lineSegment.EndPoint.Y, 4).Equals(currPoint.Y) || Math.Round(x.lineSegment.StartPoint.Y, 4).Equals(currPoint.Y));
-                        if (lineSegment != null)
-                        {
-                            if (lineSegment.iCount == 1)
-                            {
-                                EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
-                                {
-                                    Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo + 1)}.E{(i + 1)})",
-                                    Type = "EXTERIOR-WALL",
-                                    Construction = "EL1 EWall Construction",
-                                    Location = $"SPACE-V{i + 1}",
-                                    ShadingSurface = true
-                                };
-                                WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
-                                WriteContentToINPFile("   ..", eQuestFile);
-                            }
-                            else
-                            {
-                                var index = rooms.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
-                                if (room.SpaceName != seQuestFloor.rooms[index].SpaceName)
-                                {
-                                    if (ContainsInversePair(visitedRooms, room.SpaceName, seQuestFloor.rooms[index].SpaceName))
+                                    var index = tag.roomTags.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
+                                    if (ContainsInversePair(visitedRooms, room.SpaceName, eDSQuestSpaces[iNo1].rooms[index].SpaceName))
                                     {
 
                                     }
@@ -799,119 +1044,177 @@ namespace EDS.Models
                                     {
                                         EDSeQuestInteriorWall eDSeQuestInteriorWall = new EDSeQuestInteriorWall()
                                         {
-                                            Name = $"EL1 NE Wall (G.S{(iNo + 1)}.I{iInt})",
-                                            NextTo = seQuestFloor.rooms[index].SpaceName,
+                                            Name = $"EL1 NE Wall (G.S{(iNo2 + 1)}.I{iInt})",
+                                            NextTo = eDSQuestSpaces[iNo1].rooms[index].SpaceName,
                                             Construction = "EL1 IWall Construction",
                                             Location = $"SPACE-V{i + 1}",
                                         };
 
                                         eDSeQuestInteriorWall.PrintFormattedData(eQuestFile);
-                                        visitedRooms.Add(new DuplicateWall() { type1 = room.SpaceName, type2 = seQuestFloor.rooms[index].SpaceName });
+                                        visitedRooms.Add(new DuplicateWall() { type1 = room.SpaceName, type2 = eDSQuestSpaces[iNo1].rooms[index].SpaceName });
                                         iInt++;
                                     }
+
                                 }
-
                             }
+                            var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, tag.roomTags[iNo], iNo2, eQuestFile);
                         }
-                        var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, rooms[iNo], iNo, eQuestFile);
-                        //WriteLineSegmentsToFile(segmentCount.Select(x => x.lineSegment).ToList(), "E:\\text.txt");
+                        else
+                        {
+                            var currPoint = room.oRoomPoints[i];
+                            var nextPoint = room.oRoomPoints[i + 1];
+
+                            var lineSegment = segmentCount.Find(x => (LineSort.ArePointsEqual(x.lineSegment.StartPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.EndPoint, nextPoint)) || (LineSort.ArePointsEqual(x.lineSegment.EndPoint, currPoint) && LineSort.ArePointsEqual(x.lineSegment.StartPoint, nextPoint)));
+                            //var ty = segmentCount.FindAll(x => Math.Round(x.lineSegment.EndPoint.Y, 4).Equals(currPoint.Y) || Math.Round(x.lineSegment.StartPoint.Y, 4).Equals(currPoint.Y));
+                            if (lineSegment != null)
+                            {
+                                if (lineSegment.iCount == 1)
+                                {
+                                    EDSeQuestExteriorWall questWall = new EDSeQuestExteriorWall()
+                                    {
+                                        Name = $"EL1  Wall {room.BelongSpace} (G.S{(iNo2 + 1)}.E{(i + 1)})",
+                                        Type = "EXTERIOR-WALL",
+                                        Construction = "EL1 EWall Construction",
+                                        Location = $"SPACE-V{i + 1}",
+                                        ShadingSurface = true
+                                    };
+                                    WriteContentToINPFile(GetFormattedWallData(questWall), eQuestFile);
+                                    WriteContentToINPFile("   ..", eQuestFile);
+                                }
+                                else
+                                {
+                                    var index = tag.roomTags.FindIndex(x => x.room.textHandleId.Equals(lineSegment.spaces.Last()));
+                                    if (room.SpaceName != eDSQuestSpaces[iNo1].rooms[index].SpaceName)
+                                    {
+                                        if (ContainsInversePair(visitedRooms, room.SpaceName, eDSQuestSpaces[iNo1].rooms[index].SpaceName))
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            EDSeQuestInteriorWall eDSeQuestInteriorWall = new EDSeQuestInteriorWall()
+                                            {
+                                                Name = $"EL1 NE Wall (G.S{(iNo2 + 1)}.I{iInt})",
+                                                NextTo = eDSQuestSpaces[iNo1].rooms[index].SpaceName,
+                                                Construction = "EL1 IWall Construction",
+                                                Location = $"SPACE-V{i + 1}",
+                                            };
+
+                                            eDSeQuestInteriorWall.PrintFormattedData(eQuestFile);
+                                            visitedRooms.Add(new DuplicateWall() { type1 = room.SpaceName, type2 = eDSQuestSpaces[iNo1].rooms[index].SpaceName });
+                                            iInt++;
+                                        }
+                                    }
+
+                                }
+                            }
+                            var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, tag.roomTags[iNo], iNo2, eQuestFile);
+                            //WriteLineSegmentsToFile(segmentCount.Select(x => x.lineSegment).ToList(), "E:\\text.txt");
+                        }
+
+
+                        /*
+                        if (i == room.oRoomPoints.Count - 1)
+                        {
+                            var currPoint = room.oRoomPoints[i];
+                            var nextPoint = room.oRoomPoints[0];
+
+                            var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, rooms[iNo], iNo, eQuestFile);
+
+                        }
+                        else
+                        {
+                            var currPoint = room.oRoomPoints[i];
+                            var nextPoint = room.oRoomPoints[i + 1];
+
+                        }
+                        */
                     }
 
-
-                    /*
-                    if (i == room.oRoomPoints.Count - 1)
+                    EDSQuestRoof eDSQuestRoof = new EDSQuestRoof
                     {
-                        var currPoint = room.oRoomPoints[i];
-                        var nextPoint = room.oRoomPoints[0];
+                        Name = $"EL1 Roof (G.S{(iNo2 + 1)}.E2)",
+                        Construction = "EL1 Roof Construction",
+                        Location = "TOP",
+                        ShadingSurface = true
+                    };
 
-                        var line = WriteWindowContentToINPFile(doc, currPoint, nextPoint, rooms[iNo], iNo, eQuestFile);
+                    eDSQuestRoof.PrintFormattedData(eQuestFile);
 
-                    }
-                    else
+                    EDSQuestFL eDSQuestFL = new EDSQuestFL
                     {
-                        var currPoint = room.oRoomPoints[i];
-                        var nextPoint = room.oRoomPoints[i + 1];
+                        Name = $"EL1 Flr (G.S{(iNo2 + 1)}.U1)",
+                        Construction = $"EL1 UFCons (G.S1.U2)",
+                        Location = "BOTTOM"
+                    };
 
-                    }
-                    */
+                    eDSQuestFL.PrintFormattedData(eQuestFile);
+
+                    iNo++;
+                    iNo2++;
                 }
-
-                EDSQuestRoof eDSQuestRoof = new EDSQuestRoof
-                {
-                    Name = $"EL1 Roof (G.S{(iNo + 1)}.E2)",
-                    Construction = "EL1 Roof Construction",
-                    Location = "TOP",
-                    ShadingSurface = true
-                };
-
-                eDSQuestRoof.PrintFormattedData(eQuestFile);
-
-                EDSQuestFL eDSQuestFL = new EDSQuestFL
-                {
-                    Name = $"EL1 Flr (G.S{(iNo + 1)}.U1)",
-                    Construction = $"EL1 UFCons (G.S1.U2)",
-                    Location = "BOTTOM"
-                };
-
-                eDSQuestFL.PrintFormattedData(eQuestFile);
-
-                iNo++;
+                iNo1++;
             }
-
             var eContent = GetFormattedElectricalData();
 
             WriteContentToINPFile(eContent, eQuestFile);
 
+            iNo1 = 0;
             iNo = 0;
-            foreach (var room in seQuestFloor.rooms)
+            foreach (var item in floorTags)
             {
-                EDSQuestZone zone = new EDSQuestZone
+                foreach (var room in eDSQuestSpaces[iNo1].rooms)
                 {
-                    Name = $"EL1 South Perim Zn (G.S{iNo + 1})",
-                    Type = "CONDITIONED",
-                    FlowArea = 0.5,
-                    OAFlowPer = 20,
-                    DesignHeatTemp = 72,
-                    HeatTempSchedule = "S1 Sys1 (PSZ) Heat Sch",
-                    DesignCoolTemp = 75,
-                    CoolTempSchedule = "S1 Sys1 (PSZ) Cool Sch",
-                    SizingOption = "ADJUST-LOADS",
-                    Space = room.SpaceName
-                };
+                    EDSQuestZone zone = new EDSQuestZone
+                    {
+                        Name = $"EL1 South Perim Zn (G.S{iNo + 1})",
+                        Type = "CONDITIONED",
+                        FlowArea = 0.5,
+                        OAFlowPer = 20,
+                        DesignHeatTemp = 72,
+                        HeatTempSchedule = "S1 Sys1 (PSZ) Heat Sch",
+                        DesignCoolTemp = 75,
+                        CoolTempSchedule = "S1 Sys1 (PSZ) Cool Sch",
+                        SizingOption = "ADJUST-LOADS",
+                        Space = room.SpaceName
+                    };
 
-                EDSQuestSystemData system = new EDSQuestSystemData
-                {
-                    Name = $"EL1 Sys1 (PSZ) (G.S{iNo + 1})",
-                    Type = "PSZ",
-                    HeatSource = "FURNACE",
-                    ZoneHeatSource = "NONE",
-                    BaseboardSource = "NONE",
-                    SizingRatio = 1.15,
-                    HumidifierType = "NONE",
-                    MaxSupplyTemp = 120,
-                    MinSupplyTemp = 55,
-                    MaxHumidity = 100,
-                    MinHumidity = 0,
-                    EconoLimitTemp = 70,
-                    EnthalpyLimit = 30,
-                    EconoLockout = "NO",
-                    OAControl = "OA-TEMP",
-                    FanSchedule = "S1 Sys1 (PSZ) Fan Sch",
-                    SupplyStatic = 1.25,
-                    SupplyEff = 0.53,
-                    ReturnEff = 0.53,
-                    CoolingEIR = 0.263548,
-                    FurnaceAux = 0,
-                    FurnaceHIR = 1.25,
-                    HumidifierLoc = "IN-AIR-HANDLER",
-                    ControlZone = zone.Name
-                };
+                    EDSQuestSystemData system = new EDSQuestSystemData
+                    {
+                        Name = $"EL1 Sys1 (PSZ) (G.S{iNo + 1})",
+                        Type = "PSZ",
+                        HeatSource = "FURNACE",
+                        ZoneHeatSource = "NONE",
+                        BaseboardSource = "NONE",
+                        SizingRatio = 1.15,
+                        HumidifierType = "NONE",
+                        MaxSupplyTemp = 120,
+                        MinSupplyTemp = 55,
+                        MaxHumidity = 100,
+                        MinHumidity = 0,
+                        EconoLimitTemp = 70,
+                        EnthalpyLimit = 30,
+                        EconoLockout = "NO",
+                        OAControl = "OA-TEMP",
+                        FanSchedule = "S1 Sys1 (PSZ) Fan Sch",
+                        SupplyStatic = 1.25,
+                        SupplyEff = 0.53,
+                        ReturnEff = 0.53,
+                        CoolingEIR = 0.263548,
+                        FurnaceAux = 0,
+                        FurnaceHIR = 1.25,
+                        HumidifierLoc = "IN-AIR-HANDLER",
+                        ControlZone = zone.Name
+                    };
 
-                WriteContentToINPFile(system.ToString(), eQuestFile);
-                WriteContentToINPFile(zone.ToString(), eQuestFile);
+                    WriteContentToINPFile(system.ToString(), eQuestFile);
+                    WriteContentToINPFile(zone.ToString(), eQuestFile);
 
-                iNo++;
+                    iNo++;
+                }
+                iNo1++;
             }
+
 
             var endContent = GetFormattedEndData();
 
@@ -1276,7 +1579,7 @@ $ *********************************************************
 
             return newRoomPoints;
         }
-        private void GetEDSQuestRoom(int iNo, EDSeQuestRoom eDSeQuestRoom, Point3d lowerLeftMostPoint, List<Point3d> nRoomPoints, List<Point3d> oRoomPoints)
+        private void GetEDSQuestRoom(int iNo, EDSQuestRoom eDSeQuestRoom, Point3d lowerLeftMostPoint, List<Point3d> nRoomPoints, List<Point3d> oRoomPoints)
         {
             eDSeQuestRoom.X = lowerLeftMostPoint.X / 304.8;
             eDSeQuestRoom.Y = lowerLeftMostPoint.Y / 304.8;
@@ -1882,7 +2185,7 @@ $ ---------------------------------------------------------
             return finalPoints;
         }
 
-        private string GetFloorINP(EDSeQuestFloor seQuestFloor)
+        private string GetFloorINP(EDSQuestSpace seQuestFloor)
         {
             string content1 = $@"""{seQuestFloor.floorName}"" = FLOOR           
    AZIMUTH          = {seQuestFloor.azimuth}
@@ -1895,7 +2198,7 @@ $ ---------------------------------------------------------
             return content1;
         }
 
-        public string GetFormattedDataForSpace(EDSeQuestRoom questRoom)
+        public string GetFormattedDataForSpace(EDSQuestRoom questRoom)
         {
             return $@"""{questRoom.SpaceName}"" = SPACE
    X                ={questRoom.X}
@@ -2073,7 +2376,7 @@ $ ---------------------------------------------------------
             }
         }
 
-        private void CreateXMLFile(Database database)
+        private void CreateXMLFile(Database database, List<EDSFloorTag> floorTags)
         {
             if (rooms.Count > 0)
             {
@@ -2091,13 +2394,13 @@ $ ---------------------------------------------------------
 
                     var xmlOutputFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(name), System.IO.Path.GetFileName(name).Split('.')[0] + ".xml");
                     XmlFileFormat format = new XmlFileFormat();
-                    format.WriteToFile(GetXMLData(rooms, database), xmlOutputFile);
+                    format.WriteToFile(GetXMLData(rooms, database, floorTags), xmlOutputFile);
 
                 }
             }
         }
 
-        GbXml GetXMLData(List<EDSExcelRoom> rooms, Database database)
+        GbXml GetXMLData(List<EDSExcelRoom> rooms, Database database, List<EDSFloorTag> floorTags)
         {
             var campus = new Campus();
             GbXml gbxml = new GbXml
@@ -2144,19 +2447,38 @@ $ ---------------------------------------------------------
             building.Id = "Building_1";
             building.BuildingType = "Unknown";
             building.Spaces = new List<Space>();
-            foreach (EDSExcelRoom room in rooms)
-            {
-                Space space = new Space();
-                space.Id = room.room.textHandleId;
-                space.Name = room.room.spaceType;
-                space.Area = Convert.ToDouble(room.room.roomArea);
-                space.Volume = space.Area * allHeight;
-                space.PeopleNumber = new PeopleNumber() { Unit = "SquareMPerPerson", Value = 17.695817 };
-                space.EquipPowerPerArea = new EquipPowerPerArea() { Unit = "WattPerSquareMeter", Value = 10.656271 };
-                space.LightPowerPerArea = new LightPowerPerArea() { Unit = "WattPerSquareMeter", Value = 7.642376 };
-                space.BuildingStoreyIdRef = "Building Room";
+            building.BuildingStorey = new List<BuildingStorey>();
 
-                building.Spaces.Add(space);
+            int iNo1 = 1;
+            foreach (EDSFloorTag room in floorTags)
+            {
+                BuildingStorey buildingStorey = new BuildingStorey();
+                buildingStorey.Name = $"Building Story {iNo1}";
+                buildingStorey.Level = 0;
+                buildingStorey.Id = $"Building_Story_{iNo1}";
+                building.BuildingStorey.Add(buildingStorey);
+                iNo1++;
+            }
+
+            iNo1 = 1;
+            foreach (EDSFloorTag floorTag in floorTags)
+            {
+                foreach (EDSExcelRoom room in floorTag.roomTags)
+                {
+                    Space space = new Space();
+                    space.Id = room.room.textHandleId;
+                    space.Name = room.room.spaceType;
+                    space.Area = room.room.roomArea == "" ? 0 : Convert.ToDouble(room.room.roomArea);
+                    space.Volume = space.Area * allHeight;
+                    space.PeopleNumber = new PeopleNumber() { Unit = "SquareMPerPerson", Value = 17.695817 };
+                    space.EquipPowerPerArea = new EquipPowerPerArea() { Unit = "WattPerSquareMeter", Value = 10.656271 };
+                    space.LightPowerPerArea = new LightPowerPerArea() { Unit = "WattPerSquareMeter", Value = 7.642376 };
+                    space.BuildingStoreyIdRef = $"Building_Story_{iNo1}";
+
+                    building.Spaces.Add(space);
+                }
+
+                iNo1++;
             }
 
             campus.Building = building;
@@ -2961,22 +3283,6 @@ $ ---------------------------------------------------------
                                     }
                                 }
                             }
-
-                            //var point = GetMidpoint(rmLine);
-                            ////var matchLines = wallLines.FindAll(x => x.Length.Equals(rmLine.Length));
-                            //foreach (var macLine in wallLines)
-                            //{
-                            //    if (/*LinesOverlap(rmLine, macLine) && AreLinesParallel(rmLine, macLine)*/IsPointOnLine(macLine, point))
-                            //    {
-                            //        if (!room.allWalls.Any(x => x.ObjectId == macLine.ObjectId))
-                            //        {
-                            //            room.allWalls.Add(macLine);
-                            //            FindWindowsForWall(macLine.Id, windowLines, ref wallWindows);
-                            //            break;
-                            //        }
-
-                            //    }
-                            //}
                         }
                         room.allWindows = wallWindows;
                     }

@@ -136,7 +136,7 @@ namespace EDS.Models
         public List<Space> Spaces { get; set; }
 
         [XmlElement("BuildingStorey")]
-        public BuildingStorey BuildingStorey { get; set; }
+        public List<BuildingStorey> BuildingStorey { get; set; }
     }
 
     public class Space

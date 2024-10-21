@@ -5,6 +5,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
-    <StartProgram>E:\ZWCAD\ZWCAD.exe</StartProgram>
+    <StartProgram>E:\ZWCAD2022\ZWCAD.exe</StartProgram>
   </PropertyGroup>
 </Project>

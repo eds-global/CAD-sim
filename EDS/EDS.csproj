@@ -30,6 +30,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_2024|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release_2024\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_2022|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release_2022\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EPPlus, Version=7.3.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.7.3.1\lib\net462\EPPlus.dll</HintPath>
@@ -89,13 +105,17 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="ZwDatabaseMgd, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Depenedencies\ZwDatabaseMgd.dll</HintPath>
+    <Reference Include="ZwDatabaseMgd" Condition="'$(Configuration)'=='Release_2024'">
+      <HintPath>Depenedencies\2024\ZwDatabaseMgd.dll</HintPath>
     </Reference>
-    <Reference Include="ZwManaged, Version=24.10.24.10, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Depenedencies\ZwManaged.dll</HintPath>
+    <Reference Include="ZwManaged" Condition="'$(Configuration)'=='Release_2024'">
+      <HintPath>Depenedencies\2024\ZwManaged.dll</HintPath>
+    </Reference>
+    <Reference Include="ZwDatabaseMgd" Condition="'$(Configuration)'=='Release_2022' OR '$(Configuration)' == 'Debug'">
+      <HintPath>Depenedencies\2022\ZwDatabaseMgd.dll</HintPath>
+    </Reference>
+    <Reference Include="ZwManaged" Condition="'$(Configuration)'=='Release_2022' OR '$(Configuration)' == 'Debug'">
+      <HintPath>Depenedencies\2022\ZwManaged.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +126,7 @@
     <Compile Include="ExcelReader.cs" />
     <Compile Include="GenericModule.cs" />
     <Compile Include="Models\EDSExport.cs" />
+    <Compile Include="Models\EDSFloorTag.cs" />
     <Compile Include="Models\EDSRoomTag.cs" />
     <Compile Include="Models\EDSWall.cs" />
     <Compile Include="Models\EDSWindow.cs" />

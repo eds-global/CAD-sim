@@ -29,7 +29,8 @@ namespace EDS
             treeView1.Nodes.Clear();
             progressBar1.Value = 25;
             EDSScan scan = new EDSScan();
-            scan.FindClosedLoop(treeView1);
+            //scan.FindClosedLoop(treeView1);
+            scan.TraceBoundaryInRectangle(treeView1);
             progressBar1.Value = 100;
 
 
